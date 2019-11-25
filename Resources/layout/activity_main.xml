@@ -115,10 +115,49 @@
             android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="244"
-            android:background="@android:color/transparent">
-            <GridView
+            android:paddingLeft="6px"
+            android:paddingRight="6px"
+            android:paddingBottom="4dp"
+            android:orientation="vertical">
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <ImageView
+                    android:id="@+id/bt_left_select1"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/Button_coding1_activation"/>
+                <ImageView
+                    android:id="@+id/bt_left_select2"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/Button_coding2_deactivation"/>
+                <ImageView
+                    android:id="@+id/bt_left_select3"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/Button_control_deactivation"/>
+                <ImageView
+                    android:id="@+id/bt_left_select4"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/Button_effect_deactivation"/>
+            </LinearLayout>
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/Left_bloock_BG">
+                <FrameLayout
+                    android:id="@+id/left_blocks_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+            </ScrollView>
         </LinearLayout>
         <!--middle view-->
         <LinearLayout
@@ -127,12 +166,25 @@
             android:layout_weight="890"
             android:orientation="vertical"
             android:background="@android:color/transparent">
+            <!--background-->
             <FrameLayout
+                android:id="@+id/mainView"
                 android:layout_width="match_parent"
                 android:layout_height="0px"
                 android:layout_weight="545"
                 android:background="@drawable/Center_frame">
+                <!--video area-->
+                <FrameLayout
+                    android:id="@+id/videoView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <!--block animation area-->
+                <FrameLayout
+                    android:id="@+id/ContainerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
             </FrameLayout>
+            <!--block area and button-->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="0px"
@@ -140,14 +192,18 @@
                 android:orientation="horizontal"
                 android:paddingTop="10px"
                 android:layout_marginBottom="4dp">
-                <HorizontalScrollView
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/blockView"
+                    android:layout_width="30dp"
+                    android:layout_height="match_parent"/>
+                <!--<HorizontalScrollView
                     android:layout_width="300dp"
                     android:layout_height="match_parent"
-                    android:background="#f00">
+                    >
                     <GridView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"/>
-                </HorizontalScrollView>
+                </HorizontalScrollView>-->
                 <RelativeLayout
                     android:id="@+id/deleteView"
                     android:layout_width="100dp"
@@ -155,19 +211,20 @@
                     android:layout_alignParentRight="true"
                     android:orientation="vertical">
                     <ImageView
-                        android:id="@+id/bt_delete"
+                        android:id="@+id/bt_delete1"
                         android:layout_width="100dp"
                         android:layout_height="20dp"
                         android:src="@drawable/Button_choice_picturedelete"
                         android:scaleType="fitEnd"/>
                     <ImageView
-                        android:id="@+id/bt_delete"
+                        android:id="@+id/bt_delete2"
                         android:layout_width="100dp"
                         android:layout_height="20dp"
                         android:src="@drawable/Button_choice_picturecalling"
                         android:layout_centerVertical="true"
                         android:scaleType="fitEnd"/>
                     <ImageView
+                        android:id="@+id/bt_delete3"
                         android:layout_width="100dp"
                         android:layout_height="20dp"
                         android:src="@drawable/Button_choice_blockdelete"
@@ -179,7 +236,7 @@
         <LinearLayout
             android:layout_width="0px"
             android:layout_height="match_parent"
-            android:layout_weight="147">
+            android:layout_weight="146">
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

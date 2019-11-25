@@ -41,8 +41,8 @@ namespace TabletArtco {
                 accountEt.Text = sharedPres.GetString("username", "");
                 pwdEt.Text = sharedPres.GetString("password", "");
             }
-            
-            remIv.Click += (s, e) => {
+
+            FindViewById<ImageView>(Resource.Id.remIv).Click += (s, e) => {
                 remember();
             };
             
@@ -57,7 +57,6 @@ namespace TabletArtco {
 
         public void remember() {
             Boolean isRem = !sharedPres.GetBoolean("isremember", false);
-            
             editor.PutBoolean("isremember", isRem).Commit();
             remIv.SetImageResource(isRem ? Resource.Drawable.Login_checked : Resource.Drawable.Login_check);
             if (!isRem) {

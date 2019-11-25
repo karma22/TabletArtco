@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="@drawable/PictureEditing_Background">
+	<!--Top view-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="82"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/edit_logo"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/edit_title"/>    
+    </LinearLayout>
+    <!--Bottom view-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="718"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp"
+        android:background="@android:color/transparent">
+        <LinearLayout
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="244"
+            android:background="@drawable/edit_bg">
+            <GridView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+        <!--middle view-->
+        <LinearLayout
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="890"
+            android:orientation="vertical"
+            android:background="@android:color/transparent">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="545"
+                android:background="@drawable/edit_bg">
+            </FrameLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="175"
+                android:orientation="horizontal"
+                android:paddingTop="10px"
+                android:layout_marginBottom="4dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+                <RelativeLayout
+                    android:id="@+id/deleteView"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:orientation="vertical">
+                    
+                </RelativeLayout>
+            </RelativeLayout>
+        </LinearLayout>
+        
+    </LinearLayout>
+</LinearLayout>

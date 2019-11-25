@@ -54,8 +54,6 @@ namespace TabletArtco {
 
         public static void setViewSize(View view, int width, int height) {
             ViewGroup.LayoutParams layout = view.LayoutParameters;
-            Log.Info("Util", "param:" + layout.Width);
-            Log.Info("Util", "param:" + layout.Height);
             if (width != 0) {
                 layout.Width = width;
             }
