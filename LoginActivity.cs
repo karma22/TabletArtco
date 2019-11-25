@@ -20,7 +20,8 @@ namespace TabletArtco {
 
         protected override void OnCreate(Bundle savedInstanceState) {
             base.OnCreate(savedInstanceState);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);            
+            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_login);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             initView();

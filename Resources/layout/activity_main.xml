@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0px"
-        android:layout_weight="82">
+        android:layout_weight="80">
         <RelativeLayout  
             android:layout_width="0px"
             android:layout_height="match_parent"
@@ -109,14 +109,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0px"
-        android:layout_weight="718"
+        android:layout_weight="720"
         android:background="@android:color/transparent">
         <LinearLayout
             android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="244"
-            android:paddingLeft="6px"
-            android:paddingRight="6px"
+            android:paddingLeft="12px"
+            android:paddingRight="12px"
             android:paddingBottom="4dp"
             android:orientation="vertical">
             <LinearLayout
@@ -151,6 +151,8 @@
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:scrollbars="none"
+                android:layout_marginRight="2px"
                 android:background="@drawable/Left_bloock_BG">
                 <FrameLayout
                     android:id="@+id/left_blocks_view"

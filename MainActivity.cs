@@ -1,14 +1,8 @@
 ﻿using Android.App;
 using Android.OS;
 using Android.Support.V7.App;
-using Android.Support.V7.Widget;
 using Android.Runtime;
-using Android.Views;
 using Android.Widget;
-using System.Collections.Generic;
-using System;
-using Android.Util;
-using Android.Graphics;
 
 
 namespace TabletArtco {
@@ -18,7 +12,10 @@ namespace TabletArtco {
         protected override void OnCreate(Bundle savedInstanceState) {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_main);
+            
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             initView();
         }
@@ -38,7 +35,7 @@ namespace TabletArtco {
                 Resource.Id.bt_choice1, Resource.Id.bt_choice2, Resource.Id.bt_choice3, Resource.Id.bt_choice4, Resource.Id.bt_choice5,
                 Resource.Id.bt_choice6, Resource.Id.bt_choice7, Resource.Id.bt_choice8, Resource.Id.bt_choice9
             };
-            int height = (int)((ScreenUtil.ScreenHeight(this) - ScreenUtil.StatusBarHeight(this)) * 82 / 800.0 - 18);
+            int height = (int)((ScreenUtil.ScreenHeight(this) - ScreenUtil.StatusBarHeight(this)) * 80 / 800.0 - 18);
             for (int i = 0; i < 9; i++) {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
                 ViewUtil.setViewSize(imgBt, (int)(height * 73 / 70.0), height);
@@ -53,7 +50,8 @@ namespace TabletArtco {
             int[] btsResIds = {
                 Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4
             };
-            int itemW = (int)((ScreenUtil.ScreenWidth(this)*244.0/1280-12)/4);
+            
+            int itemW = (int)((ScreenUtil.ScreenWidth(this)*244.0/1280-12*2)/4);
             for (int i = 0; i < 4; i++) {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
                 ViewUtil.setViewSize(imgBt, itemW, (int)(itemW*45.0/55));
@@ -122,11 +120,16 @@ namespace TabletArtco {
                 Resource.Drawable.Edublock_Left, Resource.Drawable.Edublock_LoopN, Resource.Drawable.Edublock_Right
             };
             int[] resIds = index == 0 ? codeingOneResIds : index == 1 ? codeingTwoResIds : index == 2 ? controlResIds : educationResIds;
-            int itemW = (int)((ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - 12) / 3);
+            
+            int margin = 12;
+            int padding = 4;
+            double rowWidth = ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - 12*2;
+            int itemW = (int)((rowWidth-margin*2-padding*2) / 3);
+            
             for (int i = 0; i < resIds.Length; i++) {
                 FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(itemW, itemW);
-                param.LeftMargin = i % 3 * itemW;
-                param.TopMargin = i / 3 * itemW + (index==0 ? (i>11 ? itemW/3 : 0) : index==1 ? (i > 8 ? itemW / 3 : 0) : 0);
+                param.LeftMargin = i % 3 * (itemW+padding)+margin;
+                param.TopMargin = i / 3 * (itemW+padding) + padding + (index==0 ? (i>11 ? itemW/4 : 0) : index==1 ? (i > 8 ? itemW / 4 : 0) : 0);
                 ImageView imgIv = new ImageView(this);
                 imgIv.LayoutParameters = param;
                 imgIv.SetImageResource(resIds[i]);
