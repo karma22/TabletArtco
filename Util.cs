@@ -27,6 +27,16 @@ namespace TabletArtco {
             ac.Window.DecorView.GetWindowVisibleDisplayFrame(frame);
             return frame.Top;
         }
+
+        public static int dip2px(Context context, float dpValue) {
+            float scale = context.Resources.DisplayMetrics.Density;
+            return (int)(dpValue * scale + 0.5f);
+        }
+
+        public static int px2dip(Context context, float pxValue) {
+            float scale = context.Resources.DisplayMetrics.Density;
+            return (int)(pxValue / scale + 0.5f);
+        }
     }
 
     public class ViewUtil {

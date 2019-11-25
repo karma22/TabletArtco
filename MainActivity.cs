@@ -1,8 +1,11 @@
 ﻿using Android.App;
 using Android.OS;
 using Android.Support.V7.App;
+using Android.Support.V4.View;
 using Android.Runtime;
 using Android.Widget;
+using System.Collections.Generic;
+using System;
 
 
 namespace TabletArtco {
@@ -25,18 +28,20 @@ namespace TabletArtco {
         }
 
         public void initView() {
-            addTopButtonEvent();
-            addLeftButtonEvent();
+            initTopButtonEvent();
+            initLeftButtonEvent();
+            initMainView();
+            initAniBlocksView();
         }
 
         //Top tool button
-        public void addTopButtonEvent() {
+        public void initTopButtonEvent() {
             int[] btsResIds = {
                 Resource.Id.bt_choice1, Resource.Id.bt_choice2, Resource.Id.bt_choice3, Resource.Id.bt_choice4, Resource.Id.bt_choice5,
                 Resource.Id.bt_choice6, Resource.Id.bt_choice7, Resource.Id.bt_choice8, Resource.Id.bt_choice9
             };
             int height = (int)((ScreenUtil.ScreenHeight(this) - ScreenUtil.StatusBarHeight(this)) * 80 / 800.0 - 18);
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < btsResIds.Length; i++) {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
                 ViewUtil.setViewSize(imgBt, (int)(height * 73 / 70.0), height);
                 imgBt.Click += (t, e) => {
@@ -46,13 +51,12 @@ namespace TabletArtco {
         }
 
         //Left four select button
-        public void addLeftButtonEvent() {
+        public void initLeftButtonEvent() {
             int[] btsResIds = {
                 Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4
             };
-            
             int itemW = (int)((ScreenUtil.ScreenWidth(this)*244.0/1280-12*2)/4);
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < btsResIds.Length; i++) {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
                 ViewUtil.setViewSize(imgBt, itemW, (int)(itemW*45.0/55));
                 imgBt.Click += (t, e) => {
@@ -120,12 +124,10 @@ namespace TabletArtco {
                 Resource.Drawable.Edublock_Left, Resource.Drawable.Edublock_LoopN, Resource.Drawable.Edublock_Right
             };
             int[] resIds = index == 0 ? codeingOneResIds : index == 1 ? codeingTwoResIds : index == 2 ? controlResIds : educationResIds;
-            
             int margin = 12;
             int padding = 4;
             double rowWidth = ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - 12*2;
             int itemW = (int)((rowWidth-margin*2-padding*2) / 3);
-            
             for (int i = 0; i < resIds.Length; i++) {
                 FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(itemW, itemW);
                 param.LeftMargin = i % 3 * (itemW+padding)+margin;
@@ -137,6 +139,37 @@ namespace TabletArtco {
             }
         }
 
+        public void initMainView() {
+
+        }
+
+        public void initAniBlocksView() {
+            int width = (int)(ScreenUtil.ScreenWidth(this) * 890 / 1280.0);
+            double height = (ScreenUtil.ScreenHeight(this) * 175 / 720.0 - 10 - ScreenUtil.dip2px(this, 4));
+            int itemH = (int)((height - 40) / 3);
+            int itemW = (int)(itemH * 168 / 50.0);
+            int[] btsResIds = { Resource.Id.bt_delete1, Resource.Id.bt_delete2, Resource.Id.bt_delete3 };
+            for (int i = 0; i < btsResIds.Length; i++) {
+                ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
+                ViewUtil.setViewSize(imgBt, itemW, itemH);
+                imgBt.Click += (t, e) => {
+
+                };
+            }
+            List<String> list = new List<String> ();
+            list.Add("ff");
+            list.Add("ff");
+            BlockAdapter adapter = new BlockAdapter(this, list);
+            ViewPager viewPager = FindViewById<ViewPager>(Resource.Id.viewpager);
+            ViewUtil.setViewWidth(viewPager, width-itemW);
+            viewPager.Adapter = adapter;
+        }
+
+        public void updateMainView() {
+
+        }
+
+        
 
     }
 }

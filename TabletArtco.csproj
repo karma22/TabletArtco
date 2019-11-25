@@ -64,7 +64,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="LoginActivity.cs" />
-    <Compile Include="adapter\TopBarAdapter.cs" />
+    <Compile Include="adapter\BlockAdapter.cs" />
     <Compile Include="EditActivity.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -377,7 +377,7 @@
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\topbar_item.xml">
+    <AndroidResource Include="Resources\layout\block_item.xml">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
@@ -750,6 +750,10 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Edublock_Jump.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\block_bg.png">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
