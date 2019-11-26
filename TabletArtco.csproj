@@ -66,6 +66,7 @@
     <Compile Include="LoginActivity.cs" />
     <Compile Include="adapter\BlockAdapter.cs" />
     <Compile Include="EditActivity.cs" />
+    <Compile Include="adapter\MaterailAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -754,6 +755,10 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\block_bg.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\selected_material_item.xml">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>

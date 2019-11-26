@@ -32,6 +32,7 @@ namespace TabletArtco {
             initLeftButtonEvent();
             initMainView();
             initAniBlocksView();
+            initMaterailListView();
         }
 
         //Top tool button
@@ -140,14 +141,34 @@ namespace TabletArtco {
         }
 
         public void initMainView() {
+            LinearLayout mainView = FindViewById<LinearLayout>(Resource.Id.mainView);
+            FrameLayout centerView = FindViewById<FrameLayout>(Resource.Id.centerView);
+            double width = ScreenUtil.ScreenWidth(this) * 890 / 1280.0;
+            double height = ScreenUtil.ScreenHeight(this) * 545 / 800.0;
+            int paddingL = (int)(18 / 913.0 * width);
+            mainView.SetPadding(paddingL, (int)(19 / 549.0 * height), paddingL, 0);
+            ViewUtil.setViewHeight(centerView, (int)(481 / 549.0 * height));
+            int[] btsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4};
+            int itemW = (int)(42 / 549.0 * height);
+            for (int i = 0; i < btsResIds.Length; i++) {
+                ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
+                ViewUtil.setViewSize(imgBt, itemW, itemW);
+                imgBt.Click += (t, e) => {
 
+                };
+            }
+
+            //19 49  18 18
+            //549    913  
+            //545 175 80
         }
 
         public void initAniBlocksView() {
             int width = (int)(ScreenUtil.ScreenWidth(this) * 890 / 1280.0);
-            double height = (ScreenUtil.ScreenHeight(this) * 175 / 720.0 - 10 - ScreenUtil.dip2px(this, 4));
-            int itemH = (int)((height - 40) / 3);
+            double height = (ScreenUtil.ScreenHeight(this) * 175 / 800.0 - 10 - ScreenUtil.dip2px(this, 4));
+            int itemH = (int)((height - 40) / 3.0);
             int itemW = (int)(itemH * 168 / 50.0);
+            Android.Util.Log.Info("tag", "statusHeight:" + ScreenUtil.StatusBarHeight(this));
             int[] btsResIds = { Resource.Id.bt_delete1, Resource.Id.bt_delete2, Resource.Id.bt_delete3 };
             for (int i = 0; i < btsResIds.Length; i++) {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
@@ -165,6 +186,17 @@ namespace TabletArtco {
             viewPager.Adapter = adapter;
         }
 
+        public void initMaterailListView() {
+            ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
+            listView.Adapter = new MaterailAdapter(this);
+            listView.ItemClick += ListView_ItemClick;
+        }
+
+        private void ListView_ItemClick(object sender, AdapterView.ItemClickEventArgs e) {
+            
+        }
+
+     
         public void updateMainView() {
 
         }

@@ -169,23 +169,64 @@
             android:orientation="vertical"
             android:background="@android:color/transparent">
             <!--background-->
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/mainView"
                 android:layout_width="match_parent"
                 android:layout_height="0px"
                 android:layout_weight="545"
+                android:orientation="vertical"
                 android:background="@drawable/Center_frame">
-                <!--video area-->
                 <FrameLayout
-                    android:id="@+id/videoView"
+                    android:id="@+id/centerView"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-                <!--block animation area-->
-                <FrameLayout
-                    android:id="@+id/ContainerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-            </FrameLayout>
+                    android:layout_height="wrap_content">
+                    <!--video area-->
+                    <FrameLayout
+                        android:id="@+id/videoView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                    <!--block animation area-->
+                    <FrameLayout
+                        android:id="@+id/ContainerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                </FrameLayout>
+				<RelativeLayout
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="center_vertical"
+					android:layout_marginBottom="0.0dp">
+					<ImageView
+						android:id="@+id/bt_center1"
+						android:layout_width="10dp"
+						android:layout_height="10dp"
+						android:src="@drawable/Button_home"
+						android:layout_alignParentLeft="true"/>
+					<ImageView
+						android:id="@+id/bt_center2"
+						android:layout_width="10dp"
+						android:layout_height="10dp"
+						android:src="@drawable/Button_stop"
+						android:layout_toRightOf="@id/bt_empty"/>
+					<ImageView
+						android:id="@+id/bt_empty"
+						android:layout_width="20px"
+						android:layout_height="0dp"
+						android:layout_centerInParent="true"/>
+					<ImageView
+						android:id="@+id/bt_center3"
+						android:layout_width="10dp"
+						android:layout_height="10dp"
+						android:src="@drawable/Button_play"
+						android:layout_toLeftOf="@id/bt_empty"/>
+					<ImageView
+						android:id="@+id/bt_center4"
+						android:layout_width="10dp"
+						android:layout_height="10dp"
+						android:src="@drawable/Button_open"
+						android:layout_alignParentRight="true"/>
+				</RelativeLayout>
+            </LinearLayout>
             <!--block area and button-->
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -193,19 +234,11 @@
                 android:layout_weight="175"
                 android:orientation="horizontal"
                 android:paddingTop="10px"
-                android:layout_marginBottom="4dp">
+                android:paddingBottom="4dp">
                 <android.support.v4.view.ViewPager
                     android:id="@+id/viewpager"
                     android:layout_width="30dp"
                     android:layout_height="match_parent"/>
-                <!--<HorizontalScrollView
-                    android:layout_width="300dp"
-                    android:layout_height="match_parent"
-                    >
-                    <GridView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
-                </HorizontalScrollView>-->
                 <RelativeLayout
                     android:id="@+id/deleteView"
                     android:layout_width="wrap_content"
@@ -240,13 +273,17 @@
             android:layout_height="match_parent"
             android:layout_weight="146">
             <ListView
+                android:id="@+id/materailListView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/Right_picture_BG"
                 android:layout_marginLeft="4dp"
                 android:layout_marginRight="4dp"
                 android:layout_marginBottom="4dp"
-                android:padding="4dp"/>
+                android:divider="@null"
+                android:dividerHeight="8dp"
+                android:scrollbars="none"
+                android:padding="8dp"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
