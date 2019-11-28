@@ -9,9 +9,9 @@ namespace TabletArtco {
 
         Context mcxt;
         int itemH;
-        public MaterailAdapter(Context cxt) {
+        public MaterailAdapter(Context cxt, int itemW) {
             mcxt = cxt;
-            itemH = (int)((ScreenUtil.ScreenWidth(cxt)*146/1280.0-ScreenUtil.dip2px(cxt, 16))*31/27.0);
+            itemH = (int)(itemW*31/27.0);
         }
 
         public override int Count {

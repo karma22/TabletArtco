@@ -6,7 +6,7 @@ using Android.Runtime;
 using Android.Widget;
 using System.Collections.Generic;
 using System;
-
+using Android.Content;
 
 namespace TabletArtco {
     [Activity(Theme = "@style/AppTheme")]
@@ -187,13 +187,16 @@ namespace TabletArtco {
         }
 
         public void initMaterailListView() {
+            int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
             ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
-            listView.Adapter = new MaterailAdapter(this);
+            listView.Adapter = new MaterailAdapter(this, itemW);
             listView.ItemClick += ListView_ItemClick;
         }
 
         private void ListView_ItemClick(object sender, AdapterView.ItemClickEventArgs e) {
-            
+            // Enter main page
+            Intent intent = new Intent(this, typeof(EditActivity));
+            StartActivity(intent);
         }
 
      

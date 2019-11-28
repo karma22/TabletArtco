@@ -283,7 +283,7 @@
                 android:divider="@null"
                 android:dividerHeight="8dp"
                 android:scrollbars="none"
-                android:padding="8dp"/>
+                android:padding="12dp"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
