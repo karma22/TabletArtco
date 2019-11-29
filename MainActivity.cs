@@ -44,9 +44,34 @@ namespace TabletArtco {
             int height = (int)((ScreenUtil.ScreenHeight(this) - ScreenUtil.StatusBarHeight(this)) * 80 / 800.0 - 18);
             for (int i = 0; i < btsResIds.Length; i++) {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
+                imgBt.Tag = i;
                 ViewUtil.setViewSize(imgBt, (int)(height * 73 / 70.0), height);
                 imgBt.Click += (t, e) => {
-
+                    switch ((int)((ImageView)t).Tag) {
+                        case 0: {
+                                Intent intent = new Intent(this, typeof(PictureActivity));
+                                StartActivity(intent);
+                                break;
+                            }
+                        case 1: {
+                                Intent intent = new Intent(this, typeof(EducationActivity));
+                                StartActivity(intent);
+                                break;
+                            }
+                        case 2: {
+                                Intent intent = new Intent(this, typeof(BackgroundActivity));
+                                StartActivity(intent);
+                                break;
+                            }
+                        case 3: {
+                                Intent intent = new Intent(this, typeof(SoundActivity));
+                                StartActivity(intent);
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                    
                 }; 
             }
         }
