@@ -8,74 +8,87 @@ using System;
 using Android.Content;
 
 
-namespace TabletArtco {
+namespace TabletArtco
+{
     [Activity(Theme = "@style/AppTheme", MainLauncher = true)]
-    public class LoginActivity : AppCompatActivity {
+    public class LoginActivity : AppCompatActivity
+    {
 
         private LinearLayout loginLl;
         private EditText accountEt;
         private EditText pwdEt;
         private ImageView remIv;
-        
 
-        protected override void OnCreate(Bundle savedInstanceState) {
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_login);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
-            initView();
+            InitView();
         }
 
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults) {
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
-        public void initView() {
-            Boolean isRem = sharedPres.GetBoolean("isremember", false);
+        public void InitView()
+        {
+            Boolean isRem = SharedPres.GetBoolean("isremember", false);
             accountEt = FindViewById<EditText>(Resource.Id.accountEt);
             pwdEt = FindViewById<EditText>(Resource.Id.pwdEt);
             remIv = FindViewById<ImageView>(Resource.Id.remIv);
             remIv.SetImageResource(isRem ? Resource.Drawable.Login_checked : Resource.Drawable.Login_check);
-            if (isRem) {
-                accountEt.Text = sharedPres.GetString("username", "");
-                pwdEt.Text = sharedPres.GetString("password", "");
+            if (isRem)
+            {
+                accountEt.Text = SharedPres.GetString("username", "");
+                pwdEt.Text = SharedPres.GetString("password", "");
             }
 
-            FindViewById<ImageView>(Resource.Id.remIv).Click += (s, e) => {
-                remember();
-            };
-            
-            FindViewById<TextView>(Resource.Id.remTv).Click += (s, e) => {
-                remember();
+            FindViewById<ImageView>(Resource.Id.remIv).Click += (s, e) =>
+            {
+                Remember();
             };
 
-            FindViewById<TextView>(Resource.Id.loginBt).Click += (s, e) => {
-                signIn();
+            FindViewById<TextView>(Resource.Id.remTv).Click += (s, e) =>
+            {
+                Remember();
+            };
+
+            FindViewById<TextView>(Resource.Id.loginBt).Click += (s, e) =>
+            {
+                SignIn();
             };
         }
 
-        public void remember() {
-            Boolean isRem = !sharedPres.GetBoolean("isremember", false);
-            editor.PutBoolean("isremember", isRem).Commit();
+        public void Remember()
+        {
+            Boolean isRem = !SharedPres.GetBoolean("isremember", false);
+            Editor.PutBoolean("isremember", isRem).Commit();
             remIv.SetImageResource(isRem ? Resource.Drawable.Login_checked : Resource.Drawable.Login_check);
-            if (!isRem) {
-                editor.Remove("username").Commit();
-                editor.Remove("password").Commit();
+            if (!isRem)
+            {
+                Editor.Remove("username").Commit();
+                Editor.Remove("password").Commit();
             }
         }
 
-        public void signIn() {
+        public void SignIn()
+        {
             String account = accountEt.Text;
             String pwd = pwdEt.Text;
             // if account is empty, then return;
-            if (account.Length<=0) {
+            if (account.Length <= 0)
+            {
                 Toast.MakeText(this, "账号不能为空", ToastLength.Short).Show();
                 return;
             }
             // if password is empty, then return;
-            if (pwd.Length <= 0) {
+            if (pwd.Length <= 0)
+            {
                 Toast.MakeText(this, "密码不能为空", ToastLength.Short).Show();
                 return;
             }
@@ -83,10 +96,11 @@ namespace TabletArtco {
 
 
             //if password is remembered, write userinfo to sharedPreference
-            Boolean isRem = sharedPres.GetBoolean("isremember", false);
-            if (isRem) {
-                editor.PutString("username", account).Commit();
-                editor.PutString("password", account).Commit();
+            Boolean isRem = SharedPres.GetBoolean("isremember", false);
+            if (isRem)
+            {
+                Editor.PutString("username", account).Commit();
+                Editor.PutString("password", account).Commit();
             }
 
             // Enter main page
@@ -95,15 +109,19 @@ namespace TabletArtco {
             Finish();
         }
 
-        private ISharedPreferences sharedPres {
-            get {
+        private ISharedPreferences SharedPres
+        {
+            get
+            {
                 return GetSharedPreferences("_User_", 0);
             }
         }
 
-        private ISharedPreferencesEditor editor {
-            get {
-                return sharedPres.Edit();
+        private ISharedPreferencesEditor Editor
+        {
+            get
+            {
+                return SharedPres.Edit();
             }
         }
     }

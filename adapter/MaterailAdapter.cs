@@ -32,7 +32,7 @@ namespace TabletArtco {
             //如果convertView为空，则使用LayoutInflater()去加载布局
             if (convertView == null) {
                 convertView = LayoutInflater.From(mcxt).Inflate(Resource.Layout.selected_material_item, parent, false);
-                ViewUtil.setViewHeight(convertView, itemH);
+                ViewUtil.SetViewHeight(convertView, itemH);
                 ViewHolder holder = new ViewHolder();
                 holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
                 holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);

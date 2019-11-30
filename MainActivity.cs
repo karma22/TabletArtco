@@ -8,62 +8,73 @@ using System.Collections.Generic;
 using System;
 using Android.Content;
 
-namespace TabletArtco {
+namespace TabletArtco
+{
     [Activity(Theme = "@style/AppTheme")]
-    public class MainActivity : AppCompatActivity {
-         
-        protected override void OnCreate(Bundle savedInstanceState) {
+    public class MainActivity : AppCompatActivity
+    {
+
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_main);
-            
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
-            initView();
+            InitView();
         }
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults) {
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
-        public void initView() {
-            initTopButtonEvent();
-            initLeftButtonEvent();
-            initMainView();
-            initAniBlocksView();
-            initMaterailListView();
+        public void InitView()
+        {
+            InitTopButtonEvent();
+            InitLeftButtonEvent();
+            InitMainView();
+            InitAniBlocksView();
+            InitMaterailListView();
         }
 
         //Top tool button
-        public void initTopButtonEvent() {
+        public void InitTopButtonEvent()
+        {
             int[] btsResIds = {
                 Resource.Id.bt_choice1, Resource.Id.bt_choice2, Resource.Id.bt_choice3, Resource.Id.bt_choice4, Resource.Id.bt_choice5,
                 Resource.Id.bt_choice6, Resource.Id.bt_choice7, Resource.Id.bt_choice8, Resource.Id.bt_choice9
             };
             int height = (int)((ScreenUtil.ScreenHeight(this) - ScreenUtil.StatusBarHeight(this)) * 80 / 800.0 - 18);
-            for (int i = 0; i < btsResIds.Length; i++) {
+            for (int i = 0; i < btsResIds.Length; i++)
+            {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
                 imgBt.Tag = i;
-                ViewUtil.setViewSize(imgBt, (int)(height * 73 / 70.0), height);
-                imgBt.Click += (t, e) => {
-                    switch ((int)((ImageView)t).Tag) {
-                        case 0: {
+                ViewUtil.SetViewSize(imgBt, (int)(height * 73 / 70.0), height);
+                imgBt.Click += (t, e) =>
+                {
+                    switch ((int)((ImageView)t).Tag)
+                    {
+                        case 0:
+                            {
                                 Intent intent = new Intent(this, typeof(PictureActivity));
                                 StartActivity(intent);
                                 break;
                             }
-                        case 1: {
+                        case 1:
+                            {
                                 Intent intent = new Intent(this, typeof(EducationActivity));
                                 StartActivity(intent);
                                 break;
                             }
-                        case 2: {
+                        case 2:
+                            {
                                 Intent intent = new Intent(this, typeof(BackgroundActivity));
                                 StartActivity(intent);
                                 break;
                             }
-                        case 3: {
+                        case 3:
+                            {
                                 Intent intent = new Intent(this, typeof(SoundActivity));
                                 StartActivity(intent);
                                 break;
@@ -71,21 +82,24 @@ namespace TabletArtco {
                         default:
                             break;
                     }
-                    
-                }; 
+
+                };
             }
         }
 
         //Left four select button
-        public void initLeftButtonEvent() {
+        public void InitLeftButtonEvent()
+        {
             int[] btsResIds = {
                 Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4
             };
-            int itemW = (int)((ScreenUtil.ScreenWidth(this)*244.0/1280-12*2)/4);
-            for (int i = 0; i < btsResIds.Length; i++) {
+            int itemW = (int)((ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2)) / 4);
+            for (int i = 0; i < btsResIds.Length; i++)
+            {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
-                ViewUtil.setViewSize(imgBt, itemW, (int)(itemW*45.0/55));
-                imgBt.Click += (t, e) => {
+                ViewUtil.SetViewSize(imgBt, itemW, (int)(itemW * 45.0 / 55));
+                imgBt.Click += (t, e) =>
+                {
                     int[] normalImgResId = {
                         Resource.Drawable.Button_coding1_Deactivation,
                         Resource.Drawable.Button_coding2_Deactivation,
@@ -98,22 +112,27 @@ namespace TabletArtco {
                         Resource.Drawable.Button_control_activation,
                         Resource.Drawable.Button_effect_activation,
                     };
-                    for (int j = 0; j < 4; j++) {
+                    for (int j = 0; j < 4; j++)
+                    {
                         ImageView tempBt = FindViewById<ImageView>(btsResIds[j]);
-                        if (tempBt == t) {
+                        if (tempBt == t)
+                        {
                             tempBt.SetImageResource(selectImgResId[j]);
-                            changeLeftList(j);
-                        } else {
+                            ChangeLeftList(j);
+                        }
+                        else
+                        {
                             tempBt.SetImageResource(normalImgResId[j]);
                         }
                     }
                 };
             }
-            changeLeftList(0);
+            ChangeLeftList(0);
         }
 
         //change left blocks list
-        public void changeLeftList(int index) {
+        public void ChangeLeftList(int index)
+        {
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.left_blocks_view);
             blockView.RemoveAllViews();
             int[] codeingOneResIds = {
@@ -152,12 +171,13 @@ namespace TabletArtco {
             int[] resIds = index == 0 ? codeingOneResIds : index == 1 ? codeingTwoResIds : index == 2 ? controlResIds : educationResIds;
             int margin = 12;
             int padding = 4;
-            double rowWidth = ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - 12*2;
-            int itemW = (int)((rowWidth-margin*2-padding*2) / 3);
-            for (int i = 0; i < resIds.Length; i++) {
+            double rowWidth = ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2);
+            int itemW = (int)((rowWidth - (margin * 2) - (padding * 2)) / 3);
+            for (int i = 0; i < resIds.Length; i++)
+            {
                 FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(itemW, itemW);
-                param.LeftMargin = i % 3 * (itemW+padding)+margin;
-                param.TopMargin = i / 3 * (itemW+padding) + padding + (index==0 ? (i>11 ? itemW/4 : 0) : index==1 ? (i > 8 ? itemW / 4 : 0) : 0);
+                param.LeftMargin = i % 3 * (itemW + padding) + margin;
+                param.TopMargin = i / 3 * (itemW + padding) + padding + (index == 0 ? (i > 11 ? itemW / 4 : 0) : index == 1 ? (i > 8 ? itemW / 4 : 0) : 0);
                 ImageView imgIv = new ImageView(this);
                 imgIv.LayoutParameters = param;
                 imgIv.SetImageResource(resIds[i]);
@@ -165,71 +185,74 @@ namespace TabletArtco {
             }
         }
 
-        public void initMainView() {
+        public void InitMainView()
+        {
             LinearLayout mainView = FindViewById<LinearLayout>(Resource.Id.mainView);
             FrameLayout centerView = FindViewById<FrameLayout>(Resource.Id.centerView);
             double width = ScreenUtil.ScreenWidth(this) * 890 / 1280.0;
             double height = ScreenUtil.ScreenHeight(this) * 545 / 800.0;
             int paddingL = (int)(18 / 913.0 * width);
             mainView.SetPadding(paddingL, (int)(19 / 549.0 * height), paddingL, 0);
-            ViewUtil.setViewHeight(centerView, (int)(481 / 549.0 * height));
-            int[] btsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4};
+            ViewUtil.SetViewHeight(centerView, (int)(481 / 549.0 * height));
+            int[] btsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
             int itemW = (int)(42 / 549.0 * height);
-            for (int i = 0; i < btsResIds.Length; i++) {
+            for (int i = 0; i < btsResIds.Length; i++)
+            {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
-                ViewUtil.setViewSize(imgBt, itemW, itemW);
-                imgBt.Click += (t, e) => {
+                ViewUtil.SetViewSize(imgBt, itemW, itemW);
+                imgBt.Click += (t, e) =>
+                {
 
                 };
             }
-
-            //19 49  18 18
-            //549    913  
-            //545 175 80
         }
 
-        public void initAniBlocksView() {
+        public void InitAniBlocksView()
+        {
             int width = (int)(ScreenUtil.ScreenWidth(this) * 890 / 1280.0);
             double height = (ScreenUtil.ScreenHeight(this) * 175 / 800.0 - 10 - ScreenUtil.dip2px(this, 4));
             int itemH = (int)((height - 40) / 3.0);
             int itemW = (int)(itemH * 168 / 50.0);
             Android.Util.Log.Info("tag", "statusHeight:" + ScreenUtil.StatusBarHeight(this));
             int[] btsResIds = { Resource.Id.bt_delete1, Resource.Id.bt_delete2, Resource.Id.bt_delete3 };
-            for (int i = 0; i < btsResIds.Length; i++) {
+            for (int i = 0; i < btsResIds.Length; i++)
+            {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
-                ViewUtil.setViewSize(imgBt, itemW, itemH);
-                imgBt.Click += (t, e) => {
+                ViewUtil.SetViewSize(imgBt, itemW, itemH);
+                imgBt.Click += (t, e) =>
+                {
 
                 };
             }
-            List<String> list = new List<String> ();
+            List<String> list = new List<String>();
             list.Add("ff");
             list.Add("ff");
             BlockAdapter adapter = new BlockAdapter(this, list);
             ViewPager viewPager = FindViewById<ViewPager>(Resource.Id.viewpager);
-            ViewUtil.setViewWidth(viewPager, width-itemW);
+            ViewUtil.SetViewWidth(viewPager, width - itemW);
             viewPager.Adapter = adapter;
         }
 
-        public void initMaterailListView() {
+        public void InitMaterailListView()
+        {
             int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
             ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
             listView.Adapter = new MaterailAdapter(this, itemW);
             listView.ItemClick += ListView_ItemClick;
         }
 
-        private void ListView_ItemClick(object sender, AdapterView.ItemClickEventArgs e) {
+        private void ListView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        {
             // Enter main page
             Intent intent = new Intent(this, typeof(EditActivity));
             StartActivity(intent);
         }
 
-     
-        public void updateMainView() {
+
+        public void UpdateMainView()
+        {
 
         }
-
-        
 
     }
 }

@@ -11,23 +11,27 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace TabletArtco {
+namespace TabletArtco
+{
     [Activity(Label = "SoundActivity")]
-    public class SoundActivity : Activity, DataSource, Delegate {
+    public class SoundActivity : Activity, DataSource, Delegate
+    {
 
         private int mItemW;
         private int mItemH;
-        protected override void OnCreate(Bundle savedInstanceState) {
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
             base.OnCreate(savedInstanceState);
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_grid);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
-            initView();
+            InitView();
         }
 
-        private void initView() {
+        private void InitView()
+        {
             int width = ScreenUtil.ScreenWidth(this);
             int height = ScreenUtil.ScreenHeight(this);
             int margin = (int)(20 / 1280.0 * width);
@@ -51,15 +55,19 @@ namespace TabletArtco {
             int editTvW = (int)(166 / 35.0 * editTvH);
             int itemH = (int)(34 / 60.0 * topH);
             int itemW = (int)(92 / 35.0 * itemH);
-            for (int i = 0; i < resIds.Length; i++) {
-                if (i == 0) {
+            for (int i = 0; i < resIds.Length; i++)
+            {
+                if (i == 0)
+                {
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(editTvW, editTvH);
                     EditText searchEt = new EditText(this);
                     searchEt.LayoutParameters = lp;
                     searchEt.SetBackgroundResource(resIds[i]);
                     topView.AddView(searchEt);
-                } else {
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(i==resIds.Length-1 ? itemH : itemW, itemH);
+                }
+                else
+                {
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(i == resIds.Length - 1 ? itemH : itemW, itemH);
                     lp.LeftMargin = margin / 3;
                     ImageView imgIv = new ImageView(this);
                     imgIv.LayoutParameters = lp;
@@ -79,7 +87,7 @@ namespace TabletArtco {
 
             int columnCount = 4;
             mItemW = (int)((w - (columnCount + 1) * spacing * 1.0) / columnCount);
-            mItemH = mItemW/2;
+            mItemH = mItemW / 2;
 
             GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
             gridView.SetColumnWidth(200);
@@ -89,13 +97,15 @@ namespace TabletArtco {
             gridView.Adapter = new GridAdapter((DataSource)this, (Delegate)this);
         }
 
-        public int GetItemsCount() {
+        public int GetItemsCount()
+        {
             return 10;
         }
 
-        public View GetItemView(ViewGroup parent) {
+        public View GetItemView(ViewGroup parent)
+        {
             View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.selected_material_item, parent, false);
-            ViewUtil.setViewSize(convertView, mItemW, mItemH);
+            ViewUtil.SetViewSize(convertView, mItemW, mItemH);
             ViewHolder holder = new ViewHolder();
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
             holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
@@ -103,13 +113,15 @@ namespace TabletArtco {
             return convertView;
         }
 
-        public void UpdateItemView(View contentView, int position) {
+        public void UpdateItemView(View contentView, int position)
+        {
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             contentView.SetBackgroundColor(Android.Graphics.Color.Red);
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
-        class ViewHolder : Java.Lang.Object {
+        class ViewHolder : Java.Lang.Object
+        {
             public ImageView bgIv;
             public ImageView imgIv;
         }

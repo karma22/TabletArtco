@@ -27,7 +27,7 @@ namespace TabletArtco {
         public override Java.Lang.Object InstantiateItem(ViewGroup container, int position) {
             View view = View.Inflate(mContext, Resource.Layout.block_item, null);
             //view.SetTag(1, position);
-            initBlock(view);
+            InitBlock(view);
             container.AddView(view);
             return view;
         }
@@ -41,7 +41,7 @@ namespace TabletArtco {
             return view == @object;
         }
 
-        public void initBlock(View view) {
+        public void InitBlock(View view) {
             //int page = (int)view.GetTag(1);
             int width = (int)(ScreenUtil.ScreenWidth(view.Context)*890/1280.0);
             int height = (int)(ScreenUtil.ScreenHeight(view.Context) * 175 / 800.0 - 10 - ScreenUtil.dip2px(view.Context, 4));
