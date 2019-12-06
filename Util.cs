@@ -1,13 +1,7 @@
-﻿using System;
-using Android.Views;
+﻿using Android.Views;
 using Android.Content;
 using Android.App;
 using Android.Graphics;
-using Android.Util;
-
-using Java.Lang.Ref;
-using Java.Lang.Reflect;
-using Android.Preferences;
 
 namespace TabletArtco
 {

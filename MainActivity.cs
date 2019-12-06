@@ -13,7 +13,6 @@ namespace TabletArtco
     [Activity(Theme = "@style/AppTheme")]
     public class MainActivity : AppCompatActivity
     {
-
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -231,6 +230,7 @@ namespace TabletArtco
             ViewPager viewPager = FindViewById<ViewPager>(Resource.Id.viewpager);
             ViewUtil.SetViewWidth(viewPager, width - itemW);
             viewPager.Adapter = adapter;
+
         }
 
         public void InitMaterailListView()

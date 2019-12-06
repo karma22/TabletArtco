@@ -13,18 +13,19 @@ namespace TabletArtco
     [Activity(Theme = "@style/AppTheme", MainLauncher = true)]
     public class LoginActivity : AppCompatActivity
     {
-
-        private LinearLayout loginLl;
-        private EditText accountEt;
-        private EditText pwdEt;
-        private ImageView remIv;
+        private LinearLayout loginLl { get; set; }
+        private EditText accountEt { get; set; }
+        private EditText pwdEt { get; set; }
+        private ImageView remIv { get; set; }
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_login);
+            
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             InitView();
         }
@@ -37,10 +38,11 @@ namespace TabletArtco
 
         public void InitView()
         {
-            Boolean isRem = SharedPres.GetBoolean("isremember", false);
             accountEt = FindViewById<EditText>(Resource.Id.accountEt);
             pwdEt = FindViewById<EditText>(Resource.Id.pwdEt);
             remIv = FindViewById<ImageView>(Resource.Id.remIv);
+
+            Boolean isRem = SharedPres.GetBoolean("isremember", false);
             remIv.SetImageResource(isRem ? Resource.Drawable.Login_checked : Resource.Drawable.Login_check);
             if (isRem)
             {
@@ -69,6 +71,7 @@ namespace TabletArtco
             Boolean isRem = !SharedPres.GetBoolean("isremember", false);
             Editor.PutBoolean("isremember", isRem).Commit();
             remIv.SetImageResource(isRem ? Resource.Drawable.Login_checked : Resource.Drawable.Login_check);
+
             if (!isRem)
             {
                 Editor.Remove("username").Commit();
@@ -80,20 +83,27 @@ namespace TabletArtco
         {
             String account = accountEt.Text;
             String pwd = pwdEt.Text;
+
             // if account is empty, then return;
             if (account.Length <= 0)
             {
                 Toast.MakeText(this, "账号不能为空", ToastLength.Short).Show();
                 return;
             }
+
             // if password is empty, then return;
             if (pwd.Length <= 0)
             {
                 Toast.MakeText(this, "密码不能为空", ToastLength.Short).Show();
                 return;
             }
-            // If verification is passed，to sign in;
 
+            // If verification is passed，to sign in;
+            if(!DBManager.CheckLogin(account, pwd))
+            {
+                Toast.MakeText(this, "登录失败", ToastLength.Short).Show();
+                return;
+            }
 
             //if password is remembered, write userinfo to sharedPreference
             Boolean isRem = SharedPres.GetBoolean("isremember", false);

@@ -83,7 +83,7 @@ namespace TabletArtco
             gridView.SetColumnWidth(200);
             gridView.SetNumColumns(columnCount);
             gridView.SetVerticalSpacing(spacing);
-            gridView.SetHorizontalSpacing(spacing);
+            gridView.SetHorizontalSpacing(spacing);            
             gridView.Adapter = new GridAdapter((DataSource)this, (Delegate)this);
         }
 
