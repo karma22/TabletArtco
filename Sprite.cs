@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
+using Android.Graphics;
 
 namespace TabletArtco
 {
@@ -17,7 +17,6 @@ namespace TabletArtco
         public List<List<Block>> codes { get; set; } = new List<List<Block>>();
 
         // SpriteMiniView
-
         public List<Bitmap> spriteBits { get; set; } = new List<Bitmap>();
         public List<Bitmap> bigSpriteBits { get; set; } = new List<Bitmap>();
         public List<Bitmap> normalSpriteBits { get; set; } = new List<Bitmap>();
