@@ -20,7 +20,9 @@ namespace TabletArtco
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_main);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
+
             InitView();
+            LoadResources();
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
@@ -35,6 +37,11 @@ namespace TabletArtco
             InitMainView();
             InitAniBlocksView();
             InitMaterailListView();
+        }
+
+        public void LoadResources()
+        {
+            DBManager.LoadSprites();
         }
 
         //Top tool button
