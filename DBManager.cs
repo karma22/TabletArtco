@@ -36,7 +36,7 @@ namespace TabletArtco
                 Sprite._sprites.Add(new List<Sprite>());
             }
 
-            // I will add a security check function
+            //I will add a security check function
             string result;
             string url = "http://103.120.226.173/SelectSpriteTable.php";
             using (WebClient client = new WebClient())
@@ -64,7 +64,7 @@ namespace TabletArtco
                 {
                     Sprite._sprites.Add(new List<Sprite>());
                 }
-
+                  
                 Sprite._sprites[sprite.category].Add(sprite);
             }
         }
