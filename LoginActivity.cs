@@ -98,8 +98,8 @@ namespace TabletArtco
                 return;
             }
 
-            // If verification is passed，to sign in;
-            if(!DBManager.CheckLogin(account, pwd))
+            //// If verification is passed，to sign in;
+            if (!DBManager.CheckLogin(account, pwd))
             {
                 Toast.MakeText(this, "登录失败", ToastLength.Short).Show();
                 return;

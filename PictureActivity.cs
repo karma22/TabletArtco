@@ -10,6 +10,11 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Android.Util;
+using System.Net;
+using System.IO;
+using Android.Graphics;
+using Java.Lang;
 
 namespace TabletArtco
 {
@@ -19,6 +24,7 @@ namespace TabletArtco
 
         private int mItemW;
         private int mItemH;
+        private int mIndex;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -28,6 +34,7 @@ namespace TabletArtco
             SetContentView(Resource.Layout.activity_grid);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             InitView();
+            GetData();
         }
 
         private void InitView()
@@ -71,9 +78,16 @@ namespace TabletArtco
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(itemW, itemH);
                     lp.LeftMargin = margin / 3;
                     ImageView imgIv = new ImageView(this);
+                    imgIv.Tag = i;
                     imgIv.LayoutParameters = lp;
                     imgIv.SetImageResource(resIds[i]);
                     topView.AddView(imgIv);
+                    imgIv.Click += (t, e) =>
+                    {
+                        int tag = (int)(((ImageView)t).Tag);
+                        mIndex = tag - 1;
+                        updateView();
+                    };
                 }
             }
 
@@ -96,11 +110,43 @@ namespace TabletArtco
             gridView.SetVerticalSpacing(spacing);
             gridView.SetHorizontalSpacing(spacing);
             gridView.Adapter = new GridAdapter((DataSource)this, (Delegate)this);
+            GridAdapter adapter = new GridAdapter((DataSource)this, (Delegate)this);
+
         }
 
+        private void updateView() {
+            GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
+            GridAdapter adapter = (GridAdapter)gridView.Adapter;
+            adapter.NotifyDataSetChanged();
+        }
+
+        private void GetData()
+        {
+            //Log.Info("====", "==============");
+
+            //List<List<Sprite>> sprites = Sprite._sprites;
+            
+            //for (int i = 0; i < sprites.Count; i++)
+            //{
+            //    List<Sprite> l = sprites[i];
+            //    for (int j = 0; j < l.Count; j++)
+            //    {
+            //        Sprite s = l[j];
+            //        Log.Info("tag", "==========" + s.name);
+            //    }
+            //}
+            
+        }
+
+        // Delegate interface
         public int GetItemsCount()
         {
-            return 10;
+            List<List<Sprite>> sprites = Sprite._sprites;
+            if (mIndex<sprites.Count)
+            {
+                return sprites[mIndex].Count;
+            }
+            return 0;
         }
 
         public View GetItemView(ViewGroup parent)
@@ -116,8 +162,29 @@ namespace TabletArtco
 
         public void UpdateItemView(View contentView, int position)
         {
+            List<List<Sprite>> sprites = Sprite._sprites;   
+            if (mIndex >= sprites.Count)
+            {
+                return;
+            }
+            List<Sprite> list = sprites[mIndex];
+            Sprite sprite = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             contentView.SetBackgroundColor(Android.Graphics.Color.Red);
+            new Thread(new Runnable(()=> {
+                Stream stream = FTPManager.GetStreamFromFTP(sprite.remotePath);
+                RunOnUiThread(()=> {
+                    if (stream != null)
+                    {
+                        Log.Info("====tag====", stream.ToString());
+                        viewHolder.bgIv.SetImageBitmap(BitmapFactory.DecodeStream(stream));
+                    }
+                });
+            })).Start();
+        }
+
+        private void action() {
+
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
