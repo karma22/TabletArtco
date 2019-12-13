@@ -59,6 +59,7 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Background.cs" />
     <Compile Include="Block.cs" />
     <Compile Include="DBManager.cs" />
     <Compile Include="FTPManager.cs" />
