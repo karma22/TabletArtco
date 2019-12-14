@@ -23,23 +23,25 @@ namespace TabletArtco
             
             FtpWebRequest request = GetFtpRequest(path);
             request.Method = WebRequestMethods.Ftp.DownloadFile;
-            try
-            {
-                FtpWebResponse res = (FtpWebResponse)request.GetResponse();
-                Android.Util.Log.Info("GetStreamFromFTP", res.StatusCode + "");
-                if (res.StatusCode == FtpStatusCode.CommandOK)
-                {
-                    Android.Util.Log.Info("GetStreamFromFTP", path);
-                    return res.GetResponseStream();
-                }
-                return null;
-            }
-            catch (System.Exception ex)
-            {
-                Android.Util.Log.Info("GetStreamFromFTP error", ex.Message + "");
-                return null;
-            }
-            
+            //try
+            //{
+            //    FtpWebResponse res = (FtpWebResponse)request.GetResponse();
+            //    Android.Util.Log.Info("GetStreamFromFTP", res.StatusCode + "");
+            //    if (res.StatusCode == FtpStatusCode.CommandOK)
+            //    {
+            //        Android.Util.Log.Info("GetStreamFromFTP", path);
+            //        return res.GetResponseStream();
+            //    }
+            //    return null;
+            //}
+            //catch (System.Exception ex)
+            //{
+            //    Android.Util.Log.Info("GetStreamFromFTP error", ex.Message + "");
+            //    return null;
+            //}
+            FtpWebResponse res = (FtpWebResponse)request.GetResponse();
+            return res.GetResponseStream();
+
         }
 
         private static FtpWebRequest GetFtpRequest(string path)

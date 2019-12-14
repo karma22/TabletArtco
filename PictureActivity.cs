@@ -15,6 +15,8 @@ using System.Net;
 using System.IO;
 using Android.Graphics;
 using Java.Lang;
+using Com.Bumptech.Glide;
+
 
 namespace TabletArtco
 {
@@ -171,16 +173,19 @@ namespace TabletArtco
             Sprite sprite = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             contentView.SetBackgroundColor(Android.Graphics.Color.Red);
-            new Thread(new Runnable(()=> {
-                Stream stream = FTPManager.GetStreamFromFTP(sprite.remotePath);
-                RunOnUiThread(()=> {
-                    if (stream != null)
-                    {
-                        Log.Info("====tag====", stream.ToString());
-                        viewHolder.bgIv.SetImageBitmap(BitmapFactory.DecodeStream(stream));
-                    }
-                });
-            })).Start();
+            Glide.With(this).Load(sprite.remotePath).Into(viewHolder.bgIv);
+            //new Thread(new Runnable(() =>
+            //{
+            //    Stream stream = FTPManager.GetStreamFromFTP(sprite.remotePath);
+            //    RunOnUiThread(() =>
+            //    {
+            //        if (stream != null)
+            //        {
+            //            Log.Info("====tag====", stream.ToString());
+            //            viewHolder.bgIv.SetImageBitmap(BitmapFactory.DecodeStream(stream));
+            //        }
+            //    });
+            //})).Start();
         }
 
         private void action() {
