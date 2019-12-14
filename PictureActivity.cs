@@ -173,6 +173,7 @@ namespace TabletArtco
             Sprite sprite = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             contentView.SetBackgroundColor(Android.Graphics.Color.Red);
+
             Glide.With(this).Load(sprite.remotePath).Into(viewHolder.bgIv);
             //new Thread(new Runnable(() =>
             //{
