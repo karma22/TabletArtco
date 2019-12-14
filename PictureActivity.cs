@@ -1,20 +1,11 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Android.Util;
-using System.Net;
-using System.IO;
-using Android.Graphics;
-using Java.Lang;
 using Com.Bumptech.Glide;
 
 
@@ -36,7 +27,6 @@ namespace TabletArtco
             SetContentView(Resource.Layout.activity_grid);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             InitView();
-            GetData();
         }
 
         private void InitView()
@@ -88,7 +78,7 @@ namespace TabletArtco
                     {
                         int tag = (int)(((ImageView)t).Tag);
                         mIndex = tag - 1;
-                        updateView();
+                        UpdateView();
                     };
                 }
             }
@@ -102,10 +92,10 @@ namespace TabletArtco
             conView.LayoutParameters = conParams;
             conView.SetPadding(spacing, spacing, spacing, spacing);
 
-            int columnCount = 4;
+            int columnCount = 8;
             mItemW = (int)((w - (columnCount + 1) * spacing * 1.0) / columnCount);
-            mItemH = mItemW / 2;
-
+            mItemH = mItemW; // 2;
+            
             GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
             gridView.SetColumnWidth(200);
             gridView.SetNumColumns(columnCount);
@@ -116,28 +106,11 @@ namespace TabletArtco
 
         }
 
-        private void updateView() {
+        private void UpdateView()
+        {
             GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
             GridAdapter adapter = (GridAdapter)gridView.Adapter;
             adapter.NotifyDataSetChanged();
-        }
-
-        private void GetData()
-        {
-            //Log.Info("====", "==============");
-
-            //List<List<Sprite>> sprites = Sprite._sprites;
-            
-            //for (int i = 0; i < sprites.Count; i++)
-            //{
-            //    List<Sprite> l = sprites[i];
-            //    for (int j = 0; j < l.Count; j++)
-            //    {
-            //        Sprite s = l[j];
-            //        Log.Info("tag", "==========" + s.name);
-            //    }
-            //}
-            
         }
 
         // Delegate interface
@@ -172,20 +145,7 @@ namespace TabletArtco
             List<Sprite> list = sprites[mIndex];
             Sprite sprite = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-            contentView.SetBackgroundColor(Android.Graphics.Color.Red);
             Glide.With(this).Load(sprite.remotePath).Into(viewHolder.bgIv);
-            //new Thread(new Runnable(() =>
-            //{
-            //    Stream stream = FTPManager.GetStreamFromFTP(sprite.remotePath);
-            //    RunOnUiThread(() =>
-            //    {
-            //        if (stream != null)
-            //        {
-            //            Log.Info("====tag====", stream.ToString());
-            //            viewHolder.bgIv.SetImageBitmap(BitmapFactory.DecodeStream(stream));
-            //        }
-            //    });
-            //})).Start();
         }
 
         private void action() {

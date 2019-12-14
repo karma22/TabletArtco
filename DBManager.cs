@@ -56,7 +56,7 @@ namespace TabletArtco
                 {
                     name = datas[i + 1],
                     category = int.Parse(datas[i + 2]),
-                    remotePath = "ftp://" + _address + "/" + _rootDir + "/" + datas[i + 3],
+                    remotePath = "http://" + _address + "/" + _rootDir + "/" + datas[i + 3],
                     isUser = datas[i + 4].Equals("1") ? true : false
                 };
 

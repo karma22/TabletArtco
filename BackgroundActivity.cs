@@ -1,7 +1,9 @@
-﻿using Android.App;
+﻿using System.Collections.Generic;
+using Android.App;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using Com.Bumptech.Glide;
 
 namespace TabletArtco
 {
@@ -11,6 +13,7 @@ namespace TabletArtco
 
         private int mItemW;
         private int mItemH;
+        private int mIndex;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -63,6 +66,12 @@ namespace TabletArtco
                     imgIv.LayoutParameters = lp;
                     imgIv.SetImageResource(resIds[i]);
                     topView.AddView(imgIv);
+                    imgIv.Click += (t, e) =>
+                    {
+                        int tag = (int)(((ImageView)t).Tag);
+                        mIndex = tag+4;
+                        UpdateView();
+                    };
                 }
             }
 
@@ -87,9 +96,22 @@ namespace TabletArtco
             gridView.Adapter = new GridAdapter((DataSource)this, (Delegate)this);
         }
 
+        private void UpdateView()
+        {
+            GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
+            GridAdapter adapter = (GridAdapter)gridView.Adapter;
+            adapter.NotifyDataSetChanged();
+        }
+
+        // Delegate interface
         public int GetItemsCount()
         {
-            return 10;
+            List<List<Sprite>> sprites = Sprite._sprites;
+            if (mIndex < sprites.Count)
+            {
+                return sprites[mIndex].Count;
+            }
+            return 0;
         }
 
         public View GetItemView(ViewGroup parent)
@@ -105,8 +127,15 @@ namespace TabletArtco
 
         public void UpdateItemView(View contentView, int position)
         {
+            List<List<Sprite>> sprites = Sprite._sprites;
+            if (mIndex >= sprites.Count)
+            {
+                return;
+            }
+            List<Sprite> list = sprites[mIndex];
+            Sprite sprite = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-            contentView.SetBackgroundColor(Android.Graphics.Color.Red);
+            Glide.With(this).Load(sprite.remotePath).Into(viewHolder.bgIv);
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
