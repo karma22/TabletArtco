@@ -18,6 +18,8 @@ namespace TabletArtco
          *      }
          * }         
          */
+         
+        // http://ip/rootdirectory/filename.png
         public static Stream GetStreamFromFTP(string path)
         {
             
