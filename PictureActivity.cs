@@ -131,6 +131,8 @@ namespace TabletArtco
             ViewHolder holder = new ViewHolder();
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
             holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
+            holder.imgIv.SetPadding(mItemW/2, mItemW / 2, mItemW / 2, mItemW / 2);
+            holder.txtTv = convertView.FindViewById<TextView>(Resource.Id.sprite_tv);
             convertView.Tag = holder;
             return convertView;
         }
@@ -146,6 +148,7 @@ namespace TabletArtco
             Sprite sprite = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             Glide.With(this).Load(sprite.remotePath).Into(viewHolder.bgIv);
+            viewHolder.txtTv.Text = sprite.name;
         }
 
         private void action() {
@@ -157,6 +160,7 @@ namespace TabletArtco
         {
             public ImageView bgIv;
             public ImageView imgIv;
+            public TextView txtTv;
         }
     }
 }

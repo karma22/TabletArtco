@@ -63,6 +63,7 @@ namespace TabletArtco
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(itemW, itemH);
                     lp.LeftMargin = margin / 3;
                     ImageView imgIv = new ImageView(this);
+                    imgIv.Tag = i;
                     imgIv.LayoutParameters = lp;
                     imgIv.SetImageResource(resIds[i]);
                     topView.AddView(imgIv);
@@ -106,10 +107,10 @@ namespace TabletArtco
         // Delegate interface
         public int GetItemsCount()
         {
-            List<List<Sprite>> sprites = Sprite._sprites;
-            if (mIndex < sprites.Count)
+            List<List<Background>> backgrounds = Background._backgrounds;
+            if (mIndex < backgrounds.Count)
             {
-                return sprites[mIndex].Count;
+                return backgrounds[mIndex].Count;
             }
             return 0;
         }
@@ -127,15 +128,15 @@ namespace TabletArtco
 
         public void UpdateItemView(View contentView, int position)
         {
-            List<List<Sprite>> sprites = Sprite._sprites;
-            if (mIndex >= sprites.Count)
+            List<List<Background>> backgrounds = Background._backgrounds;
+            if (mIndex >= backgrounds.Count)
             {
                 return;
             }
-            List<Sprite> list = sprites[mIndex];
-            Sprite sprite = list[position];
+            List<Background> list = backgrounds[mIndex];
+            Background background = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-            Glide.With(this).Load(sprite.remotePath).Into(viewHolder.bgIv);
+            Glide.With(this).Load(background.remotePreviewImgPath).Into(viewHolder.bgIv);
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
