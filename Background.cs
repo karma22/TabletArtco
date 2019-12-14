@@ -11,7 +11,7 @@ namespace TabletArtco
         public int category { get; set; }
         public string remoteVideoPath { get; set; }
         public string remotePreviewImgPath { get; set; }
-        public string remoteeSoundPath { get; set; }
+        public string remoteSoundPath { get; set; }
         public int level { get; set; }
         public int mode { get; set; }
         public int idx { get; set; }

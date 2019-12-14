@@ -97,13 +97,14 @@ namespace TabletArtco
                     idx = int.Parse(datas[i + 2]),
                     category = int.Parse(datas[i + 3]),
                     mode = int.Parse(datas[i + 4]),
-                    remoteVideoPath = "http://" + _address + "/" + _rootDir + "/" + datas[i + 5],
+                    remoteVideoPath = "http://" + _address + "/" + _rootDir + "/" + datas[i + 5] + ".mp4",
+                    remotePreviewImgPath = "http://" + _address + "/" + _rootDir + "/" + datas[i + 5] + ".jpg",
                     isPng = datas[i + 6].Equals("1") ? true : false,
                     level = int.Parse(datas[i + 7]),
-                    remoteeSoundPath = "http://" + _address + "/" + _rootDir + "/" + datas[i + 8],
-
+                    remoteSoundPath = "http://" + _address + "/" + _rootDir + "/" + datas[i + 8],
                 };
 
+                background.remoteSoundPath = (datas[i + 8] != string.Empty) ? "http://" + _address + "/" + _rootDir + "/" + datas[i + 8] : null;
                 while (background.category >= Background._backgrounds.Count)
                 {
                     Background._backgrounds.Add(new List<Background>());
