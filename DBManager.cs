@@ -56,7 +56,7 @@ namespace TabletArtco
                 {
                     name = datas[i + 1],
                     category = int.Parse(datas[i + 2]),
-                    remotePath = "ftp://" + _address + "/" + _rootDir + "/" + datas[i + 3],
+                    remotePath = "http://" + _address + "/" + _rootDir + "/" + datas[i + 3],
                     isUser = datas[i + 4].Equals("1") ? true : false
                 };
 
@@ -66,6 +66,50 @@ namespace TabletArtco
                 }
                   
                 Sprite._sprites[sprite.category].Add(sprite);
+            }
+        }
+
+        public static void LoadBackgrounds()
+        {
+            if (Background._backgrounds.Count == 0)
+            {
+                Background._backgrounds.Add(new List<Background>());
+            }
+
+            //I will add a security check function
+            string result;
+            string url = "http://103.120.226.173/SelectBackgroundTable.php";
+            using (WebClient client = new WebClient())
+            {
+                byte[] bytes = client.DownloadData(url);
+                result = Encoding.UTF8.GetString(bytes);
+            }
+
+            const int rowCnt = 9;
+            string[] datas = result.Split('\n');
+            for (int i = 0; i <= datas.Length - rowCnt; i += rowCnt)
+            {
+                // This is korean name
+                // string name1 = datas[i];
+                Background background = new Background()
+                {
+                    name = datas[i + 1],
+                    idx = int.Parse(datas[i + 2]),
+                    category = int.Parse(datas[i + 3]),
+                    mode = int.Parse(datas[i + 4]),
+                    remoteVideoPath = "http://" + _address + "/" + _rootDir + "/" + datas[i + 5],
+                    isPng = datas[i + 6].Equals("1") ? true : false,
+                    level = int.Parse(datas[i + 7]),
+                    remoteeSoundPath = "http://" + _address + "/" + _rootDir + "/" + datas[i + 8],
+
+                };
+
+                while (background.category >= Background._backgrounds.Count)
+                {
+                    Background._backgrounds.Add(new List<Background>());
+                }
+
+                Background._backgrounds[background.category].Add(background);                
             }
         }
 
