@@ -18,9 +18,9 @@ namespace TabletArtco
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
-            SetContentView(Resource.Layout.activity_main);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
-
+            SetContentView(Resource.Layout.activity_main);
+            
             InitView();
             LoadResources();
         }
@@ -38,7 +38,7 @@ namespace TabletArtco
             InitAniBlocksView();
             InitMaterailListView();
         }
-
+        
         public void LoadResources()
         {
             DBManager.LoadSprites();

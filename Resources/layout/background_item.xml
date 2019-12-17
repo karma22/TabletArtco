@@ -7,18 +7,25 @@
     <ImageView
         android:id="@+id/selected_material_bgIv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="@drawable/xml_gridview_bg"/>
     <ImageView
         android:id="@+id/selected_material_imgIv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginBottom="20dp"
+        android:scaleType="fitXY"/>
     <TextView
         android:id="@+id/sprite_tv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="20dp"
         android:textAlignment="center"
         android:textSize="12dp"
         android:lines="1"
+        android:gravity="center"
         android:layout_alignParentBottom="true"/>
 </RelativeLayout>
+

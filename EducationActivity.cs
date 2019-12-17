@@ -97,7 +97,8 @@ namespace TabletArtco
 
             int columnCount = 4;
             mItemW = (int)((w - (columnCount + 1) * spacing * 1.0) / columnCount);
-            mItemH = mItemW / 2;
+            mItemH = (int)(mItemW *170.0/ 250);
+
             GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
             gridView.SetColumnWidth(200);
             gridView.SetNumColumns(columnCount);
@@ -117,12 +118,6 @@ namespace TabletArtco
         public int GetItemsCount()
         {
             List<List<Background>> backgrounds = Background._backgrounds;
-            Android.Util.Log.Info("fff", backgrounds+"");
-            //for (int i = 0; i < backgrounds.Count; i++)
-            //{
-            //    Android.Util.Log.Info("fff", i + ""); 
-            //    Android.Util.Log.Info("fff", backgrounds[i] + "");
-            //}
             if (mIndex < backgrounds.Count)
             {
                 return backgrounds[mIndex].Count;
@@ -132,12 +127,19 @@ namespace TabletArtco
 
         public View GetItemView(ViewGroup parent)
         {
-            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.selected_material_item, parent, false);
+            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.background_item, parent, false);
             ViewUtil.SetViewSize(convertView, mItemW, mItemH);
             ViewHolder holder = new ViewHolder();
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
             holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
+            holder.txtTv = convertView.FindViewById<TextView>(Resource.Id.sprite_tv);
             convertView.Tag = holder;
+            convertView.Click += (t, e) =>
+            {
+                ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
+                int position = (int)viewHolder.txtTv.Tag;
+                ClickItem(position);
+            };
             return convertView;
         }
 
@@ -150,10 +152,15 @@ namespace TabletArtco
             }
             List<Background> list = backgrounds[mIndex];
             Background background = list[position];
-            //contentView.SetBackgroundColor(Color.Red);
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             Android.Util.Log.Info("background", background.remotePreviewImgPath+"");
-            Glide.With(this).Load(background.remotePreviewImgPath).Into(viewHolder.bgIv);
+            Glide.With(this).Load(background.remotePreviewImgPath).Into(viewHolder.imgIv);
+            viewHolder.txtTv.Text = background.name;
+            viewHolder.txtTv.Tag = position;
+        }
+
+        public void ClickItem(int position) {
+            Android.Util.Log.Info("position", "position===" + position);
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
@@ -161,6 +168,7 @@ namespace TabletArtco
         {
             public ImageView bgIv;
             public ImageView imgIv;
+            public TextView txtTv;
         }
     }
 }

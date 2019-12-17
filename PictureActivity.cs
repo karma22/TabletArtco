@@ -8,7 +8,6 @@ using Android.Views;
 using Android.Widget;
 using Com.Bumptech.Glide;
 
-
 namespace TabletArtco
 {
     [Activity(Label = "PictureActivity")]
@@ -23,9 +22,9 @@ namespace TabletArtco
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_grid);
-            RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             InitView();
         }
 
@@ -99,7 +98,7 @@ namespace TabletArtco
             GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
             gridView.SetColumnWidth(200);
             gridView.SetNumColumns(columnCount);
-            gridView.SetVerticalSpacing(spacing);
+            gridView.SetVerticalSpacing(spacing*2);
             gridView.SetHorizontalSpacing(spacing);
             gridView.Adapter = new GridAdapter((DataSource)this, (Delegate)this);
             GridAdapter adapter = new GridAdapter((DataSource)this, (Delegate)this);
@@ -131,9 +130,14 @@ namespace TabletArtco
             ViewHolder holder = new ViewHolder();
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
             holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
-            holder.imgIv.SetPadding(mItemW/2, mItemW / 2, mItemW / 2, mItemW / 2);
             holder.txtTv = convertView.FindViewById<TextView>(Resource.Id.sprite_tv);
             convertView.Tag = holder;
+            convertView.Click += (t, e) =>
+            {
+                ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
+                int position = (int)viewHolder.txtTv.Tag;
+                ClickItem(position);
+            };
             return convertView;
         }
 
@@ -147,12 +151,14 @@ namespace TabletArtco
             List<Sprite> list = sprites[mIndex];
             Sprite sprite = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-            Glide.With(this).Load(sprite.remotePath).Into(viewHolder.bgIv);
+            Glide.With(this).Load(sprite.remotePath).Into(viewHolder.imgIv);
             viewHolder.txtTv.Text = sprite.name;
+            viewHolder.txtTv.Tag = position;
         }
 
-        private void action() {
-
+        public void ClickItem(int position)
+        {
+            Android.Util.Log.Info("position", "position===" + position);
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
