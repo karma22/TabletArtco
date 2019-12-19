@@ -43,6 +43,7 @@ namespace TabletArtco
         {
             DBManager.LoadSprites();
             DBManager.LoadBackgrounds();
+            DBManager.LoadBlocks();
         }
 
         //Top tool button
