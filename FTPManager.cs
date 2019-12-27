@@ -31,7 +31,7 @@ namespace TabletArtco
             //    Android.Util.Log.Info("GetStreamFromFTP", res.StatusCode + "");
             //    if (res.StatusCode == FtpStatusCode.CommandOK)
             //    {
-            //        Android.Util.Log.Info("GetStreamFromFTP", remotePath);
+            //        Android.Util.Log.Info("GetStreamFromFTP", path);
             //        return res.GetResponseStream();
             //    }
             //    return null;

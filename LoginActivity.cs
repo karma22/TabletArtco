@@ -25,8 +25,6 @@ namespace TabletArtco
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_login);
-            
-            
             InitView();
         }
 

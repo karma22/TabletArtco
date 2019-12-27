@@ -127,14 +127,15 @@
     <Compile Include="Sprite.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="LoginActivity.cs" />
-    <Compile Include="adapter\BlockAdapter.cs" />
     <Compile Include="EditActivity.cs" />
-    <Compile Include="adapter\MaterailAdapter.cs" />
+    <Compile Include="adapter\SpriteAdapter.cs" />
     <Compile Include="BackgroundActivity.cs" />
     <Compile Include="EducationActivity.cs" />
     <Compile Include="SoundActivity.cs" />
     <Compile Include="PictureActivity.cs" />
     <Compile Include="adapter\GridAdapter.cs" />
+    <Compile Include="adapter\Delegate.cs" />
+    <Compile Include="adapter\DataSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -1157,7 +1158,7 @@
       <Generator>
       </Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\selected_material_item.xml">
+    <AndroidResource Include="Resources\layout\item_sprite.xml">
       <SubType>
       </SubType>
       <Generator>
@@ -1373,11 +1374,51 @@
       <Generator>
       </Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\background_item.xml">
+    <AndroidResource Include="Resources\layout\item_background.xml">
       <SubType>
       </SubType>
       <Generator>
       </Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\item_activate_block.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\Button_choice_cameraBlue.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\Button_choice_picturecalling02.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\Button_choice_picturedelete02.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\Button_choice_blockdelete02.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\Slide.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\Slide_stick.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\zoom_in.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\zoom_out.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\title.png">
+      <SubType></SubType>
+      <Generator></Generator>
     </AndroidResource>
   </ItemGroup>
   <ItemGroup />

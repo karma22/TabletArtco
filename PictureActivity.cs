@@ -7,6 +7,7 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Com.Bumptech.Glide;
+using Android.Content;
 
 namespace TabletArtco
 {
@@ -112,8 +113,12 @@ namespace TabletArtco
             adapter.NotifyDataSetChanged();
         }
 
-        // Delegate interface
-        public int GetItemsCount()
+        /*
+         *
+         * Delegate interface
+         * 
+         */
+        public int GetItemsCount(Java.Lang.Object adapter)
         {
             List<List<Sprite>> sprites = Sprite._sprites;
             if (mIndex<sprites.Count)
@@ -123,9 +128,9 @@ namespace TabletArtco
             return 0;
         }
 
-        public View GetItemView(ViewGroup parent)
+        public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
         {
-            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.selected_material_item, parent, false);
+            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
             ViewUtil.SetViewSize(convertView, mItemW, mItemH);
             ViewHolder holder = new ViewHolder();
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
@@ -141,7 +146,7 @@ namespace TabletArtco
             return convertView;
         }
 
-        public void UpdateItemView(View contentView, int position)
+        public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
             List<List<Sprite>> sprites = Sprite._sprites;   
             if (mIndex >= sprites.Count)
@@ -158,7 +163,21 @@ namespace TabletArtco
 
         public void ClickItem(int position)
         {
+            
+            List<List<Sprite>> sprites = Sprite._sprites;
+            if (mIndex >= sprites.Count)
+            {
+                return;
+            }
             Android.Util.Log.Info("position", "position===" + position);
+            List<Sprite> list = sprites[mIndex];
+            Sprite sprite = list[position];
+            Intent intent = new Intent();
+            Bundle bundle = new Bundle();
+            bundle.PutString("model", sprite.ToString());
+            intent.PutExtra("bundle", bundle);
+            SetResult(Result.Ok, intent);
+            Finish();
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
@@ -170,3 +189,4 @@ namespace TabletArtco
         }
     }
 }
+

@@ -97,14 +97,14 @@ namespace TabletArtco
             gridView.Adapter = new GridAdapter((DataSource)this, (Delegate)this);
         }
 
-        public int GetItemsCount()
+        public int GetItemsCount(Java.Lang.Object adapter)
         {
             return 10;
         }
 
-        public View GetItemView(ViewGroup parent)
+        public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
         {
-            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.selected_material_item, parent, false);
+            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
             ViewUtil.SetViewSize(convertView, mItemW, mItemH);
             ViewHolder holder = new ViewHolder();
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
@@ -113,7 +113,7 @@ namespace TabletArtco
             return convertView;
         }
 
-        public void UpdateItemView(View contentView, int position)
+        public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             contentView.SetBackgroundColor(Android.Graphics.Color.Red);

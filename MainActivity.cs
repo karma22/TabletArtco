@@ -7,12 +7,23 @@ using Android.Widget;
 using System.Collections.Generic;
 using System;
 using Android.Content;
+using Android.Views;
+using Com.Bumptech.Glide;
 
 namespace TabletArtco
 {
     [Activity(Theme = "@style/AppTheme")]
-    public class MainActivity : AppCompatActivity
+    public class MainActivity : AppCompatActivity, Delegate, DataSource
     {
+
+        private List<ActivatedSprite> spritesList = SpriteManager.sprites;
+        private List<Block> blocksList = new List<Block>();
+        private Background mBackground = null;
+        private List<ImageView> imgList = new List<ImageView>();
+        private SpriteAdapter mSpriteAdapter;
+        private GridAdapter mBlockAdapter;
+        private int mSpriteIndex = -1;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -20,9 +31,9 @@ namespace TabletArtco
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             SetContentView(Resource.Layout.activity_main);
-            
-            InitView();
+
             LoadResources();
+            InitView();
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
@@ -30,22 +41,72 @@ namespace TabletArtco
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+
+            switch (requestCode)
+            {
+                //Select Sprite callback
+                case 0:
+                    {
+                        Bundle bundle = data.GetBundleExtra("bundle");
+                        Sprite sprite = Sprite.ToSprite(bundle.GetString("model"));
+                        if (sprite == null)
+                        {
+                            return;
+                        }
+                        spritesList.Add(new ActivatedSprite(sprite));
+                        mSpriteIndex = spritesList.Count == 1 ? 0 : mSpriteIndex;                        
+                        ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
+                        mSpriteAdapter.NotifyDataSetChanged();
+                        break;
+                    }
+                case 1:
+                    {
+                        Bundle bundle = data.GetBundleExtra("bundle");
+                        Background background = Background.ToBackground(bundle.GetString("model"));
+                        if (background == null)
+                        {
+                            return;
+                        }
+                        mBackground = background;
+                        break;
+                    }
+                case 2:
+                    {
+                        Bundle bundle = data.GetBundleExtra("bundle");
+                        Background background = Background.ToBackground(bundle.GetString("model"));
+                        if (background == null)
+                        {
+                            return;
+                        }
+                        mBackground = background;
+                        if (mBackground.isPng)
+                        {
+                            
+                        }
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        public void LoadResources()
+        {
+            DBManager.LoadSprites();
+            DBManager.LoadBackgrounds();
+        }
+
         public void InitView()
         {
             InitTopButtonEvent();
             InitLeftButtonEvent();
             InitMainView();
-            InitAniBlocksView();
-            InitMaterailListView();
+            InitSpriteListView();
         }
         
-        public void LoadResources()
-        {
-            DBManager.LoadSprites();
-            DBManager.LoadBackgrounds();
-            DBManager.LoadBlocks();
-        }
-
         //Top tool button
         public void InitTopButtonEvent()
         {
@@ -66,25 +127,25 @@ namespace TabletArtco
                         case 0:
                             {
                                 Intent intent = new Intent(this, typeof(PictureActivity));
-                                StartActivity(intent);
+                                StartActivityForResult(intent, 0, null);
                                 break;
                             }
                         case 1:
                             {
                                 Intent intent = new Intent(this, typeof(EducationActivity));
-                                StartActivity(intent);
+                                StartActivityForResult(intent, 1, null);
                                 break;
                             }
                         case 2:
                             {
                                 Intent intent = new Intent(this, typeof(BackgroundActivity));
-                                StartActivity(intent);
+                                StartActivityForResult(intent, 2, null);
                                 break;
                             }
                         case 3:
                             {
                                 Intent intent = new Intent(this, typeof(SoundActivity));
-                                StartActivity(intent);
+                                StartActivityForResult(intent, 3, null);
                                 break;
                             }
                         default:
@@ -143,40 +204,9 @@ namespace TabletArtco
         {
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.left_blocks_view);
             blockView.RemoveAllViews();
-            int[] codeingOneResIds = {
-                Resource.Drawable.Moveblock_Down1, Resource.Drawable.Moveblock_Down5, Resource.Drawable.Moveblock_Down10,
-                Resource.Drawable.Moveblock_Left1, Resource.Drawable.Moveblock_Left5, Resource.Drawable.Moveblock_Left10,
-                Resource.Drawable.Moveblock_Right1, Resource.Drawable.Moveblock_Right5, Resource.Drawable.Moveblock_Right10,
-                Resource.Drawable.Moveblock_Up1, Resource.Drawable.Moveblock_Up5, Resource.Drawable.Moveblock_Up10,
-                Resource.Drawable.Actblock_Slow, Resource.Drawable.Actblock_Fast, Resource.Drawable.Actblock_Flash,
-                Resource.Drawable.Actblock_RRotate, Resource.Drawable.Actblock_LRotate, Resource.Drawable.Actblock_RotateLoop,
-                Resource.Drawable.Actblock_Wave, Resource.Drawable.Actblock_TWave, Resource.Drawable.Actblock_RandomMove,
-                Resource.Drawable.Actblock_Zigzag, Resource.Drawable.Actblock_TZigzag, Resource.Drawable.Actblock_Bounce,
-                Resource.Drawable.Actblock_Jump, Resource.Drawable.Actblock_RLJump, Resource.Drawable.Actblock_Animate
-            };
-            int[] codeingTwoResIds = {
-                Resource.Drawable.Moveblock_LUpN, Resource.Drawable.Moveblock_UpN, Resource.Drawable.Moveblock_RUpN,
-                Resource.Drawable.Moveblock_LeftN, Resource.Drawable.Moveblock_Empty, Resource.Drawable.Moveblock_RightN,
-                Resource.Drawable.Moveblock_LDownN, Resource.Drawable.Moveblock_DownN, Resource.Drawable.Moveblock_RDownN,
-                Resource.Drawable.Actblock_Slow, Resource.Drawable.Actblock_Fast, Resource.Drawable.Actblock_Flash,
-                Resource.Drawable.Actblock_RRotateN, Resource.Drawable.Actblock_LRotateN, Resource.Drawable.Actblock_RotateLoop,
-                Resource.Drawable.Actblock_Wave, Resource.Drawable.Actblock_TWave, Resource.Drawable.Actblock_RandomMove,
-                Resource.Drawable.Actblock_Zigzag, Resource.Drawable.Actblock_TZigzag, Resource.Drawable.Actblock_Bounce,
-                Resource.Drawable.Actblock_Jump, Resource.Drawable.Actblock_RLJump, Resource.Drawable.Actblock_Animate
-            };
-            int[] controlResIds = {
-                Resource.Drawable.Contblock_Time1, Resource.Drawable.Contblock_Time2, Resource.Drawable.Contblock_TimeN,
-                Resource.Drawable.Contblock_LoopN, Resource.Drawable.Contblock_loop, Resource.Drawable.Contblock_Flag,
-                Resource.Drawable.Contblock_FlipX, Resource.Drawable.Contblock_FlipY, Resource.Drawable.Contblock_NextSprite,
-                Resource.Drawable.Contblock_Show, Resource.Drawable.Contblock_Hide, Resource.Drawable.Contblock_Sound,
-                Resource.Drawable.Contblock_AdditionBackground, Resource.Drawable.Contblock_SendSignal, Resource.Drawable.Contblock_ReceiveSignal,
-                Resource.Drawable.Contblock_Speak
-            };
-            int[] educationResIds = {
-                Resource.Drawable.Edublock_Down, Resource.Drawable.Edublock_Jump, Resource.Drawable.Edublock_Up,
-                Resource.Drawable.Edublock_Left, Resource.Drawable.Edublock_LoopN, Resource.Drawable.Edublock_Right
-            };
-            int[] resIds = index == 0 ? codeingOneResIds : index == 1 ? codeingTwoResIds : index == 2 ? controlResIds : educationResIds;
+            
+            int[] resIds = index == 0 ? Block.blockTab1ResIds : index == 1 ? Block.blockTab3ResIds : index == 2 ? Block.blockTab3ResIds : Block.blockTab4ResIds;
+            string[] resIdStrs = index == 0 ? Block.blockTab1ResIdStrs : index == 1 ? Block.blockTab3ResIdStrs : index == 2 ? Block.blockTab3ResIdStrs : Block.blockTab4ResIdStrs;
             int margin = 12;
             int padding = 4;
             double rowWidth = ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2);
@@ -190,9 +220,20 @@ namespace TabletArtco
                 imgIv.LayoutParameters = param;
                 imgIv.SetImageResource(resIds[i]);
                 blockView.AddView(imgIv);
+                imgIv.Click += (t, e) =>
+                {
+                    Block block = new Block();
+                    block.resourceId = resIds[i];
+                    block.name = resIdStrs[i];
+                    block.tabIndex = index;
+                    block.index = i;
+                    spritesList[mSpriteIndex].AddCode(block);
+                    
+                };
             }
         }
 
+        // center main view
         public void InitMainView()
         {
             LinearLayout mainView = FindViewById<LinearLayout>(Resource.Id.mainView);
@@ -201,6 +242,7 @@ namespace TabletArtco
             double height = ScreenUtil.ScreenHeight(this) * 545 / 800.0;
             int paddingL = (int)(18 / 913.0 * width);
             mainView.SetPadding(paddingL, (int)(19 / 549.0 * height), paddingL, 0);
+            ViewUtil.SetViewHeight(mainView, (int)height);
             ViewUtil.SetViewHeight(centerView, (int)(481 / 549.0 * height));
             int[] btsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
             int itemW = (int)(42 / 549.0 * height);
@@ -213,40 +255,50 @@ namespace TabletArtco
 
                 };
             }
+
+            //videoView
+            //ContainerView
+
+            RelativeLayout activate_block_view = FindViewById<RelativeLayout>(Resource.Id.activate_block_view);
+            ViewUtil.SetViewHeight(activate_block_view, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0));
+
+            //int columnCount = 4;
+            //mItemW = (int)((w - (columnCount + 1) * spacing * 1.0) / columnCount);
+            //mItemH = (int)(mItemW * 170.0 / 250);
+
+            //int width = (int)(ScreenUtil.ScreenWidth(view.Context) * 890 / 1280.0);
+            int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - 10 - ScreenUtil.dip2px(this, 4));
+            
+            int margin = 20;
+            int itemH = (int)((GridViewH - margin) / 2.0);
+            int column = (int)(width / itemH);
+            int start = (int)((width - column * itemH) / 2.0);
+
+            GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
+            gridView.SetColumnWidth(200);
+            gridView.SetNumColumns(column);
+            gridView.SetVerticalSpacing(margin);
+            gridView.SetHorizontalSpacing(margin);
+            mBlockAdapter = new GridAdapter((DataSource)this, (Delegate)this);
+            gridView.Adapter = mBlockAdapter;
+            
+            //List<String> list = new List<String>();
+            //list.Add("ff");
+            //list.Add("ff");
+            //BlockAdapter adapter = new BlockAdapter(this, list);
+            //ViewPager viewPager = FindViewById<ViewPager>(Resource.Id.viewpager);
+            //ViewUtil.SetViewWidth(viewPager, (int)width);
+            //viewPager.Adapter = adapter;
         }
 
-        public void InitAniBlocksView()
-        {
-            int width = (int)(ScreenUtil.ScreenWidth(this) * 890 / 1280.0);
-            double height = (ScreenUtil.ScreenHeight(this) * 175 / 800.0 - 10 - ScreenUtil.dip2px(this, 4));
-            int itemH = (int)((height - 40) / 3.0);
-            int itemW = (int)(itemH * 168 / 50.0);
-            Android.Util.Log.Info("tag", "statusHeight:" + ScreenUtil.StatusBarHeight(this));
-            int[] btsResIds = { Resource.Id.bt_delete1, Resource.Id.bt_delete2, Resource.Id.bt_delete3 };
-            for (int i = 0; i < btsResIds.Length; i++)
-            {
-                ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
-                ViewUtil.SetViewSize(imgBt, itemW, itemH);
-                imgBt.Click += (t, e) =>
-                {
-
-                };
-            }
-            List<String> list = new List<String>();
-            list.Add("ff");
-            list.Add("ff");
-            BlockAdapter adapter = new BlockAdapter(this, list);
-            ViewPager viewPager = FindViewById<ViewPager>(Resource.Id.viewpager);
-            ViewUtil.SetViewWidth(viewPager, width - itemW);
-            viewPager.Adapter = adapter;
-
-        }
-
-        public void InitMaterailListView()
+       
+        // Right sprite list
+        public void InitSpriteListView()
         {
             int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
             ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
-            listView.Adapter = new MaterailAdapter(this, itemW);
+            mSpriteAdapter = new SpriteAdapter(this, this);
+            listView.Adapter = mSpriteAdapter;
             listView.ItemClick += ListView_ItemClick;
         }
 
@@ -263,5 +315,67 @@ namespace TabletArtco
 
         }
 
+        public void startAnimation() {
+
+        }
+
+        public void stopAnimation() {
+
+        }
+
+
+        /*
+         * Delegate
+         * DataSource 
+         * interface
+        */
+        public int GetItemsCount(Java.Lang.Object adapter)
+        {
+            if (adapter == mSpriteAdapter)
+            {
+                return spritesList.Count;
+            }
+            else
+            {
+                return blocksList.Count;
+            }
+        }
+
+        public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
+        {
+            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
+            int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
+            ViewUtil.SetViewHeight(convertView, itemW);
+            ViewHolder holder = new ViewHolder();
+            holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
+            holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
+            holder.bgIv.SetBackgroundResource(Resource.Drawable.xml_gridview_bg);
+            convertView.Tag = holder;
+            convertView.Click += (t, e) =>
+            {
+                ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
+                //ClickItem(position);
+            };
+            return convertView;
+        }
+
+        public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
+        {
+            ActivatedSprite sprite = spritesList[position];
+            ViewHolder viewHolder = (ViewHolder)contentView.Tag;
+            Glide.With(this).Load(sprite._sprite.remotePath).Into(viewHolder.imgIv);
+        }
+
+        public void ClickItem(int position)
+        {
+           
+        }
+
+        //定义ViewHolder内部类，用于对控件实例进行缓存
+        class ViewHolder : Java.Lang.Object
+        {
+            public ImageView bgIv;
+            public ImageView imgIv;
+        }
     }
 }

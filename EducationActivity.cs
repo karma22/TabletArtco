@@ -7,11 +7,10 @@ using System.Text;
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Com.Bumptech.Glide;
-using Android.Graphics;
+
 
 namespace TabletArtco
 {
@@ -115,7 +114,7 @@ namespace TabletArtco
         }
 
         // Delegate interface
-        public int GetItemsCount()
+        public int GetItemsCount(Java.Lang.Object adapter)
         {
             List<List<Background>> backgrounds = Background._backgrounds;
             if (mIndex < backgrounds.Count)
@@ -125,9 +124,9 @@ namespace TabletArtco
             return 0;
         }
 
-        public View GetItemView(ViewGroup parent)
+        public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
         {
-            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.background_item, parent, false);
+            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_background, parent, false);
             ViewUtil.SetViewSize(convertView, mItemW, mItemH);
             ViewHolder holder = new ViewHolder();
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
@@ -143,7 +142,7 @@ namespace TabletArtco
             return convertView;
         }
 
-        public void UpdateItemView(View contentView, int position)
+        public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
             List<List<Background>> backgrounds = Background._backgrounds;
             if (mIndex >= backgrounds.Count)
@@ -159,8 +158,21 @@ namespace TabletArtco
             viewHolder.txtTv.Tag = position;
         }
 
-        public void ClickItem(int position) {
-            Android.Util.Log.Info("position", "position===" + position);
+        public void ClickItem(int position)
+        {
+            List<List<Background>> backgrounds = Background._backgrounds;
+            if (mIndex >= backgrounds.Count)
+            {
+                return;
+            }
+            List<Background> list = backgrounds[mIndex];
+            Background background = list[position];
+            Intent intent = new Intent();
+            Bundle bundle = new Bundle();
+            bundle.PutString("model", background.ToString());
+            intent.PutExtra("bundle", bundle);
+            SetResult(Result.Ok, intent);
+            Finish();
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存

@@ -5,12 +5,16 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Android.Graphics;
+using Com.Bumptech.Glide;
+using System.Collections.Generic;
 
 namespace TabletArtco
 {
     [Activity(Label = "EditActivity")]
-    public class EditActivity : Activity
+    public class EditActivity : Activity, Delegate, DataSource
     {
+        private List<Sprite> spritesList = new List<Sprite>();
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -50,7 +54,7 @@ namespace TabletArtco
             int itemW = listW - 30;
             ListView listView = FindViewById<ListView>(Resource.Id.edit_material_list);
             listView.SetPadding(30, 28, 45, 50);
-            listView.Adapter = new MaterailAdapter(this, itemW);
+            listView.Adapter = new SpriteAdapter(this, this);
 
         }
 
@@ -201,6 +205,80 @@ namespace TabletArtco
                 imgBt.LayoutParameters = layoutParams;
                 contentView.AddView(imgBt);
             }
+        }
+
+
+        /*
+         * 
+         * Delegate and DataSource 
+         * 
+        */
+        public int GetItemsCount(Java.Lang.Object adapter)
+        {
+            return spritesList.Count;
+        }
+
+        public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
+        {
+            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
+            //int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
+
+            int sw = ScreenUtil.ScreenWidth(this);
+            double width = sw * 190 / 1280.0;
+            int listW = (int)((190 - 60) / 1280.0 * sw);
+            int itemW = listW - 30;
+
+            ViewUtil.SetViewHeight(convertView, itemW);
+            ViewHolder holder = new ViewHolder();
+            holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
+            holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
+            convertView.Tag = holder;
+            convertView.Click += (t, e) =>
+            {
+                ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
+                //ClickItem(position);
+            };
+            return convertView;
+        }
+
+        public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
+        {
+            //List<List<Sprite>> sprites = Sprite._sprites;
+            //if (mIndex >= sprites.Count)
+            //{
+            //    return;
+            //}
+            //List<Sprite> list = sprites[mIndex];
+            Sprite sprite = spritesList[position];
+            ViewHolder viewHolder = (ViewHolder)contentView.Tag;
+            Glide.With(this).Load(sprite.remotePath).Into(viewHolder.imgIv);
+            //viewHolder.txtTv.Text = sprite.name;
+            //viewHolder.txtTv.Tag = position;
+        }
+
+        public void ClickItem(int position)
+        {
+            //Android.Util.Log.Info("position", "position===" + position);
+            //List<List<Sprite>> sprites = Sprite._sprites;
+            //if (mIndex >= sprites.Count)
+            //{
+            //    return;
+            //}
+            //List<Sprite> list = sprites[mIndex];
+            //Sprite sprite = list[position];
+            //Intent intent = new Intent();
+            //Bundle bundle = new Bundle();
+            //bundle.PutString("model", sprite.ToString());
+            //intent.PutExtra("bundle", bundle);
+            //SetResult(Result.Ok, intent);
+            //Finish();
+        }
+
+        //定义ViewHolder内部类，用于对控件实例进行缓存
+        class ViewHolder : Java.Lang.Object
+        {
+            public ImageView bgIv;
+            public ImageView imgIv;
         }
     }
 }
