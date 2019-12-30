@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using Android.Graphics;
 using Android.Util;
+using Android.Content;
 using System.Threading;
+using Com.Bumptech.Glide;
 
 namespace TabletArtco
 {
@@ -77,6 +79,7 @@ namespace TabletArtco
         public int category { get; set; }
         public string remotePath { get; set; }
         public bool isUser { get; set; }
+        public Bitmap bitmap { get; set; }
 
         public override string ToString()
         {
@@ -110,8 +113,10 @@ namespace TabletArtco
     class ActivatedSprite
     {
         public Sprite _sprite { get; set; }
+        //public Context mcon
         // Block list
-        public List<List<Block>> mBlocks { get; set; } = new List<List<Block>>();
+        //public List<List<Block>> mBlocks { get; set; } = new List<List<Block>>();
+        public List<Block> mBlocks { get; set; } = new List<Block>();
         public List<Bitmap> _originBitmapList { get; set; } = new List<Bitmap>();
         public Point _originPoint { get; set; } = new Point(0, 0);
 
@@ -132,6 +137,9 @@ namespace TabletArtco
         public ActivatedSprite(Sprite sprite)
         {
             _sprite = sprite;
+            //Glide.With(this).
+      
+
             //_spriteBit
             //_normalSpriteBit.Add(new Bitmap(new Bitmap(sprite._localPath)));
             //if (_sprite._isUser)
@@ -160,162 +168,319 @@ namespace TabletArtco
         }
 
 
+        //public void CodeRunThread(object arg)
+        //{
+        //START:
+        //    int loopCnt = 0;
+        //    int loopStartTab = 0;
+        //    int loopStartIdx = 0;
+
+        //    for (int tab = 0; tab < mBlocks.Count; tab++)
+        //    {
+        //        for (int idx = 0; idx < mBlocks[tab].Count; idx++)
+        //        {
+        //            try
+        //            {
+        //            SAVE:
+        //                Block block = mBlocks[tab][idx];
+        //                string blockName = mBlocks[tab][idx].name;
+
+        //                if (blockName.Equals("ControlLoop")) goto START;
+        //                else if (blockName.Equals("ControlLoopN") || blockName.Equals("GameLoopN"))
+        //                {
+        //                    if (!System.Int32.TryParse(block.text, out int n))
+        //                    {
+        //                        //new MsgBoxForm($"{i + 1}번째 그림, {tab + 1}페이지, {idx + 1}번째에 실행할 수 없는 값이 있습니다.").ShowDialog();
+        //                    }
+        //                    else if (n == 0)
+        //                    {
+        //                        continue;
+        //                    }
+        //                    else
+        //                    {
+        //                        if (++loopCnt != n)
+        //                        {
+        //                            tab = loopStartTab;
+        //                            idx = loopStartIdx;
+
+        //                            goto SAVE;
+        //                        }
+        //                        else
+        //                        {
+        //                            if (idx < mBlocks[tab].Count - 1)
+        //                            {
+        //                                loopStartIdx = idx = idx + 1;
+        //                                loopStartTab = tab;
+        //                            }
+        //                            else
+        //                            {
+        //                                if ((idx == rowMaxCount - 1) && (tab < mBlocks.Count - 1))
+        //                                {
+        //                                    loopStartIdx = idx = 0;
+        //                                    loopStartTab = tab = tab + 1;
+        //                                }
+        //                                else
+        //                                {
+        //                                    break;
+        //                                }
+        //                            }
+
+        //                            loopCnt = 0;
+        //                            goto SAVE;
+        //                        }
+        //                    }
+        //                }
+        //                else if (blockName.Equals("ControlFlag"))
+        //                {
+        //                    if (idx < mBlocks[tab].Count - 1)
+        //                    {
+        //                        loopStartIdx = idx + 1;
+        //                        loopStartTab = tab;
+        //                    }
+        //                    else
+        //                    {
+        //                        if ((idx == rowMaxCount - 1) && (tab < mBlocks.Count - 1))
+        //                        {
+        //                            loopStartIdx = 0;
+        //                            loopStartTab = tab + 1;
+        //                        }
+        //                        else
+        //                        {
+        //                            break;
+        //                        }
+        //                    }
+
+        //                    continue;
+        //                }
+        //                else if (blockName.Equals("MoveRDownN")) MoveVariable(MoveArrow.RightDown, block.text);
+        //                else if (blockName.Equals("MoveRUpN")) MoveVariable(MoveArrow.RightUp, block.text);
+        //                else if (blockName.Equals("MoveLDownN")) MoveVariable(MoveArrow.LeftDown, block.text);
+        //                else if (blockName.Equals("MoveLUpN")) MoveVariable(MoveArrow.LeftUp, block.text);
+        //                else if (blockName.Equals("MoveRight1")) MoveConstant(MoveArrow.Right, 1, true);
+        //                else if (blockName.Equals("MoveRight5")) MoveConstant(MoveArrow.Right, 5, true);
+        //                else if (blockName.Equals("MoveRight10")) MoveConstant(MoveArrow.Right, 10, true);
+        //                else if (blockName.Equals("MoveRightN")) MoveVariable(MoveArrow.Right, block.text);
+        //                else if (blockName.Equals("MoveDown1")) MoveConstant(MoveArrow.Down, 1, true);
+        //                else if (blockName.Equals("MoveDown5")) MoveConstant(MoveArrow.Down, 5, true);
+        //                else if (blockName.Equals("MoveDown10")) MoveConstant(MoveArrow.Down, 10, true);
+        //                else if (blockName.Equals("MoveDownN")) MoveVariable(MoveArrow.Down, block.text);
+        //                else if (blockName.Equals("MoveLeft1")) MoveConstant(MoveArrow.Left, 1, true);
+        //                else if (blockName.Equals("MoveLeft5")) MoveConstant(MoveArrow.Left, 5, true);
+        //                else if (blockName.Equals("MoveLeft10")) MoveConstant(MoveArrow.Left, 10, true);
+        //                else if (blockName.Equals("MoveLeftN")) MoveVariable(MoveArrow.Left, block.text);
+        //                else if (blockName.Equals("MoveUp1")) MoveConstant(MoveArrow.Up, 1, true);
+        //                else if (blockName.Equals("MoveUp5")) MoveConstant(MoveArrow.Up, 5, true);
+        //                else if (blockName.Equals("MoveUp10")) MoveConstant(MoveArrow.Up, 10, true);
+        //                else if (blockName.Equals("MoveUpN")) MoveVariable(MoveArrow.Up, block.text);
+        //                else if (blockName.Equals("ActionRRotate")) RotateLoop(90, true, false);
+        //                else if (blockName.Equals("ActionLRotate")) RotateLoop(90, false, false);
+        //                else if (blockName.Equals("ActionBounce")) ActionBounce();
+        //                else if (blockName.Equals("ActionWave")) ActionWave();
+        //                else if (blockName.Equals("ActionTWave")) ActionTWave();
+        //                else if (blockName.Equals("ActionZigzag")) ActionZigzag();
+        //                else if (blockName.Equals("ActionTZigzag")) ActionTZigzag();
+        //                else if (blockName.Equals("ActionJump")) JumpSprite();
+        //                else if (blockName.Equals("ActionRandomMove")) RandomMove();
+        //                else if (blockName.Equals("ActionFast")) ActionFast();
+        //                else if (blockName.Equals("ActionSlow")) ActionSlow();
+        //                else if (blockName.Equals("ActionRotateLoop")) RotateLoop(10, true, true);
+        //                else if (blockName.Equals("ActionRRotateN")) RotateArrowValue(true, block.text);
+        //                else if (blockName.Equals("ActionLRotateN")) RotateArrowValue(false, block.text);
+        //                else if (blockName.Equals("ActionFlash")) ShowHideLoop();
+        //                else if (blockName.Equals("ActionRLJump")) RightLeftJumpLoop();
+        //                else if (blockName.Equals("ActionAnimate")) AnimateSpritesLoop();
+        //                else if (blockName.Equals("ControlFlipX")) FlipXSprite();
+        //                else if (blockName.Equals("ControlFlipY")) FlipYSprite();
+        //                else if (blockName.Equals("ControlShow")) ShowSprite(true);
+        //                else if (blockName.Equals("ControlHide")) ShowSprite(false);
+        //                else if (blockName.Equals("ControlNextSprite")) SetNextBit();
+        //                else if (blockName.Equals("ControlPrevSprite")) SetPrevBit();
+        //                else if (blockName.Equals("ControlTime1")) Thread.Sleep((int)(1 * 100.0f));
+        //                else if (blockName.Equals("ControlTime2")) Thread.Sleep((int)(5 * 100.0f));
+        //                else if (blockName.Equals("ControlTimeN")) SleepVariable(block.text);
+        //                //else if (blockName.Equals("ControlSpeak")) ControlSpeak(block.text);
+        //                //else if (blockName.Equals("ControlSound")) EffectSoundPlay(sprite._codes[tab][idx]._inputTextbox.Text);
+        //                //else if (blockName.Equals("GameRight")) TurnAndMoveForward(5);
+        //                //else if (blockName.Equals("GameDown")) TurnAndMoveForward(6);
+        //                //else if (blockName.Equals("GameLeft")) TurnAndMoveForward(7);
+        //                //else if (blockName.Equals("GameUp")) TurnAndMoveForward(8);
+        //                //else if (blockName.Equals("GameJump")) ArrowJump();
+
+        //                Thread.Sleep(10);
+
+        //            }
+        //            catch (ThreadAbortException)
+        //            {
+
+        //                //ActivatedSprite.mciSendString("close wav", null, 0, IntPtr.Zero);
+        //                //lock (sprite._lockObj)
+        //                //{
+        //                //    sprite._spriteBit[sprite._curSpriteNum] = new Bitmap(sprite.GetSpriteBit());
+        //                //    sprite._angle = 0.0f;
+        //                //    sprite._speakText = null;
+        //                //    sprite._isVisible = true;
+        //                //}
+        //                reset();
+        //            }
+        //        }
+        //    }
+        //}
         public void CodeRunThread(object arg)
         {
         START:
             int loopCnt = 0;
-            int loopStartTab = 0;
+            //int loopStartTab = 0;
             int loopStartIdx = 0;
 
-            for (int tab = 0; tab < mBlocks.Count; tab++)
+            //for (int tab = 0; tab < mBlocks.Count; tab++)
+            //{
+            for (int idx = 0; idx < mBlocks.Count; idx++)
             {
-                for (int idx = 0; idx < mBlocks[tab].Count; idx++)
+                try
                 {
-                    try
-                    {
-                    SAVE:
-                        Block block = mBlocks[tab][idx];
-                        string blockName = mBlocks[tab][idx].name;
+                SAVE:
+                    Block block = mBlocks[idx];
+                    string blockName = mBlocks[idx].name;
 
-                        if (blockName.Equals("ControlLoop")) goto START;
-                        else if (blockName.Equals("ControlLoopN") || blockName.Equals("GameLoopN"))
+                    if (blockName.Equals("ControlLoop")) goto START;
+                    else if (blockName.Equals("ControlLoopN") || blockName.Equals("GameLoopN"))
+                    {
+                        if (!System.Int32.TryParse(block.text, out int n))
                         {
-                            if (!System.Int32.TryParse(block.text, out int n))
+                            //new MsgBoxForm($"{i + 1}번째 그림, {tab + 1}페이지, {idx + 1}번째에 실행할 수 없는 값이 있습니다.").ShowDialog();
+                        }
+                        else if (n == 0)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            if (++loopCnt != n)
                             {
-                                //new MsgBoxForm($"{i + 1}번째 그림, {tab + 1}페이지, {idx + 1}번째에 실행할 수 없는 값이 있습니다.").ShowDialog();
-                            }
-                            else if (n == 0)
-                            {
-                                continue;
+                                //tab = loopStartTab;
+                                idx = loopStartIdx;
+
+                                goto SAVE;
                             }
                             else
                             {
-                                if (++loopCnt != n)
+                                if (idx < mBlocks.Count - 1)
                                 {
-                                    tab = loopStartTab;
-                                    idx = loopStartIdx;
-
-                                    goto SAVE;
+                                    loopStartIdx = idx = idx + 1;
+                                    //loopStartTab = tab;
                                 }
                                 else
                                 {
-                                    if (idx < mBlocks[tab].Count - 1)
+                                    if ((idx == rowMaxCount - 1))
                                     {
-                                        loopStartIdx = idx = idx + 1;
-                                        loopStartTab = tab;
+                                        loopStartIdx = idx = 0;
+                                        //loopStartTab = tab = tab + 1;
                                     }
                                     else
                                     {
-                                        if ((idx == rowMaxCount - 1) && (tab < mBlocks.Count - 1))
-                                        {
-                                            loopStartIdx = idx = 0;
-                                            loopStartTab = tab = tab + 1;
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
+                                        break;
                                     }
-
-                                    loopCnt = 0;
-                                    goto SAVE;
                                 }
+
+                                loopCnt = 0;
+                                goto SAVE;
                             }
                         }
-                        else if (blockName.Equals("ControlFlag"))
+                    }
+                    else if (blockName.Equals("ControlFlag"))
+                    {
+                        if (idx < mBlocks.Count - 1)
                         {
-                            if (idx < mBlocks[tab].Count - 1)
+                            loopStartIdx = idx + 1;
+                            //loopStartTab = tab;
+                        }
+                        else
+                        {
+                            if ((idx == rowMaxCount - 1))
                             {
-                                loopStartIdx = idx + 1;
-                                loopStartTab = tab;
+                                loopStartIdx = 0;
+                                //loopStartTab = tab + 1;
                             }
                             else
                             {
-                                if ((idx == rowMaxCount - 1) && (tab < mBlocks.Count - 1))
-                                {
-                                    loopStartIdx = 0;
-                                    loopStartTab = tab + 1;
-                                }
-                                else
-                                {
-                                    break;
-                                }
+                                break;
                             }
-
-                            continue;
                         }
-                        else if (blockName.Equals("MoveRDownN")) MoveVariable(MoveArrow.RightDown, block.text);
-                        else if (blockName.Equals("MoveRUpN")) MoveVariable(MoveArrow.RightUp, block.text);
-                        else if (blockName.Equals("MoveLDownN")) MoveVariable(MoveArrow.LeftDown, block.text);
-                        else if (blockName.Equals("MoveLUpN")) MoveVariable(MoveArrow.LeftUp, block.text);
-                        else if (blockName.Equals("MoveRight1")) MoveConstant(MoveArrow.Right, 1, true);
-                        else if (blockName.Equals("MoveRight5")) MoveConstant(MoveArrow.Right, 5, true);
-                        else if (blockName.Equals("MoveRight10")) MoveConstant(MoveArrow.Right, 10, true);
-                        else if (blockName.Equals("MoveRightN")) MoveVariable(MoveArrow.Right, block.text);
-                        else if (blockName.Equals("MoveDown1")) MoveConstant(MoveArrow.Down, 1, true);
-                        else if (blockName.Equals("MoveDown5")) MoveConstant(MoveArrow.Down, 5, true);
-                        else if (blockName.Equals("MoveDown10")) MoveConstant(MoveArrow.Down, 10, true);
-                        else if (blockName.Equals("MoveDownN")) MoveVariable(MoveArrow.Down, block.text);
-                        else if (blockName.Equals("MoveLeft1")) MoveConstant(MoveArrow.Left, 1, true);
-                        else if (blockName.Equals("MoveLeft5")) MoveConstant(MoveArrow.Left, 5, true);
-                        else if (blockName.Equals("MoveLeft10")) MoveConstant(MoveArrow.Left, 10, true);
-                        else if (blockName.Equals("MoveLeftN")) MoveVariable(MoveArrow.Left, block.text);
-                        else if (blockName.Equals("MoveUp1")) MoveConstant(MoveArrow.Up, 1, true);
-                        else if (blockName.Equals("MoveUp5")) MoveConstant(MoveArrow.Up, 5, true);
-                        else if (blockName.Equals("MoveUp10")) MoveConstant(MoveArrow.Up, 10, true);
-                        else if (blockName.Equals("MoveUpN")) MoveVariable(MoveArrow.Up, block.text);
-                        else if (blockName.Equals("ActionRRotate")) RotateLoop(90, true, false);
-                        else if (blockName.Equals("ActionLRotate")) RotateLoop(90, false, false);
-                        else if (blockName.Equals("ActionBounce")) ActionBounce();
-                        else if (blockName.Equals("ActionWave")) ActionWave();
-                        else if (blockName.Equals("ActionTWave")) ActionTWave();
-                        else if (blockName.Equals("ActionZigzag")) ActionZigzag();
-                        else if (blockName.Equals("ActionTZigzag")) ActionTZigzag();
-                        else if (blockName.Equals("ActionJump")) JumpSprite();
-                        else if (blockName.Equals("ActionRandomMove")) RandomMove();
-                        else if (blockName.Equals("ActionFast")) ActionFast();
-                        else if (blockName.Equals("ActionSlow")) ActionSlow();
-                        else if (blockName.Equals("ActionRotateLoop")) RotateLoop(10, true, true);
-                        else if (blockName.Equals("ActionRRotateN")) RotateArrowValue(true, block.text);
-                        else if (blockName.Equals("ActionLRotateN")) RotateArrowValue(false, block.text);
-                        else if (blockName.Equals("ActionFlash")) ShowHideLoop();
-                        else if (blockName.Equals("ActionRLJump")) RightLeftJumpLoop();
-                        else if (blockName.Equals("ActionAnimate")) AnimateSpritesLoop();
-                        else if (blockName.Equals("ControlFlipX")) FlipXSprite();
-                        else if (blockName.Equals("ControlFlipY")) FlipYSprite();
-                        else if (blockName.Equals("ControlShow")) ShowSprite(true);
-                        else if (blockName.Equals("ControlHide")) ShowSprite(false);
-                        else if (blockName.Equals("ControlNextSprite")) SetNextBit();
-                        else if (blockName.Equals("ControlPrevSprite")) SetPrevBit();
-                        else if (blockName.Equals("ControlTime1")) Thread.Sleep((int)(1 * 100.0f));
-                        else if (blockName.Equals("ControlTime2")) Thread.Sleep((int)(5 * 100.0f));
-                        else if (blockName.Equals("ControlTimeN")) SleepVariable(block.text);
-                        //else if (blockName.Equals("ControlSpeak")) ControlSpeak(block.text);
-                        //else if (blockName.Equals("ControlSound")) EffectSoundPlay(sprite._codes[tab][idx]._inputTextbox.Text);
-                        //else if (blockName.Equals("GameRight")) TurnAndMoveForward(5);
-                        //else if (blockName.Equals("GameDown")) TurnAndMoveForward(6);
-                        //else if (blockName.Equals("GameLeft")) TurnAndMoveForward(7);
-                        //else if (blockName.Equals("GameUp")) TurnAndMoveForward(8);
-                        //else if (blockName.Equals("GameJump")) ArrowJump();
 
-                        Thread.Sleep(10);
-
+                        continue;
                     }
-                    catch (ThreadAbortException)
-                    {
+                    else if (blockName.Equals("MoveRDownN")) MoveVariable(MoveArrow.RightDown, block.text);
+                    else if (blockName.Equals("MoveRUpN")) MoveVariable(MoveArrow.RightUp, block.text);
+                    else if (blockName.Equals("MoveLDownN")) MoveVariable(MoveArrow.LeftDown, block.text);
+                    else if (blockName.Equals("MoveLUpN")) MoveVariable(MoveArrow.LeftUp, block.text);
+                    else if (blockName.Equals("MoveRight1")) MoveConstant(MoveArrow.Right, 1, true);
+                    else if (blockName.Equals("MoveRight5")) MoveConstant(MoveArrow.Right, 5, true);
+                    else if (blockName.Equals("MoveRight10")) MoveConstant(MoveArrow.Right, 10, true);
+                    else if (blockName.Equals("MoveRightN")) MoveVariable(MoveArrow.Right, block.text);
+                    else if (blockName.Equals("MoveDown1")) MoveConstant(MoveArrow.Down, 1, true);
+                    else if (blockName.Equals("MoveDown5")) MoveConstant(MoveArrow.Down, 5, true);
+                    else if (blockName.Equals("MoveDown10")) MoveConstant(MoveArrow.Down, 10, true);
+                    else if (blockName.Equals("MoveDownN")) MoveVariable(MoveArrow.Down, block.text);
+                    else if (blockName.Equals("MoveLeft1")) MoveConstant(MoveArrow.Left, 1, true);
+                    else if (blockName.Equals("MoveLeft5")) MoveConstant(MoveArrow.Left, 5, true);
+                    else if (blockName.Equals("MoveLeft10")) MoveConstant(MoveArrow.Left, 10, true);
+                    else if (blockName.Equals("MoveLeftN")) MoveVariable(MoveArrow.Left, block.text);
+                    else if (blockName.Equals("MoveUp1")) MoveConstant(MoveArrow.Up, 1, true);
+                    else if (blockName.Equals("MoveUp5")) MoveConstant(MoveArrow.Up, 5, true);
+                    else if (blockName.Equals("MoveUp10")) MoveConstant(MoveArrow.Up, 10, true);
+                    else if (blockName.Equals("MoveUpN")) MoveVariable(MoveArrow.Up, block.text);
+                    else if (blockName.Equals("ActionRRotate")) RotateLoop(90, true, false);
+                    else if (blockName.Equals("ActionLRotate")) RotateLoop(90, false, false);
+                    else if (blockName.Equals("ActionBounce")) ActionBounce();
+                    else if (blockName.Equals("ActionWave")) ActionWave();
+                    else if (blockName.Equals("ActionTWave")) ActionTWave();
+                    else if (blockName.Equals("ActionZigzag")) ActionZigzag();
+                    else if (blockName.Equals("ActionTZigzag")) ActionTZigzag();
+                    else if (blockName.Equals("ActionJump")) JumpSprite();
+                    else if (blockName.Equals("ActionRandomMove")) RandomMove();
+                    else if (blockName.Equals("ActionFast")) ActionFast();
+                    else if (blockName.Equals("ActionSlow")) ActionSlow();
+                    else if (blockName.Equals("ActionRotateLoop")) RotateLoop(10, true, true);
+                    else if (blockName.Equals("ActionRRotateN")) RotateArrowValue(true, block.text);
+                    else if (blockName.Equals("ActionLRotateN")) RotateArrowValue(false, block.text);
+                    else if (blockName.Equals("ActionFlash")) ShowHideLoop();
+                    else if (blockName.Equals("ActionRLJump")) RightLeftJumpLoop();
+                    else if (blockName.Equals("ActionAnimate")) AnimateSpritesLoop();
+                    else if (blockName.Equals("ControlFlipX")) FlipXSprite();
+                    else if (blockName.Equals("ControlFlipY")) FlipYSprite();
+                    else if (blockName.Equals("ControlShow")) ShowSprite(true);
+                    else if (blockName.Equals("ControlHide")) ShowSprite(false);
+                    else if (blockName.Equals("ControlNextSprite")) SetNextBit();
+                    else if (blockName.Equals("ControlPrevSprite")) SetPrevBit();
+                    else if (blockName.Equals("ControlTime1")) Thread.Sleep((int)(1 * 100.0f));
+                    else if (blockName.Equals("ControlTime2")) Thread.Sleep((int)(5 * 100.0f));
+                    else if (blockName.Equals("ControlTimeN")) SleepVariable(block.text);
+                    //else if (blockName.Equals("ControlSpeak")) ControlSpeak(block.text);
+                    //else if (blockName.Equals("ControlSound")) EffectSoundPlay(sprite._codes[tab][idx]._inputTextbox.Text);
+                    //else if (blockName.Equals("GameRight")) TurnAndMoveForward(5);
+                    //else if (blockName.Equals("GameDown")) TurnAndMoveForward(6);
+                    //else if (blockName.Equals("GameLeft")) TurnAndMoveForward(7);
+                    //else if (blockName.Equals("GameUp")) TurnAndMoveForward(8);
+                    //else if (blockName.Equals("GameJump")) ArrowJump();
 
-                        //ActivatedSprite.mciSendString("close wav", null, 0, IntPtr.Zero);
-                        //lock (sprite._lockObj)
-                        //{
-                        //    sprite._spriteBit[sprite._curSpriteNum] = new Bitmap(sprite.GetSpriteBit());
-                        //    sprite._angle = 0.0f;
-                        //    sprite._speakText = null;
-                        //    sprite._isVisible = true;
-                        //}
-                        reset();
-                    }
+                    Thread.Sleep(10);
+
+                }
+                catch (ThreadAbortException)
+                {
+
+                    //ActivatedSprite.mciSendString("close wav", null, 0, IntPtr.Zero);
+                    //lock (sprite._lockObj)
+                    //{
+                    //    sprite._spriteBit[sprite._curSpriteNum] = new Bitmap(sprite.GetSpriteBit());
+                    //    sprite._angle = 0.0f;
+                    //    sprite._speakText = null;
+                    //    sprite._isVisible = true;
+                    //}
+                    reset();
                 }
             }
+            //}
         }
 
         public void reset() {
@@ -607,19 +772,20 @@ namespace TabletArtco
 
         public void AddCode(Block code)
         {
-            int editorTab = 0;
-            //EffectSound.blockLinkSound.Play();
-            if (mBlocks.Count != 0)
-            {
-                editorTab = (GetListCount() / rowMaxCount);
-                //_maxEditorPageNumber = editorTab;
-            }
-            if (mBlocks.Count < editorTab + 1)
-            {
-                mBlocks.Add(new List<Block>());
-            }
-            mBlocks.Add(new List<Block>());
-            mBlocks[editorTab].Add(code);
+            //int editorTab = 0;
+            ////EffectSound.blockLinkSound.Play();
+            //if (mBlocks.Count != 0)
+            //{
+            //    editorTab = (GetListCount() / rowMaxCount);
+            //    //_maxEditorPageNumber = editorTab;
+            //}
+            //if (mBlocks.Count < editorTab + 1)
+            //{
+            //    mBlocks.Add(new List<Block>());
+            //}
+            //mBlocks.Add(new List<Block>());
+            //mBlocks[editorTab].Add(code);
+            mBlocks.Add(code);
             //_programCnt++;x 
             //Editor.SetEditorLocation(editorTab);
             //_editorPageNumber = editorTab;
@@ -629,23 +795,24 @@ namespace TabletArtco
 
         public int GetListCount()
         {
-            int cnt = 0;
-            for (int i = 0; i < mBlocks.Count; i++)
-            {
-                for (int j = 0; j < mBlocks[i].Count; j++)
-                {
-                    cnt++;
-                }
-            }
-            return cnt;
+            //int cnt = 0;
+            //for (int i = 0; i < mBlocks.Count; i++)
+            //{
+            //    for (int j = 0; j < mBlocks[i].Count; j++)
+            //    {
+            //        cnt++;
+            //    }
+            //}
+            return mBlocks.Count;
         }
 
         public void ClearCode()
         {
-            for (int i = 0; i < mBlocks.Count; i++)
-            {
-                mBlocks[i].RemoveRange(0, mBlocks[i].Count);
-            }
+            //for (int i = 0; i < mBlocks.Count; i++)
+            //{
+            //    mBlocks[i].RemoveRange(0, mBlocks[i].Count);
+            //}
+            mBlocks.RemoveRange(0, mBlocks.Count);
         }
 
 

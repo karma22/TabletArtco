@@ -97,11 +97,11 @@ namespace TabletArtco
             }
 
             //// If verification is passed，to sign in;
-            if (!DBManager.CheckLogin(account, pwd))
-            {
-                Toast.MakeText(this, "登录失败", ToastLength.Short).Show();
-                return;
-            }
+            //if (!DBManager.CheckLogin(account, pwd))
+            //{
+            //    Toast.MakeText(this, "登录失败", ToastLength.Short).Show();
+            //    return;
+            //}
 
             //if password is remembered, write userinfo to sharedPreference
             Boolean isRem = SharedPres.GetBoolean("isremember", false);

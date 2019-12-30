@@ -1,23 +1,27 @@
 ﻿using Android.App;
 using Android.OS;
 using Android.Support.V7.App;
-using Android.Support.V4.View;
 using Android.Runtime;
 using Android.Widget;
 using System.Collections.Generic;
-using System;
 using Android.Content;
 using Android.Views;
 using Com.Bumptech.Glide;
+using Com.Bumptech.Glide.Request;
+using Android.Graphics;
+using Java.Lang;
+using Com.Bumptech.Glide.Load.Engine;
+using Com.Bumptech.Glide.Request.Target;
+using Com.Bumptech.Glide.Load;
 
 namespace TabletArtco
 {
     [Activity(Theme = "@style/AppTheme")]
-    public class MainActivity : AppCompatActivity, Delegate, DataSource
+    public class MainActivity : AppCompatActivity, Delegate, DataSource, DragDelegate, IRequestListener
     {
 
         private List<ActivatedSprite> spritesList = SpriteManager.sprites;
-        private List<Block> blocksList = new List<Block>();
+        //private List<Block> blocksList = new List<Block>();
         private Background mBackground = null;
         private List<ImageView> imgList = new List<ImageView>();
         private SpriteAdapter mSpriteAdapter;
@@ -31,7 +35,8 @@ namespace TabletArtco
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             SetContentView(Resource.Layout.activity_main);
-
+            //IWindowManager mWindowManager = (IWindowManager)this.GetSystemService(Context.WindowService);
+            
             LoadResources();
             InitView();
         }
@@ -44,7 +49,10 @@ namespace TabletArtco
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
-
+            if (data == null)
+            {
+                return;
+            }
             switch (requestCode)
             {
                 //Select Sprite callback
@@ -56,12 +64,40 @@ namespace TabletArtco
                         {
                             return;
                         }
+
+                        //RequestManager a;
+
+
+                        //Glide.With(ApplicationContext).//.Load(sprite.remotePath).
+                        //Bitmap myBitmap = Glide.With(this).AsBitmap().Load(sprite.remotePath).;
+                        //Glide.with(this).lo
+
+                        //Target target = new SimpleTarget(() =>
+                        //{
+
+                        //    void OnResourceReady(Object p0, ITransition p1) {
+
+                        //    }
+                        //});
+
+
+
+                        //Glide.With(this).Load(sprite.remotePath).Into(new SimpleTarget() => { });
+
+                        Glide.With(this).Load(sprite.remotePath).Listener(this);
+                        //IFutureTarget target = Glide.With(this).Load(sprite.remotePath).Submit();
+                        //target.Get();
+
+                        //.load(yourUrl).asBitmap().centerCrop().into(500, 500).get()
+
                         spritesList.Add(new ActivatedSprite(sprite));
-                        mSpriteIndex = spritesList.Count == 1 ? 0 : mSpriteIndex;                        
+                        mSpriteIndex = spritesList.Count-1;
                         ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
                         mSpriteAdapter.NotifyDataSetChanged();
+                        mBlockAdapter.NotifyDataSetChanged();
+                        addSpriteView();
                         break;
-                    }
+                    }  
                 case 1:
                     {
                         Bundle bundle = data.GetBundleExtra("bundle");
@@ -218,17 +254,23 @@ namespace TabletArtco
                 param.TopMargin = i / 3 * (itemW + padding) + padding + (index == 0 ? (i > 11 ? itemW / 4 : 0) : index == 1 ? (i > 8 ? itemW / 4 : 0) : 0);
                 ImageView imgIv = new ImageView(this);
                 imgIv.LayoutParameters = param;
+                imgIv.Tag = index * 1000 + i;
                 imgIv.SetImageResource(resIds[i]);
                 blockView.AddView(imgIv);
                 imgIv.Click += (t, e) =>
                 {
+                    int tag = (int)(((ImageView)t).Tag);
+                    int tabIndex = tag / 1000;
+                    int tempIndex = tag - tabIndex * 1000;
+                    //int[] resIds = tabIndex == 0 ? Block.blockTab1ResIds : tabIndex == 1 ? Block.blockTab3ResIds : tabIndex == 2 ? Block.blockTab3ResIds : Block.blockTab4ResIds;
+                    //string[] resIdStrs = tabIndex == 0 ? Block.blockTab1ResIdStrs : tabIndex == 1 ? Block.blockTab3ResIdStrs : tabIndex == 2 ? Block.blockTab3ResIdStrs : Block.blockTab4ResIdStrs;
                     Block block = new Block();
-                    block.resourceId = resIds[i];
-                    block.name = resIdStrs[i];
-                    block.tabIndex = index;
-                    block.index = i;
+                    block.resourceId = resIds[tempIndex];
+                    block.name = resIdStrs[tempIndex];
+                    block.tabIndex = tabIndex;
+                    block.index = tempIndex;
                     spritesList[mSpriteIndex].AddCode(block);
-                    
+                    mBlockAdapter.NotifyDataSetChanged();
                 };
             }
         }
@@ -265,7 +307,6 @@ namespace TabletArtco
             //int columnCount = 4;
             //mItemW = (int)((w - (columnCount + 1) * spacing * 1.0) / columnCount);
             //mItemH = (int)(mItemW * 170.0 / 250);
-
             //int width = (int)(ScreenUtil.ScreenWidth(view.Context) * 890 / 1280.0);
             int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - 10 - ScreenUtil.dip2px(this, 4));
             
@@ -274,12 +315,14 @@ namespace TabletArtco
             int column = (int)(width / itemH);
             int start = (int)((width - column * itemH) / 2.0);
 
-            GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
+            DragGridView gridView = FindViewById<DragGridView>(Resource.Id.gridview);
             gridView.SetColumnWidth(200);
             gridView.SetNumColumns(column);
             gridView.SetVerticalSpacing(margin);
             gridView.SetHorizontalSpacing(margin);
             mBlockAdapter = new GridAdapter((DataSource)this, (Delegate)this);
+            gridView.SetDragDelegate(this);
+            gridView.setWindowManager(this.WindowManager);
             gridView.Adapter = mBlockAdapter;
             
             //List<String> list = new List<String>();
@@ -299,20 +342,25 @@ namespace TabletArtco
             ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
             mSpriteAdapter = new SpriteAdapter(this, this);
             listView.Adapter = mSpriteAdapter;
-            listView.ItemClick += ListView_ItemClick;
         }
 
-        private void ListView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
-        {
-            // Enter main page
-            Intent intent = new Intent(this, typeof(EditActivity));
-            StartActivity(intent);
+        public void addSpriteView() {
+            FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
+            containerView.RemoveAllViews();
+            for (int i = 0; i < spritesList.Count; i++)
+            {
+                ActivatedSprite activatedSprite = spritesList[i];
+                ImageView imgIv = new ImageView(this);
+                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(activatedSprite.curSize.Width, activatedSprite.curSize.Height);
+                layoutParams.LeftMargin = activatedSprite.curPoint.X;
+                layoutParams.TopMargin = activatedSprite.curPoint.Y;
+                containerView.AddView(imgIv, layoutParams);
+            }
         }
-
 
         public void UpdateMainView()
         {
-
+            
         }
 
         public void startAnimation() {
@@ -323,6 +371,67 @@ namespace TabletArtco
 
         }
 
+
+        bool IRequestListener.OnLoadFailed(GlideException p0, Object p1, ITarget p2, bool p3)
+        {
+            return false;
+        }
+
+        public bool OnResourceReady(Object p0, Object p1, ITarget p2, Com.Bumptech.Glide.Load.DataSource p3, bool p4)
+        {
+            return false;
+        }
+
+        public View CreateDragView(View selectView) {
+            // get property by selectView
+            BlockViewHolder blockViewHolder = (BlockViewHolder)selectView.Tag;
+            int position = (int)blockViewHolder.contentView.Tag;
+            ActivatedSprite sprite = spritesList[mSpriteIndex];
+            List<Block> blocks = sprite.mBlocks;
+            Block block = blocks[position];
+
+            // create dragview and setpropety
+            double width = ScreenUtil.ScreenWidth(this) * 890 / 1280.0;
+            int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - 10 - ScreenUtil.dip2px(this, 4));
+            int margin = 20;
+            int itemW = (int)((GridViewH - margin) / 2.0);
+            View dragView = LayoutInflater.From(this).Inflate(Resource.Layout.item_activate_block, null, false);
+            //ViewUtil.SetViewSize(dragView, itemW, itemW);
+            //dragView.Width = itemW;
+            //dragView.Height = itemW;
+            ImageView imgIv = dragView.FindViewById<ImageView>(Resource.Id.block_img);
+            imgIv = dragView.FindViewById<ImageView>(Resource.Id.block_img);
+            Glide.With(this).Load(block.resourceId).Into(imgIv);
+            return dragView;
+        }
+
+        public void ExchangePosition(int originalPosition, int nowPosition, bool isMove)
+        {
+            ActivatedSprite sprite = spritesList[mSpriteIndex];
+            List<Block> blocks = sprite.mBlocks;
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                Android.Util.Log.Info("tag", "i:" + i + ",  name:" + blocks[i].name);
+            }
+            Block block = blocks[originalPosition];
+            blocks.RemoveAt(originalPosition);
+            blocks.Insert(nowPosition, block);
+            sprite.mBlocks = blocks;
+            Android.Util.Log.Info("tag", blocks.Count+"");
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                Android.Util.Log.Info("tag", "i:" + i + ",  name:" + blocks[i].name);
+            }
+            //mBlockAdapter.movePosition = nowPosition;
+            //mBlockAdapter.isMove = isMove;
+            mBlockAdapter.NotifyDataSetChanged();
+            //T t = list.get(originalPosition);
+            //list.remove(originalPosition);
+            //list.add(nowPosition, t);
+            //movePosition = nowPosition;
+            //this.isMove = isMove;
+            //notifyDataSetChanged();
+        }
 
         /*
          * Delegate
@@ -337,44 +446,102 @@ namespace TabletArtco
             }
             else
             {
-                return blocksList.Count;
+                if (mSpriteIndex>-1)
+                {
+                    ActivatedSprite activatedSprite = spritesList[mSpriteIndex];
+                    return activatedSprite.mBlocks.Count;
+                }
+                else
+                {
+                    return 0;
+                }
             }
         }
 
         public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
         {
-            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
-            int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
-            ViewUtil.SetViewHeight(convertView, itemW);
-            ViewHolder holder = new ViewHolder();
-            holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
-            holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
-            holder.bgIv.SetBackgroundResource(Resource.Drawable.xml_gridview_bg);
-            convertView.Tag = holder;
-            convertView.Click += (t, e) =>
+            if (adapter == mSpriteAdapter)
             {
-                ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
-                //ClickItem(position);
-            };
-            return convertView;
+                View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
+                int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
+                ViewUtil.SetViewHeight(convertView, itemW);
+                ViewHolder holder = new ViewHolder();
+                holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
+                holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
+                holder.bgIv.SetBackgroundResource(Resource.Drawable.xml_gridview_bg);
+                convertView.Tag = holder;
+                convertView.Click += (t, e) =>
+                {
+                    ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
+                    int position = (int)viewHolder.bgIv.Tag;
+                    ClickItem(position);
+                };
+                return convertView;
+            }
+            else
+            {
+                double width = ScreenUtil.ScreenWidth(this) * 890 / 1280.0;
+                int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - 10 - ScreenUtil.dip2px(this, 4));
+                int margin = 20;
+                int itemW = (int)((GridViewH - margin) / 2.0);
+                View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_activate_block, parent, false);
+                ViewUtil.SetViewSize(convertView, itemW, itemW);
+                BlockViewHolder holder = new BlockViewHolder();
+                holder.contentView = convertView.FindViewById<FrameLayout>(Resource.Id.containView);
+                holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.block_img);
+                convertView.Tag = holder;
+                return convertView;
+            }
         }
 
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
-            ActivatedSprite sprite = spritesList[position];
-            ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-            Glide.With(this).Load(sprite._sprite.remotePath).Into(viewHolder.imgIv);
+            if (adapter == mSpriteAdapter)
+            {
+                ActivatedSprite sprite = spritesList[position];
+                ViewHolder viewHolder = (ViewHolder)contentView.Tag;
+                viewHolder.bgIv.Tag = position;
+                Glide.With(this).Load(sprite._sprite.remotePath).Into(viewHolder.imgIv);
+            }
+            else
+            {
+                ActivatedSprite sprite = spritesList[mSpriteIndex];
+                List<Block> blocks = sprite.mBlocks;
+                Block block = blocks[position];
+                BlockViewHolder blockViewHolder = (BlockViewHolder)contentView.Tag;
+                blockViewHolder.contentView.Tag = position;
+                Glide.With(this).Load(block.resourceId).Into(blockViewHolder.imgIv);
+                for (int i = 0; i < blocks.Count; i++)
+                {
+                    Android.Util.Log.Info("tag", "UpdateItemView i:" + i + ",  name:" + blocks[i].name);
+                }
+            }
         }
 
         public void ClickItem(int position)
         {
-           
+            mSpriteIndex = position;
+            mBlockAdapter.NotifyDataSetChanged();
         }
+
+        public bool ClickBlockItem(int position) {
+
+            return false;
+        }
+
+        
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
         class ViewHolder : Java.Lang.Object
         {
             public ImageView bgIv;
+            public ImageView imgIv;
+        }
+
+        //定义ViewHolder内部类，用于对控件实例进行缓存
+        class BlockViewHolder : Java.Lang.Object
+        {
+            public FrameLayout contentView;
             public ImageView imgIv;
         }
     }

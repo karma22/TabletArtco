@@ -7,6 +7,10 @@ using Android.Graphics;
 namespace TabletArtco {
 
     public class GridAdapter : BaseAdapter {
+
+        public bool isMove = false;
+        public int movePosition = -1;
+
         private DataSource mDataCount;
         private Delegate mViewHandler;
 
@@ -34,6 +38,14 @@ namespace TabletArtco {
             if (convertView == null) {
                 convertView = mViewHandler.GetItemView(this, parent);
             }
+            //if (position == movePosition && isMove)
+            //{
+            //    convertView.Visibility = ViewStates.Invisible;
+            //}
+            //else
+            //{
+            //    convertView.Visibility = ViewStates.Visible;
+            //}
             mViewHandler.UpdateItemView(this, convertView, position);
             return convertView;
         }
