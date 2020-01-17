@@ -96,20 +96,24 @@ namespace TabletArtco
                 return;
             }
 
-            //// If verification is passed，to sign in;
-            //if (!DBManager.CheckLogin(account, pwd))
-            //{
-            //    Toast.MakeText(this, "登录失败", ToastLength.Short).Show();
-            //    return;
-            //}
+            // If verification is passed，to sign in;
+            if (DBManager.CheckLogin(account, pwd))
+            {
+                Toast.MakeText(this, "登录失败", ToastLength.Short).Show();
+                return;
+            }
 
             //if password is remembered, write userinfo to sharedPreference
             Boolean isRem = SharedPres.GetBoolean("isremember", false);
             if (isRem)
             {
                 Editor.PutString("username", account).Commit();
-                Editor.PutString("password", account).Commit();
+                Editor.PutString("password", pwd).Commit();
             }
+
+            //new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
+            GlideUtil.username = account;
+            GlideUtil.pwd = pwd;
 
             // Enter main page
             Intent intent = new Intent(this, typeof(MainActivity));

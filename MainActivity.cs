@@ -7,26 +7,25 @@ using System.Collections.Generic;
 using Android.Content;
 using Android.Views;
 using Com.Bumptech.Glide;
-using Com.Bumptech.Glide.Request;
-using Android.Graphics;
 using Java.Lang;
-using Com.Bumptech.Glide.Load.Engine;
-using Com.Bumptech.Glide.Request.Target;
-using Com.Bumptech.Glide.Load;
+using Android.Graphics;
 
 namespace TabletArtco
 {
     [Activity(Theme = "@style/AppTheme")]
-    public class MainActivity : AppCompatActivity, Delegate, DataSource, DragDelegate, IRequestListener
+    public class MainActivity : AppCompatActivity, Delegate, DataSource, UpdateDelegate, View.IOnDragListener
     {
-
-        private List<ActivatedSprite> spritesList = SpriteManager.sprites;
+        private static string Tag = "MainActivity";
+        private List<ActivatedSprite> spritesList = Project.mSprites;
         //private List<Block> blocksList = new List<Block>();
         private Background mBackground = null;
         private List<ImageView> imgList = new List<ImageView>();
         private SpriteAdapter mSpriteAdapter;
         private GridAdapter mBlockAdapter;
         private int mSpriteIndex = -1;
+        private bool isPlay;
+        private MediaManager mediaManager;
+        private bool activateBlockScale = false;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -40,12 +39,20 @@ namespace TabletArtco
             LoadResources();
             InitView();
         }
+
+        protected override void OnPause()
+        {
+            base.OnPause();
+            mediaManager.Stop();
+        }
+
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
+        [System.Obsolete]
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
@@ -65,37 +72,19 @@ namespace TabletArtco
                             return;
                         }
 
-                        //RequestManager a;
-
-
-                        //Glide.With(ApplicationContext).//.Load(sprite.remotePath).
-                        //Bitmap myBitmap = Glide.With(this).AsBitmap().Load(sprite.remotePath).;
-                        //Glide.with(this).lo
-
-                        //Target target = new SimpleTarget(() =>
-                        //{
-
-                        //    void OnResourceReady(Object p0, ITransition p1) {
-
-                        //    }
-                        //});
-
-
-
-                        //Glide.With(this).Load(sprite.remotePath).Into(new SimpleTarget() => { });
-
-                        Glide.With(this).Load(sprite.remotePath).Listener(this);
-                        //IFutureTarget target = Glide.With(this).Load(sprite.remotePath).Submit();
-                        //target.Get();
-
-                        //.load(yourUrl).asBitmap().centerCrop().into(500, 500).get()
-
-                        spritesList.Add(new ActivatedSprite(sprite));
-                        mSpriteIndex = spritesList.Count-1;
-                        ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
-                        mSpriteAdapter.NotifyDataSetChanged();
-                        mBlockAdapter.NotifyDataSetChanged();
-                        addSpriteView();
+                        new Thread(new Runnable(() =>
+                        {
+                            Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
+                            sprite.bitmap = bitmap;
+                            RunOnUiThread(() => {
+                                Project.AddSprite(sprite);
+                                mSpriteIndex = spritesList.Count - 1;
+                                ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
+                                mSpriteAdapter.NotifyDataSetChanged();
+                                UpdateBlockView();
+                                addSpriteView();
+                            });
+                        })).Start();
                         break;
                     }  
                 case 1:
@@ -107,6 +96,7 @@ namespace TabletArtco
                             return;
                         }
                         mBackground = background;
+                        mediaManager.SetPath(mBackground.remoteVideoPath);
                         break;
                     }
                 case 2:
@@ -124,10 +114,16 @@ namespace TabletArtco
                         }
                         break;
                     }
+                case 10:
+                    {
+
+                        break;
+                    }
                 default:
                     break;
             }
         }
+
 
         public void LoadResources()
         {
@@ -241,8 +237,8 @@ namespace TabletArtco
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.left_blocks_view);
             blockView.RemoveAllViews();
             
-            int[] resIds = index == 0 ? Block.blockTab1ResIds : index == 1 ? Block.blockTab3ResIds : index == 2 ? Block.blockTab3ResIds : Block.blockTab4ResIds;
-            string[] resIdStrs = index == 0 ? Block.blockTab1ResIdStrs : index == 1 ? Block.blockTab3ResIdStrs : index == 2 ? Block.blockTab3ResIdStrs : Block.blockTab4ResIdStrs;
+            int[] resIds = index == 0 ? Block.blockTab1ResIds : index == 1 ? Block.blockTab2ResIds : index == 2 ? Block.blockTab3ResIds : Block.blockTab4ResIds;
+            string[] resIdStrs = index == 0 ? Block.blockTab1ResIdStrs : index == 1 ? Block.blockTab2ResIdStrs : index == 2 ? Block.blockTab3ResIdStrs : Block.blockTab4ResIdStrs;
             int margin = 12;
             int padding = 4;
             double rowWidth = ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2);
@@ -259,6 +255,10 @@ namespace TabletArtco
                 blockView.AddView(imgIv);
                 imgIv.Click += (t, e) =>
                 {
+                    if (mSpriteIndex<0 || mSpriteIndex>=spritesList.Count)
+                    {
+                        return;
+                    }
                     int tag = (int)(((ImageView)t).Tag);
                     int tabIndex = tag / 1000;
                     int tempIndex = tag - tabIndex * 1000;
@@ -269,8 +269,9 @@ namespace TabletArtco
                     block.name = resIdStrs[tempIndex];
                     block.tabIndex = tabIndex;
                     block.index = tempIndex;
-                    spritesList[mSpriteIndex].AddCode(block);
-                    mBlockAdapter.NotifyDataSetChanged();
+                    spritesList[mSpriteIndex].AddBlock(block);
+                    UpdateBlockView();
+                    //mBlockAdapter.NotifyDataSetChanged();
                 };
             }
         }
@@ -283,7 +284,8 @@ namespace TabletArtco
             double width = ScreenUtil.ScreenWidth(this) * 890 / 1280.0;
             double height = ScreenUtil.ScreenHeight(this) * 545 / 800.0;
             int paddingL = (int)(18 / 913.0 * width);
-            mainView.SetPadding(paddingL, (int)(19 / 549.0 * height), paddingL, 0);
+            int paddingB = (int)(19 / 549.0 * height);
+            mainView.SetPadding(paddingL, paddingB, paddingL, 0);
             ViewUtil.SetViewHeight(mainView, (int)height);
             ViewUtil.SetViewHeight(centerView, (int)(481 / 549.0 * height));
             int[] btsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
@@ -292,49 +294,104 @@ namespace TabletArtco
             {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
                 ViewUtil.SetViewSize(imgBt, itemW, itemW);
+                imgBt.Tag = i;
                 imgBt.Click += (t, e) =>
                 {
+                    int tag = (int)((ImageView)t).Tag;
+                    switch (tag)
+                    {
+                        case 0:
+                            {
 
+                                break;
+                            }
+                        case 1:
+                            {
+                                Android.Util.Log.Info(Tag, "Click play animation start");
+                                if (isPlay)
+                                {
+                                    return;
+                                }
+                                isPlay = true;
+                                Project.RunSprite();
+
+                                //CrossMediaManager.Current.Play("https://672-3.vod.tv.itc.cn/sohu/v1/TmwGoKIsWBeHgB67yEW4gmdbW6c48KPLghAXeBvFhJXUyYbSoO27fSx.mp4?k=FtJelY&p=j9lvzSw3qm1UqpxUoLPUqSXiqpxmqpsdhRYRzSPWXZxIWhoGgY220Go70ScAZMx4gf&r=TUldziJCtpCmhWB3tSCGhWlvsmCUqmPWtWaizY&q=OpCBhW7IRYodRDvswmfCyY2sWhyHfhyt5G64fJXsWYeS0F2OfGWsWYdsZYoURDvsfp", MediaFileType.Video);
+                                mediaManager.Play();
+                                break;
+                            }
+                        case 2:
+                            {
+                                Android.Util.Log.Info(Tag, "Click play animation stop");
+                                if (!isPlay)
+                                {
+                                    return;
+                                }
+                                isPlay = false;
+                                Project.StopSprite();
+                                mediaManager.Stop();
+                                break;
+                            }
+                        case 3:
+                            {
+
+                                break;
+                            }
+                        default:
+                            break;
+                    }
                 };
             }
 
+            ActivatedSprite.notFullSize = new Android.Util.Size((int)width-paddingL*2, (int)(481 / 549.0 * height));
+            ActivatedSprite.fullSize = new Android.Util.Size(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this));
+            ActivatedSprite.mUpdateDelegate = this;
             //videoView
+            //surfaceView
+            
+            SurfaceView surfaceView = FindViewById<SurfaceView>(Resource.Id.surfaceView);
+            mediaManager = new MediaManager(surfaceView);
+
+            //Stream input = Assets.Open("Stage_Default.mp4");
+            //Java.IO.InputStream input = (Java.IO.InputStream)Assets.Open("Stage_Default.mp4");
+
+            //InputStream inputStream;
+            //LogUtil.CustomLog(Assets.OpenFd("Stage_Default.mp4").ToString());
+            //File file = Resources.Assets.Open();
+            //Resource.
+            //Resources.OpenRawResource
+            //mediaManager.SetPath();
             //ContainerView
 
-            RelativeLayout activate_block_view = FindViewById<RelativeLayout>(Resource.Id.activate_block_view);
-            ViewUtil.SetViewHeight(activate_block_view, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0));
+            RelativeLayout activate_block_wrapperview = FindViewById<RelativeLayout>(Resource.Id.activate_block_wrapperview);
+            ScrollView activate_block_view = FindViewById<ScrollView>(Resource.Id.activate_block_view);
+            ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0-ScreenUtil.dip2px(this, 8)));
 
-            //int columnCount = 4;
-            //mItemW = (int)((w - (columnCount + 1) * spacing * 1.0) / columnCount);
-            //mItemH = (int)(mItemW * 170.0 / 250);
-            //int width = (int)(ScreenUtil.ScreenWidth(view.Context) * 890 / 1280.0);
-            int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - 10 - ScreenUtil.dip2px(this, 4));
-            
-            int margin = 20;
-            int itemH = (int)((GridViewH - margin) / 2.0);
-            int column = (int)(width / itemH);
-            int start = (int)((width - column * itemH) / 2.0);
+            FindViewById<ImageView>(Resource.Id.bt_scale).Click += (t, e) =>
+            {
+                activateBlockScale = !activateBlockScale;
+                if (activateBlockScale)
+                {
+                    ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 * 3 / 800.0 ));
+                    activate_block_wrapperview.SetBackgroundResource(Resource.Drawable.BlockGlass_large);
+                }
+                else
+                {
+                    ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - ScreenUtil.dip2px(this, 8)));
+                    activate_block_wrapperview.SetBackgroundResource(Resource.Drawable.BlockGlass_small);
+                }
+            };
 
-            DragGridView gridView = FindViewById<DragGridView>(Resource.Id.gridview);
-            gridView.SetColumnWidth(200);
-            gridView.SetNumColumns(column);
-            gridView.SetVerticalSpacing(margin);
-            gridView.SetHorizontalSpacing(margin);
-            mBlockAdapter = new GridAdapter((DataSource)this, (Delegate)this);
-            gridView.SetDragDelegate(this);
-            gridView.setWindowManager(this.WindowManager);
-            gridView.Adapter = mBlockAdapter;
-            
-            //List<String> list = new List<String>();
-            //list.Add("ff");
-            //list.Add("ff");
-            //BlockAdapter adapter = new BlockAdapter(this, list);
-            //ViewPager viewPager = FindViewById<ViewPager>(Resource.Id.viewpager);
-            //ViewUtil.SetViewWidth(viewPager, (int)width);
-            //viewPager.Adapter = adapter;
+            FindViewById<ImageView>(Resource.Id.bt_clear_block).Click += (t, e) =>
+            {
+                if (mSpriteIndex > -1)
+                {
+                    ActivatedSprite activatedSprite = spritesList[mSpriteIndex];
+                    activatedSprite.ClearCode();
+                    UpdateBlockView();
+                }
+            };
         }
 
-       
         // Right sprite list
         public void InitSpriteListView()
         {
@@ -347,6 +404,7 @@ namespace TabletArtco
         public void addSpriteView() {
             FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
             containerView.RemoveAllViews();
+            imgList.RemoveRange(0, imgList.Count);
             for (int i = 0; i < spritesList.Count; i++)
             {
                 ActivatedSprite activatedSprite = spritesList[i];
@@ -355,12 +413,71 @@ namespace TabletArtco
                 layoutParams.LeftMargin = activatedSprite.curPoint.X;
                 layoutParams.TopMargin = activatedSprite.curPoint.Y;
                 containerView.AddView(imgIv, layoutParams);
+                imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
+                imgList.Add(imgIv);
+                imgIv.SetOnDragListener(this);
             }
         }
 
         public void UpdateMainView()
         {
-            
+            FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
+            for (int i = 0; i < imgList.Count; i++)
+            {
+                ActivatedSprite activatedSprite = spritesList[i];
+                ImageView imgIv = imgList[i];
+                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)imgIv.LayoutParameters;
+                layoutParams.LeftMargin = activatedSprite.curPoint.X;
+                layoutParams.TopMargin = activatedSprite.curPoint.Y;
+                layoutParams.Width = activatedSprite.curSize.Width;
+                layoutParams.Height = activatedSprite.curSize.Height;
+                imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
+                imgIv.Visibility = activatedSprite.isVisible ? ViewStates.Visible : ViewStates.Invisible;
+                containerView.UpdateViewLayout(imgIv, layoutParams);
+            }
+            LogUtil.CustomLog("UpdateMainView");
+        }
+
+        public void UpdateBlockView() {
+            FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.block_view);
+            int width = (int)(ScreenUtil.ScreenWidth(this) * 890 / 1280.0) - ScreenUtil.dip2px(this, 30);
+            int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - ScreenUtil.dip2px(this, 28));
+            int margin = 10;
+            int itemW = (int)((GridViewH - margin) / 2.0);
+            int padding = 10;
+            int column = (width - padding * 2) / (itemW + margin);
+            padding = (width - column * itemW - (column - 1) * margin)/2;
+            if (mSpriteIndex > -1)
+            {
+                blockView.RemoveAllViews();
+                ActivatedSprite activatedSprite = spritesList[mSpriteIndex];
+                List<List<Block>> blockList = activatedSprite.mBlocks;
+
+                int originY = 0;
+                for (int i = 0; i < blockList.Count; i++)
+                {
+                    List<Block> list = blockList[i];
+                    for (int j = 0; j < list.Count; j++)
+                    {
+                        originY += (j > 0 && j % column == 0) ? itemW + margin : 0;
+                        Block block = list[j];
+                        FrameLayout view = new FrameLayout(this);
+                        view.SetBackgroundResource(block.resourceId);
+                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(itemW, itemW);
+                        layoutParams.LeftMargin = padding + (itemW+margin)*(j%column);
+                        layoutParams.TopMargin = originY;
+                        blockView.AddView(view, layoutParams);
+
+                        view.Click += (t, e) =>
+                        {
+
+                            DialogView dialogView = new DialogView(this, DialogStyle.Signal);
+                            dialogView.Show();
+                        };
+                    }
+                    originY += itemW + margin;
+                }
+            }
         }
 
         public void startAnimation() {
@@ -368,180 +485,92 @@ namespace TabletArtco
         }
 
         public void stopAnimation() {
-
-        }
-
-
-        bool IRequestListener.OnLoadFailed(GlideException p0, Object p1, ITarget p2, bool p3)
-        {
-            return false;
-        }
-
-        public bool OnResourceReady(Object p0, Object p1, ITarget p2, Com.Bumptech.Glide.Load.DataSource p3, bool p4)
-        {
-            return false;
-        }
-
-        public View CreateDragView(View selectView) {
-            // get property by selectView
-            BlockViewHolder blockViewHolder = (BlockViewHolder)selectView.Tag;
-            int position = (int)blockViewHolder.contentView.Tag;
-            ActivatedSprite sprite = spritesList[mSpriteIndex];
-            List<Block> blocks = sprite.mBlocks;
-            Block block = blocks[position];
-
-            // create dragview and setpropety
-            double width = ScreenUtil.ScreenWidth(this) * 890 / 1280.0;
-            int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - 10 - ScreenUtil.dip2px(this, 4));
-            int margin = 20;
-            int itemW = (int)((GridViewH - margin) / 2.0);
-            View dragView = LayoutInflater.From(this).Inflate(Resource.Layout.item_activate_block, null, false);
-            //ViewUtil.SetViewSize(dragView, itemW, itemW);
-            //dragView.Width = itemW;
-            //dragView.Height = itemW;
-            ImageView imgIv = dragView.FindViewById<ImageView>(Resource.Id.block_img);
-            imgIv = dragView.FindViewById<ImageView>(Resource.Id.block_img);
-            Glide.With(this).Load(block.resourceId).Into(imgIv);
-            return dragView;
-        }
-
-        public void ExchangePosition(int originalPosition, int nowPosition, bool isMove)
-        {
-            ActivatedSprite sprite = spritesList[mSpriteIndex];
-            List<Block> blocks = sprite.mBlocks;
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                Android.Util.Log.Info("tag", "i:" + i + ",  name:" + blocks[i].name);
-            }
-            Block block = blocks[originalPosition];
-            blocks.RemoveAt(originalPosition);
-            blocks.Insert(nowPosition, block);
-            sprite.mBlocks = blocks;
-            Android.Util.Log.Info("tag", blocks.Count+"");
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                Android.Util.Log.Info("tag", "i:" + i + ",  name:" + blocks[i].name);
-            }
-            //mBlockAdapter.movePosition = nowPosition;
-            //mBlockAdapter.isMove = isMove;
-            mBlockAdapter.NotifyDataSetChanged();
-            //T t = list.get(originalPosition);
-            //list.remove(originalPosition);
-            //list.add(nowPosition, t);
-            //movePosition = nowPosition;
-            //this.isMove = isMove;
-            //notifyDataSetChanged();
+            
         }
 
         /*
-         * Delegate
-         * DataSource 
-         * interface
+         * ActivateSprite interface
+         */
+        public void UpdateView() {
+            RunOnUiThread(() => {
+                UpdateMainView();
+            });
+        }
+
+        /*
+         *
+         * OnDrag interface
+         * 
+         */
+        bool View.IOnDragListener.OnDrag(View v, DragEvent e)
+        {
+            LogUtil.CustomLog(e.ToString());
+            return true;
+        }
+
+        /*
+         * 
+         * Delegate and DataSource interface 
+         * 
         */
         public int GetItemsCount(Java.Lang.Object adapter)
         {
-            if (adapter == mSpriteAdapter)
-            {
-                return spritesList.Count;
-            }
-            else
-            {
-                if (mSpriteIndex>-1)
-                {
-                    ActivatedSprite activatedSprite = spritesList[mSpriteIndex];
-                    return activatedSprite.mBlocks.Count;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
+            return spritesList.Count;
         }
 
         public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
         {
-            if (adapter == mSpriteAdapter)
+            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
+            int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
+            ViewUtil.SetViewHeight(convertView, itemW);
+            ViewHolder holder = new ViewHolder();
+            holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
+            holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
+            holder.bgIv.SetBackgroundResource(Resource.Drawable.xml_gridview_bg);
+            convertView.Tag = holder;
+            convertView.Click += (t, e) =>
             {
-                View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
-                int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
-                ViewUtil.SetViewHeight(convertView, itemW);
-                ViewHolder holder = new ViewHolder();
-                holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
-                holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
-                holder.bgIv.SetBackgroundResource(Resource.Drawable.xml_gridview_bg);
-                convertView.Tag = holder;
-                convertView.Click += (t, e) =>
-                {
-                    ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
-                    int position = (int)viewHolder.bgIv.Tag;
-                    ClickItem(position);
-                };
-                return convertView;
-            }
-            else
+                ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
+                int position = (int)viewHolder.bgIv.Tag;
+                ClickItem(position);
+            };
+            convertView.LongClick += (t, e) =>
             {
-                double width = ScreenUtil.ScreenWidth(this) * 890 / 1280.0;
-                int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - 10 - ScreenUtil.dip2px(this, 4));
-                int margin = 20;
-                int itemW = (int)((GridViewH - margin) / 2.0);
-                View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_activate_block, parent, false);
-                ViewUtil.SetViewSize(convertView, itemW, itemW);
-                BlockViewHolder holder = new BlockViewHolder();
-                holder.contentView = convertView.FindViewById<FrameLayout>(Resource.Id.containView);
-                holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.block_img);
-                convertView.Tag = holder;
-                return convertView;
-            }
+                ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
+                int position = (int)viewHolder.bgIv.Tag;
+                LongClickItem(position);
+            };
+            return convertView;
         }
 
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
-            if (adapter == mSpriteAdapter)
-            {
-                ActivatedSprite sprite = spritesList[position];
-                ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-                viewHolder.bgIv.Tag = position;
-                Glide.With(this).Load(sprite._sprite.remotePath).Into(viewHolder.imgIv);
-            }
-            else
-            {
-                ActivatedSprite sprite = spritesList[mSpriteIndex];
-                List<Block> blocks = sprite.mBlocks;
-                Block block = blocks[position];
-                BlockViewHolder blockViewHolder = (BlockViewHolder)contentView.Tag;
-                blockViewHolder.contentView.Tag = position;
-                Glide.With(this).Load(block.resourceId).Into(blockViewHolder.imgIv);
-                for (int i = 0; i < blocks.Count; i++)
-                {
-                    Android.Util.Log.Info("tag", "UpdateItemView i:" + i + ",  name:" + blocks[i].name);
-                }
-            }
+            ActivatedSprite sprite = spritesList[position];
+            ViewHolder viewHolder = (ViewHolder)contentView.Tag;
+            viewHolder.bgIv.Tag = position;
+            Glide.With(this).Load(GlideUtil.GetGlideUrl(sprite.sprite.remotePath)).Into(viewHolder.imgIv);
         }
 
         public void ClickItem(int position)
         {
             mSpriteIndex = position;
-            mBlockAdapter.NotifyDataSetChanged();
+            UpdateBlockView();
         }
 
-        public bool ClickBlockItem(int position) {
-
-            return false;
+        public void LongClickItem(int position)
+        {
+            mSpriteIndex = position;
+            Intent intent = new Intent(this, typeof(EditActivity));
+            Bundle bundle = new Bundle();
+            bundle.PutInt("position", position);
+            intent.PutExtra("bundle", bundle);
+            StartActivityForResult(intent, 10, null);
         }
-
-        
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
         class ViewHolder : Java.Lang.Object
         {
             public ImageView bgIv;
-            public ImageView imgIv;
-        }
-
-        //定义ViewHolder内部类，用于对控件实例进行缓存
-        class BlockViewHolder : Java.Lang.Object
-        {
-            public FrameLayout contentView;
             public ImageView imgIv;
         }
     }

@@ -8,6 +8,8 @@ using Android.Views;
 using Android.Widget;
 using Com.Bumptech.Glide;
 using Android.Content;
+using Com.Bumptech.Glide.Load.Model;
+using Java.Net;
 
 namespace TabletArtco
 {
@@ -156,7 +158,8 @@ namespace TabletArtco
             List<Sprite> list = sprites[mIndex];
             Sprite sprite = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-            Glide.With(this).Load(sprite.remotePath).Into(viewHolder.imgIv);
+
+            Glide.With(this).Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(viewHolder.imgIv);
             viewHolder.txtTv.Text = sprite.name;
             viewHolder.txtTv.Tag = position;
         }

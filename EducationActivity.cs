@@ -153,7 +153,7 @@ namespace TabletArtco
             Background background = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             Android.Util.Log.Info("background", background.remotePreviewImgPath+"");
-            Glide.With(this).Load(background.remotePreviewImgPath).Into(viewHolder.imgIv);
+            Glide.With(this).Load(GlideUtil.GetGlideUrl(background.remotePreviewImgPath)).Into(viewHolder.imgIv);
             viewHolder.txtTv.Text = background.name;
             viewHolder.txtTv.Tag = position;
         }

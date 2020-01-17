@@ -7,13 +7,17 @@ using Android.Widget;
 using Android.Graphics;
 using Com.Bumptech.Glide;
 using System.Collections.Generic;
+using Android.Content;
+using Android.Util;
 
 namespace TabletArtco
 {
     [Activity(Label = "EditActivity")]
     public class EditActivity : Activity, Delegate, DataSource
     {
-        private List<Sprite> spritesList = new List<Sprite>();
+        private List<Bitmap> originList = new List<Bitmap>();
+        private List<Bitmap> operateList = new List<Bitmap>();
+        private int mIndex = -1;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -22,7 +26,29 @@ namespace TabletArtco
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_edit);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
+            initData();
             InitView();
+        }
+
+        private void initData() {
+            Intent intent = this.Intent;
+            Bundle bundle = intent.GetBundleExtra("bundle");
+            int position = bundle.GetInt("position");
+            if (position<Project.mSprites.Count)
+            {
+                ActivatedSprite sprite = Project.mSprites[position];
+                for (int i = 0; i < sprite.originBitmapList.Count; i++)
+                {
+                    Bitmap bitmap = Bitmap.CreateBitmap(sprite.originBitmapList[i]);
+                    originList.Add(bitmap);
+                    operateList.Add(Bitmap.CreateBitmap(bitmap));
+                }
+                if (sprite.originBitmapList.Count>0)
+                {
+                    mIndex = 0;
+                }
+            }
+               
         }
 
         private void InitView()
@@ -215,7 +241,7 @@ namespace TabletArtco
         */
         public int GetItemsCount(Java.Lang.Object adapter)
         {
-            return spritesList.Count;
+            return operateList.Count;
         }
 
         public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
@@ -249,9 +275,10 @@ namespace TabletArtco
             //    return;
             //}
             //List<Sprite> list = sprites[mIndex];
-            Sprite sprite = spritesList[position];
+            Bitmap bitmap = operateList[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-            Glide.With(this).Load(sprite.remotePath).Into(viewHolder.imgIv);
+            viewHolder.imgIv.SetImageBitmap(bitmap);
+            //Glide.With(this).Load(sprite.remotePath).Into(viewHolder.imgIv);
             //viewHolder.txtTv.Text = sprite.name;
             //viewHolder.txtTv.Tag = position;
         }
@@ -280,5 +307,37 @@ namespace TabletArtco
             public ImageView bgIv;
             public ImageView imgIv;
         }
+    }
+
+    public class JPImageView : ImageView {
+        private Context mContext;
+
+        public JPImageView(Context context) : base(context)
+        {
+            Initialize(context);
+        }
+
+        public JPImageView(Context context, IAttributeSet attrs) : base(context, attrs)
+        {
+            Initialize(context);
+        }
+
+        public JPImageView(Context context, IAttributeSet attrs, int defStyle) : base(context, attrs, defStyle)
+        {
+            Initialize(context);
+        }
+
+        private void Initialize(Context context) {
+            mContext = context;
+        }
+
+        public override void Draw(Canvas canvas)
+        {
+            base.Draw(canvas);
+
+        }
+
+
+
     }
 }
