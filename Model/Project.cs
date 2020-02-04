@@ -13,7 +13,9 @@ namespace TabletArtco
     {
         public static List<Background> backgroundsList { get; set; } = new List<Background>();
         public static List<ActivatedSprite> mSprites { get; set; } = new List<ActivatedSprite>();
-
+        public static Dictionary<string, string> variableMap = new Dictionary<string, string>();
+        public static Dictionary<string, string> curVariableMap = new Dictionary<string, string>();
+        public static List<string> signalList = new List<string>();
 
         public static bool isMove { get; set; }
         public static int curSpriteNum { get; set; } = -1;

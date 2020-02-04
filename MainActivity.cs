@@ -129,6 +129,7 @@ namespace TabletArtco
         {
             DBManager.LoadSprites();
             DBManager.LoadBackgrounds();
+            DBManager.LoadSounds();
         }
 
         public void InitView()
@@ -237,8 +238,8 @@ namespace TabletArtco
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.left_blocks_view);
             blockView.RemoveAllViews();
             
-            int[] resIds = index == 0 ? Block.blockTab1ResIds : index == 1 ? Block.blockTab2ResIds : index == 2 ? Block.blockTab3ResIds : Block.blockTab4ResIds;
-            string[] resIdStrs = index == 0 ? Block.blockTab1ResIdStrs : index == 1 ? Block.blockTab2ResIdStrs : index == 2 ? Block.blockTab3ResIdStrs : Block.blockTab4ResIdStrs;
+            int[] resIds = index == 0 ? Block.blockTab0ResIds : index == 1 ? Block.blockTab1ResIds : index == 2 ? Block.blockTab2ResIds : Block.blockTab3ResIds;
+            string[] resIdStrs = index == 0 ? Block.blockTab0ResIdStrs : index == 1 ? Block.blockTab1ResIdStrs : index == 2 ? Block.blockTab2ResIdStrs : Block.blockTab3ResIdStrs;
             int margin = 12;
             int padding = 4;
             double rowWidth = ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2);
@@ -247,7 +248,7 @@ namespace TabletArtco
             {
                 FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(itemW, itemW);
                 param.LeftMargin = i % 3 * (itemW + padding) + margin;
-                param.TopMargin = i / 3 * (itemW + padding) + padding + (index == 0 ? (i > 11 ? itemW / 4 : 0) : index == 1 ? (i > 8 ? itemW / 4 : 0) : 0);
+                param.TopMargin = i / 3 * (itemW + padding) + padding;
                 ImageView imgIv = new ImageView(this);
                 imgIv.LayoutParameters = param;
                 imgIv.Tag = index * 1000 + i;
@@ -259,11 +260,14 @@ namespace TabletArtco
                     {
                         return;
                     }
+                    
                     int tag = (int)(((ImageView)t).Tag);
                     int tabIndex = tag / 1000;
                     int tempIndex = tag - tabIndex * 1000;
-                    //int[] resIds = tabIndex == 0 ? Block.blockTab1ResIds : tabIndex == 1 ? Block.blockTab3ResIds : tabIndex == 2 ? Block.blockTab3ResIds : Block.blockTab4ResIds;
-                    //string[] resIdStrs = tabIndex == 0 ? Block.blockTab1ResIdStrs : tabIndex == 1 ? Block.blockTab3ResIdStrs : tabIndex == 2 ? Block.blockTab3ResIdStrs : Block.blockTab4ResIdStrs;
+                    if (resIdStrs[tempIndex] == "MoveEmpty")
+                    {
+                        return;
+                    }
                     Block block = new Block();
                     block.resourceId = resIds[tempIndex];
                     block.name = resIdStrs[tempIndex];
@@ -351,17 +355,6 @@ namespace TabletArtco
             SurfaceView surfaceView = FindViewById<SurfaceView>(Resource.Id.surfaceView);
             mediaManager = new MediaManager(surfaceView);
 
-            //Stream input = Assets.Open("Stage_Default.mp4");
-            //Java.IO.InputStream input = (Java.IO.InputStream)Assets.Open("Stage_Default.mp4");
-
-            //InputStream inputStream;
-            //LogUtil.CustomLog(Assets.OpenFd("Stage_Default.mp4").ToString());
-            //File file = Resources.Assets.Open();
-            //Resource.
-            //Resources.OpenRawResource
-            //mediaManager.SetPath();
-            //ContainerView
-
             RelativeLayout activate_block_wrapperview = FindViewById<RelativeLayout>(Resource.Id.activate_block_wrapperview);
             ScrollView activate_block_view = FindViewById<ScrollView>(Resource.Id.activate_block_view);
             ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0-ScreenUtil.dip2px(this, 8)));
@@ -379,6 +372,14 @@ namespace TabletArtco
                     ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - ScreenUtil.dip2px(this, 8)));
                     activate_block_wrapperview.SetBackgroundResource(Resource.Drawable.BlockGlass_small);
                 }
+            };
+
+            FindViewById<ImageView>(Resource.Id.bt_add).Click += (t, e) =>
+            {
+                VariableInitDialog dialog = new VariableInitDialog(this, (name, value)=> {
+                    Project.variableMap[name] = value;
+                });
+                dialog.Show();
             };
 
             FindViewById<ImageView>(Resource.Id.bt_clear_block).Click += (t, e) =>
@@ -435,7 +436,6 @@ namespace TabletArtco
                 imgIv.Visibility = activatedSprite.isVisible ? ViewStates.Visible : ViewStates.Invisible;
                 containerView.UpdateViewLayout(imgIv, layoutParams);
             }
-            LogUtil.CustomLog("UpdateMainView");
         }
 
         public void UpdateBlockView() {
@@ -447,6 +447,7 @@ namespace TabletArtco
             int padding = 10;
             int column = (width - padding * 2) / (itemW + margin);
             padding = (width - column * itemW - (column - 1) * margin)/2;
+            column = column - 1;
             if (mSpriteIndex > -1)
             {
                 blockView.RemoveAllViews();
@@ -457,6 +458,16 @@ namespace TabletArtco
                 for (int i = 0; i < blockList.Count; i++)
                 {
                     List<Block> list = blockList[i];
+                    if (activatedSprite.curRow == i) 
+                    {
+                        ImageView view = new ImageView(this);
+                        view.SetImageResource(Resource.Drawable.Revision_line);
+                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(itemW, itemW);
+                        layoutParams.LeftMargin =  padding;
+                        layoutParams.TopMargin = originY;
+                        blockView.AddView(view, layoutParams);
+                    }
+
                     for (int j = 0; j < list.Count; j++)
                     {
                         originY += (j > 0 && j % column == 0) ? itemW + margin : 0;
@@ -464,16 +475,153 @@ namespace TabletArtco
                         FrameLayout view = new FrameLayout(this);
                         view.SetBackgroundResource(block.resourceId);
                         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(itemW, itemW);
-                        layoutParams.LeftMargin = padding + (itemW+margin)*(j%column);
+                        layoutParams.LeftMargin = itemW + padding+margin + (itemW+margin)*(j%column);
                         layoutParams.TopMargin = originY;
                         blockView.AddView(view, layoutParams);
-
-                        view.Click += (t, e) =>
+                        List<Dictionary<string, string>> locationList = Block.TextViewLocations(block);
+                        if (locationList != null && locationList.Count>0)
                         {
+                            for (int k = 0; k < locationList.Count; k++)
+                            {
+                                Dictionary<string, string> dic = locationList[k];
+                                float x = float.Parse(dic["x"]) * itemW;
+                                float y = float.Parse(dic["y"]) * itemW;
+                                float w = float.Parse(dic["w"]) * itemW;
+                                float h = float.Parse(dic["h"]) * itemW;
+                                TextView tv = new TextView(this);
+                                FrameLayout.LayoutParams tvparams = new FrameLayout.LayoutParams((int)w,(int)h);
+                                tvparams.LeftMargin = (int)x;
+                                tvparams.TopMargin = (int)y;
+                                tv.Text = dic["text"];
+                                tv.TextSize = h;
+                                view.AddView(tv, tvparams);
+                            }
+                        }
+                        int clickType = Block.GetClickType(block);
+                        if (clickType != -1)
+                        {
+                            view.Click += (t, e) =>
+                            {
+                                if (clickType == 3 || clickType == 5 || clickType == 6 || clickType == 10)
+                                {
+                                    activatedSprite.curRow = block.row;
+                                    UpdateBlockView();
+                                }
+                                switch (clickType) {
+                                    case 0:
+                                        {
+                                            List<string> varlist = new List<string>();
+                                            foreach (string name in Project.variableMap.Keys)
+                                            {
+                                                varlist.Add(name);
+                                            }
+                                            VariableSelectDialog dialog = new VariableSelectDialog(this, (selectIndex, text)=> {
+                                                if (selectIndex != -1)
+                                                {
+                                                    block.varName = varlist[selectIndex];
+                                                }
+                                                else
+                                                {
+                                                    block.text = text;
+                                                }
+                                                UpdateBlockView();
+                                            });
+                                            dialog.mList = varlist;
+                                            dialog.Show();
+                                            break;
+                                        }
+                                    case 1:
+                                    case 2:
+                                        {
+                                            if (Project.variableMap.Count<=0)
+                                            {
+                                                ToastUtil.ShowToast(this, "你还没有添加变量");
+                                                return;
+                                            }
+                                            List<string> varlist = new List<string>();
+                                            foreach (string name in Project.variableMap.Keys)
+                                            {
+                                                varlist.Add(name);
+                                            }
+                                            VariableChangeDialog dialog = new VariableChangeDialog(this, clickType>1, (selectIndex, value) =>
+                                            {
+                                                block.varName = varlist[selectIndex];
+                                                block.varValue = value;
+                                                UpdateBlockView();
+                                            });
+                                            dialog.mList = varlist;
+                                            dialog.Show();
+                                            break;
+                                        }
+                                    case 3:
+                                    case 4:
+                                        {
+                                            SignalDialog dialog = new SignalDialog(this, (text) => {
+                                                block.text = text;
+                                                UpdateBlockView();
+                                            });
+                                            dialog.Show();
+                                            break;
+                                        }
+                                    
+                                    case 5:
+                                    case 6:
+                                        {
+                                            if (clickType == 4 && Project.mSprites.Count == 1)
+                                            {
+                                                ToastUtil.ShowToast(this, "至少选择两个精灵才会有碰撞");
+                                                return;
+                                            }
+                                            List<string> titlelist = new List<string>();
+                                            List<string> imglist = new List<string>();
+                                            List<string> idlist = new List<string>();
+                                            for (int q = 0; q < Project.mSprites.Count; q++)
+                                            {
+                                                ActivatedSprite sprite = Project.mSprites[q];
+                                                titlelist.Add(sprite.sprite.name);
+                                                imglist.Add(sprite.sprite.remotePath);
+                                                idlist.Add(sprite.activateSpriteId);
+                                            }
+                                            if (clickType == 4)
+                                            {
+                                                titlelist.RemoveRange(mSpriteIndex, 1);
+                                                imglist.RemoveRange(mSpriteIndex, 1);
+                                                idlist.RemoveRange(mSpriteIndex, 1);
+                                            }
 
-                            DialogView dialogView = new DialogView(this, DialogStyle.Signal);
-                            dialogView.Show();
-                        };
+                                            ImageSelectDialog dialog = new ImageSelectDialog(this, clickType>4, (selectIndex) => {
+                                                block.text = titlelist[selectIndex];
+                                                block.activateSpriteId = idlist[selectIndex];
+                                                UpdateBlockView();
+                                            });
+                                            dialog.mList = titlelist;
+                                            dialog.mImgList = imglist;
+                                            dialog.Show();
+                                            break;
+                                        }
+                                    case 7: {
+                                            SpeakDialog dialog = new SpeakDialog(this, (text) => {
+                                                block.text = text;
+                                                UpdateBlockView();
+                                            });
+                                            dialog.Show();
+                                            break;
+                                        }
+                                    case 8:
+                                    case 9: {
+                                            Intent intent = new Intent(this, clickType == 7 ? typeof(SoundActivity) : typeof(BackgroundActivity));
+                                            Bundle bundle = new Bundle();
+                                            bundle.PutInt("row", i);
+                                            bundle.PutInt("column", j);
+                                            intent.PutExtra("bundle", bundle);
+                                            StartActivityForResult(intent, clickType, null);
+                                            break;
+                                        }
+                                    default:
+                                        break;
+                                }
+                            };
+                        }
                     }
                     originY += itemW + margin;
                 }

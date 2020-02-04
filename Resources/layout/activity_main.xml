@@ -267,6 +267,13 @@
 						android:src="@drawable/zoom_out"
 						android:layout_centerHorizontal="true"
 						android:layout_alignParentTop="true"/>
+                    <ImageView
+                        android:id="@+id/bt_add"
+						android:layout_width="20dp"
+						android:layout_height="20dp"
+						android:src="@drawable/var_add"
+						android:layout_centerInParent="true"
+						/>
 					<ImageView
                         android:id="@+id/bt_clear_block"
 						android:layout_width="20dp"

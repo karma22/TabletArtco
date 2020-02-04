@@ -18,7 +18,8 @@ namespace TabletArtco
         public static string url_sprite = _host + "/SelectSpriteTable.php";
         public static string url_background = _host + "/SelectBackgroundTable.php";
         public static string url_block = _host + "/SelectBlockTable.php";
-
+        public static string url_sound = _host + "/SelectSoundTable.php";
+        
         public static string imgPath = _host + "/artco/";
 
         public static bool CheckLogin(string id, string passwd)
@@ -60,7 +61,7 @@ namespace TabletArtco
                 result = Encoding.UTF8.GetString(bytes);
             }
 
-            const int rowCnt = 5;
+            const int rowCnt = 4;
             string[] datas = result.Split('\n');
             for (int i = 0; i <= datas.Length - rowCnt; i += rowCnt)
             {
@@ -72,7 +73,7 @@ namespace TabletArtco
                     name = datas[i + 1],
                     category = int.Parse(datas[i + 2]),
                     remotePath = imgPath + datas[i + 3],
-                    isUser = datas[i + 4].Equals("1") ? true : false
+                    //isUser = datas[i + 4].Equals("1") ? true : false
                 };
 
                 while (sprite.category >= Sprite._sprites.Count)
@@ -155,6 +156,32 @@ namespace TabletArtco
 
                 Block.blocks[block.category].Add(block);
             }
+        }
+
+        public static void LoadSounds()
+        {
+            string result;
+            using (WebClient client = GetWebClient())
+            {
+                byte[] bytes = client.DownloadData(url_sound);
+                result = Encoding.UTF8.GetString(bytes);
+            }
+
+            const int rowCnt = 5;
+            string[] datas = result.Split('\n');
+            for (int i = 0; i <= datas.Length - rowCnt; i += rowCnt)
+            {
+                string name = datas[i + 1];
+                //int idx = int.Parse(datas[i + 2]);
+                int category = int.Parse(datas[i + 3]);
+                string localPath = "./" + datas[i + 4];
+
+                for (; category >= Sound._sounds.Count;)
+                    Sound._sounds.Add(new List<Sound>());
+
+                Sound._sounds[category].Add(new Sound(name, localPath));
+            }
+            
         }
 
         public static WebClient GetWebClient()

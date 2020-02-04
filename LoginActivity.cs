@@ -11,6 +11,7 @@ using Android.Content;
 namespace TabletArtco
 {
     [Activity(Theme = "@style/AppTheme", MainLauncher = true)]
+    //[Activity(Theme = "@style/AppTheme")]
     public class LoginActivity : AppCompatActivity
     {
         private LinearLayout loginLl { get; set; }

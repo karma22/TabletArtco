@@ -12,12 +12,14 @@ using Android.Util;
 
 namespace TabletArtco
 {
-    [Activity(Label = "EditActivity")]
+    //[Activity(Label = "EditActivity", MainLauncher = true)]
+    [Activity(Theme = "@style/AppTheme")]
     public class EditActivity : Activity, Delegate, DataSource
     {
         private List<Bitmap> originList = new List<Bitmap>();
         private List<Bitmap> operateList = new List<Bitmap>();
         private int mIndex = -1;
+        private CustomView mCustomView;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -26,7 +28,7 @@ namespace TabletArtco
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_edit);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
-            initData();
+            //initData();
             InitView();
         }
 
@@ -114,6 +116,15 @@ namespace TabletArtco
             areaParams.LeftMargin = topMargin + colorMargin;
             areaView.LayoutParameters = areaParams;
             areaView.SetBackgroundResource(Resource.Drawable.xml_edit_bg);
+
+            mCustomView = new CustomView(this);
+            mCustomView.mAction = (list) =>
+            {
+
+            };
+            mCustomView.AddBitmap(operateList[0]);
+            FrameLayout.LayoutParams conParams = new FrameLayout.LayoutParams(areaParams.Width, areaParams.Height);
+            areaView.AddView(mCustomView, conParams);
 
             //right tool area
             FrameLayout toolView = FindViewById<FrameLayout>(Resource.Id.tool_wrapper_view);
@@ -309,34 +320,289 @@ namespace TabletArtco
         }
     }
 
-    public class JPImageView : ImageView {
+    enum OperateTarget { Default, RightUp, RightDown, LeftDown, LeftUp, Right, Down, Left, Up };
+    enum OperateAction { FlipX, FlipY, RotateR, RotateL, Enlarge, Narrow, Eraser, Draw, Move };
+
+    struct HPosition {
+        public int row;
+        public int column;
+        public HPosition(int row, int column) {
+            this.row = row;
+            this.column = column;
+        }
+    }
+
+    class CustomView : View {
+
         private Context mContext;
+        
+        private int mWidth;
+        private int mHeight;
 
-        public JPImageView(Context context) : base(context)
+        private Bitmap mBitmap;
+
+        private Paint mEraserPaint;
+        private Paint mPaint;
+        public Action<List<Bitmap>> mAction { get; set; }
+
+        public static List<List<List<Bitmap>>> layersList = new List<List<List<Bitmap>>>();
+        public static List<List<List<Dictionary<OperateAction, Java.Lang.Object>>>> operateList = new List<List<List<Dictionary<OperateAction, Java.Lang.Object>>>>();
+        public static List<HPosition> positionList = new List<HPosition>();
+
+        public static List<List<Bitmap>> curlayersList = new List<List<Bitmap>>();
+        public static List<List<Dictionary<OperateAction, Java.Lang.Object>>> curOperateList = new List<List<Dictionary<OperateAction, Java.Lang.Object>>>();
+        public static HPosition curHPosition;
+        private int mIndex;
+
+        public CustomView(Context context) : base(context)
         {
             Initialize(context);
         }
 
-        public JPImageView(Context context, IAttributeSet attrs) : base(context, attrs)
+        public CustomView(Context context, IAttributeSet attrs) : base(context, attrs)
         {
             Initialize(context);
         }
 
-        public JPImageView(Context context, IAttributeSet attrs, int defStyle) : base(context, attrs, defStyle)
+        public CustomView(Context context, IAttributeSet attrs, int defStyle) : base(context, attrs, defStyle)
         {
             Initialize(context);
         }
 
-        private void Initialize(Context context) {
+        private void Initialize(Context context)
+        {
             mContext = context;
+            mPaint = new Paint();
+        }
+
+        public void AddBitmap(Bitmap bitmap)
+        {
+            // 添加操作图片
+            List<Bitmap> list = new List<Bitmap>();
+            list.Add(Bitmap.CreateBitmap(bitmap));
+            curlayersList.RemoveRange(0, curlayersList.Count);
+            curlayersList.Add(list);
+            layersList.Add(curlayersList);
+            // 添加操作
+            List<Dictionary<OperateAction, Java.Lang.Object>> tempList = new List<Dictionary<OperateAction, Java.Lang.Object>>();
+            curOperateList.RemoveRange(0, curOperateList.Count);
+            curOperateList.Add(tempList);
+            operateList.Add(curOperateList);
+            // 添加操作历史
+            curHPosition = new HPosition(layersList.Count-1, 0);
+            positionList.Add(curHPosition);
+            updateBitmap();
+        }
+
+        public void DeleteBitmap(int position)
+        {
+            if (position == mIndex)
+            {
+                mIndex = position - 1;
+                curlayersList = layersList[mIndex];
+                curOperateList = operateList[mIndex];
+                curHPosition = positionList[mIndex];
+                layersList.RemoveAt(position);
+                operateList.RemoveAt(position);
+                positionList.RemoveAt(position);
+            }
+            updateBitmap();
+        }
+
+        // 当前图片插入图片
+        public void InsertBitmap(Bitmap bitmap)
+        {
+            List<Bitmap> list = new List<Bitmap>();
+            list.Add(Bitmap.CreateBitmap(mBitmap));
+            list.Add(Bitmap.CreateBitmap(bitmap));
+            curlayersList.Add(list);
+
+            List<Dictionary<OperateAction, Java.Lang.Object>> tempList = new List<Dictionary<OperateAction, Java.Lang.Object>>();
+            curOperateList.Add(tempList);
+            List<Dictionary<OperateAction, Java.Lang.Object>> tempList1 = new List<Dictionary<OperateAction, Java.Lang.Object>>();
+            curOperateList.Add(tempList1);
+            curHPosition.row = curlayersList.Count - 1;
+            curHPosition.column = 0;
+
+            updateBitmap();
+        }
+
+        public void SetPosition(int position) {
+            mIndex = position;
+            curlayersList = layersList[mIndex];
+            curOperateList = operateList[mIndex];
+            curHPosition = positionList[mIndex];
+            updateBitmap();
+        }
+
+        public void OperateImg(OperateAction action)
+        {
+            
+        }
+
+        private int measure(int measureSpec)
+        {
+            MeasureSpecMode specMode = MeasureSpec.GetMode(measureSpec);
+            int specSize = MeasureSpec.GetSize(measureSpec);
+            //设置一个默认值，就是这个View的默认宽度为500，这个看我们自定义View的要求
+            int result = 500;
+            if (specMode ==  MeasureSpecMode.AtMost)
+            {//相当于我们设置为wrap_content
+                result = specSize;
+            }
+            else if (specMode == MeasureSpecMode.Exactly)
+            {//相当于我们设置为match_parent或者为一个具体的值
+                result = specSize;
+            }
+            LogUtil.CustomLog("measure=" + result);
+            return result;
+        }
+
+        protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+        {
+            base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+            mWidth = measure(widthMeasureSpec);
+            mHeight = measure(heightMeasureSpec);
+            SetMeasuredDimension(mWidth, mHeight);
         }
 
         public override void Draw(Canvas canvas)
         {
             base.Draw(canvas);
 
+            //mPaint.AntiAlias = true;
+            //mPaint.SetStyle(Paint.Style.Fill);
+            //mPaint.SetXfermode(null);
+            //mPaint.SetARGB(200, 255, 0, 0);
+            //Rect rect = new Rect(0, 0, mWidth, mHeight);
+            //Bitmap bitmap = Bitmap.CreateBitmap(mWidth, mHeight, Bitmap.Config.Argb8888);
+            //Canvas c = new Canvas(bitmap);
+            //c.DrawRect(rect, mPaint);
+            ////c.Save();
+            
+            ////c.ClipRect(new Rect(mWidth / 4, mHeight / 4, 3 * mWidth / 4, 3 * mHeight / 4));
+            
+            //mPaint.SetARGB(255, 255, 255, 0);
+            //mPaint.SetStyle(Paint.Style.Fill);
+
+            //Rect r = new Rect(mWidth / 4, mHeight / 4, 3 * mWidth / 4, 3 * mHeight / 4);
+            //for (int i = r.Left; i < r.Right; i++)
+            //{
+            //    for (int j = r.Top; j < r.Bottom; j++)
+            //    {
+            //        bitmap.SetPixel(i, j, Color.Transparent);
+            //    }
+            //}
+            //c.Save();
+            //c.Rotate(10);
+            //c.DrawRect(r, mPaint);
+
+
+            //mPaint.SetARGB(255, 0,0,0);
+            //mPaint.SetStyle(Paint.Style.Stroke);
+            //mPaint.StrokeWidth = 4;
+            //mPaint.SetPathEffect(new DashPathEffect(new float[] { 15, 15 }, 0));
+            //c.DrawRect(r, mPaint);
+            //c.Restore();
+                
+       
+            //canvas.DrawBitmap(bitmap, rect, rect, mPaint);
+            //Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         }
 
+        private void updateBitmap() {
+            if (mBitmap!=null)
+            {
+                mBitmap.Recycle();
+            }
+
+            List<Bitmap> list = curlayersList[curHPosition.row];
+            List<Dictionary<OperateAction, Java.Lang.Object>> operateList = curOperateList[curHPosition.row];
+
+            int count = 0;
+            for (int i = 0; i < list.Count; i++)
+            {
+                Bitmap bitmap = Bitmap.CreateBitmap(list[i]);
+                Dictionary<OperateAction, Java.Lang.Object> map = operateList[i];
+
+                mBitmap = Bitmap.CreateBitmap(mWidth, mHeight, Bitmap.Config.Argb8888);
+            }
+            
+
+
+
+            Invalidate();
+        }
+
+        //private void touch_start(float x, float y)
+        //{
+        //    mPath.reset();
+        //    mPath.moveTo(x, y);
+        //    mX = x;
+        //    mY = y;
+        //    //如果是“画笔”模式就用mPaint画笔进行绘制
+        //    if (mMode == Pen)
+        //    {
+        //        mCanvas.drawPath(mPath, mPaint);
+        //    }
+        //    //如果是“橡皮擦”模式就用mEraserPaint画笔进行绘制
+        //    if (mMode == Eraser)
+        //    {
+        //        mCanvas.drawPath(mPath, mEraserPaint);
+        //    }
+
+        //}
+
+        //private void touch_move(float x, float y)
+        //{
+        //    float dx = Math.abs(x - mX);
+        //    float dy = Math.abs(y - mY);
+        //    if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE)
+        //    {
+        //        mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+        //        mX = x;
+        //        mY = y;
+        //        if (mMode == Pen)
+        //        {
+        //            mCanvas.drawPath(mPath, mPaint);
+        //        }
+        //        if (mMode == Eraser)
+        //        {
+        //            mCanvas.drawPath(mPath, mEraserPaint);
+        //        }
+        //    }
+        //}
+
+
+        //private void touch_up()
+        //{
+        //    mPath.lineTo(mX, mY);
+        //    if (mMode == Pen)
+        //    {
+        //        mCanvas.drawPath(mPath, mPaint);
+        //    }
+        //    if (mMode == Eraser)
+        //    {
+        //        mCanvas.drawPath(mPath, mEraserPaint);
+        //    }
+        //}
+
+
+        public override bool OnTouchEvent(MotionEvent e)
+        {
+            switch (e.Action)
+            {
+                case MotionEventActions.Down:
+                    break;
+                case MotionEventActions.Move:
+                    
+                    break;
+                case MotionEventActions.Up:
+                   
+                    break;
+            }
+            return base.OnTouchEvent(e);
+        }
 
 
     }

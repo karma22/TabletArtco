@@ -17,10 +17,13 @@ namespace TabletArtco
         public static bool mIsFull { get; set; }
         public static bool isAnimationTag {get; set;}
 
+        public string activateSpriteId { get; set; }
         public Sprite sprite { get; set; }
         public List<List<Block>> mBlocks { get; set; } = new List<List<Block>>();
         public List<Bitmap> originBitmapList { get; set; } = new List<Bitmap>();
         public Point originPoint { get; set; } = new Point(0, 0);
+
+        
 
         // animation arguments
         public bool isVisible { get; set; } = true;
@@ -35,6 +38,7 @@ namespace TabletArtco
             }
         }
 
+        public int curRow { get; set; } = 0;
         public int curIndex { get; set; } = 0;
         public List<Bitmap> curbitmapList { get; set; } = new List<Bitmap>();
         public float curAngle { get; set; } = 0;
@@ -70,25 +74,26 @@ namespace TabletArtco
         //添加积木 add block
         public void AddBlock(Block block)
         {
-            if (block.name.Equals("ControlStart") || block.name.Equals("ControlReceiveSignal"))
+            if (block.name.Equals("ControlStart") || block.name.Equals("ControlRecvSig") || block.name.Equals("ControlTouch") || block.name.Equals("ControlClickSprite"))
             {
                 List<Block> list = new List<Block>();
                 list.Add(block);
                 block.row = mBlocks.Count;
                 mBlocks.Add(list);
+                curRow = mBlocks.Count - 1;
             }
             else
             {
                 if (mBlocks.Count>0)
                 {
-                    List<Block> list = mBlocks[mBlocks.Count - 1];
-                    block.row = mBlocks.Count - 1;
+                    List<Block> list = mBlocks[curRow];
+                    block.row = curRow;
                     list.Add(block);
                 }
             }
         }
 
-        public void DeleteBlock() {
+        public void DeleteBlock(Block block) {
 
         }
 
@@ -122,7 +127,7 @@ namespace TabletArtco
 
         public void InvalidateStage()
         {
-            LogUtil.CustomLog("InvalidateStage");
+            //LogUtil.CustomLog("InvalidateStage");
             if (mUpdateDelegate != null && isAnimationTag)
             {
                 mUpdateDelegate.UpdateView();
@@ -213,87 +218,56 @@ namespace TabletArtco
                 return;
             }
             List<Block> list = mBlocks[index];
-        START:
+        //START:
             int loopCnt = 0;
-            int loopStartIdx = 0;
-            for (int idx = 0; idx < list.Count; idx++)
-            {
+            int loopStartIdx = -1;
+            int idx = 0;
+            while (isAnimationTag) {
                 try
                 {
-                SAVE:
+                //SAVE:
+                    if (!isAnimationTag) break;
+                    if (idx >= list.Count) {
+                        Thread.Sleep(10);
+                        continue;
+                    }
                     Block block = list[idx];
                     string blockName = list[idx].name;
-
-                    if (!isAnimationTag)
+                    LogUtil.CustomLog("------------------" + idx + "----------" + block.name);
+                    
+                    if (blockName.Equals("ControlLoop"))
                     {
-                        break;
+                        loopCnt = 0;
+                        loopStartIdx = -1;
+                        idx = -1;
+                        //goto SAVE;
                     }
-                    if (blockName.Equals("ControlLoop")) goto START;
                     else if (blockName.Equals("ControlLoopN") || blockName.Equals("GameLoopN"))
                     {
                         if (!System.Int32.TryParse(block.text, out int n))
                         {
-                            //new MsgBoxForm($"{i + 1}번째 그림, {tab + 1}페이지, {idx + 1}번째에 실행할 수 없는 값이 있습니다.").ShowDialog();
+
                         }
-                        else if (n == 0)
-                        {
-                            continue;
-                        }
+                        else if (n == 0) { }
                         else
                         {
                             if (++loopCnt != n)
                             {
-                                //tab = loopStartTab;
                                 idx = loopStartIdx;
-
-                                goto SAVE;
+                                //goto SAVE;
                             }
                             else
                             {
-                                if (idx < mBlocks.Count - 1)
-                                {
-                                    loopStartIdx = idx = idx + 1;
-                                    //loopStartTab = tab;
-                                }
-                                else
-                                {
-                                    if ((idx == rowMaxCount - 1))
-                                    {
-                                        loopStartIdx = idx = 0;
-                                        //loopStartTab = tab = tab + 1;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-
+                                loopStartIdx = idx;
                                 loopCnt = 0;
-                                goto SAVE;
+                                //continue;
                             }
                         }
                     }
                     else if (blockName.Equals("ControlFlag"))
                     {
-                        if (idx < mBlocks.Count - 1)
-                        {
-                            loopStartIdx = idx + 1;
-                            //loopStartTab = tab;
-                        }
-                        else
-                        {
-                            if ((idx == rowMaxCount - 1))
-                            {
-                                loopStartIdx = 0;
-                                //loopStartTab = tab + 1;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-
-                        continue;
+                        loopStartIdx = idx;
+                        //continue;
                     }
                     else if (blockName.Equals("MoveRDownN")) MoveVariable(MoveArrow.RightDown, block.text);
                     else if (blockName.Equals("MoveRUpN")) MoveVariable(MoveArrow.RightUp, block.text);
@@ -365,7 +339,12 @@ namespace TabletArtco
                     //}
                     Reset();
                 }
+                idx++;
             }
+            //for (idx = 0; idx < list.Count; idx++, LogUtil.CustomLog(idx+""))
+            //{
+                
+            //}
             //}
         }
 
