@@ -5390,16 +5390,19 @@ namespace TabletArtco
 			public const int var_add = 2131165551;
 			
 			// aapt resource value: 0x7F070170
-			public const int xml_edit_bg = 2131165552;
+			public const int xml_custom_bg = 2131165552;
 			
 			// aapt resource value: 0x7F070171
-			public const int xml_gridview_bg = 2131165553;
+			public const int xml_edit_bg = 2131165553;
 			
 			// aapt resource value: 0x7F070172
-			public const int zoom_in = 2131165554;
+			public const int xml_gridview_bg = 2131165554;
 			
 			// aapt resource value: 0x7F070173
-			public const int zoom_out = 2131165555;
+			public const int zoom_in = 2131165555;
+			
+			// aapt resource value: 0x7F070174
+			public const int zoom_out = 2131165556;
 			
 			static Drawable()
 			{

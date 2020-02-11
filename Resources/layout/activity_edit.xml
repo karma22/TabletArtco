@@ -58,12 +58,12 @@
                 android:layout_height="0px"
                 android:layout_weight="600"
                 android:background="@drawable/edit_bg">
-                <FrameLayout
+                <RelativeLayout
                     android:id="@+id/edit_area_view"
                     android:layout_width="100dp"
                     android:layout_height="100dp">
                     
-                </FrameLayout>
+                </RelativeLayout>
                 <FrameLayout
                     android:id="@+id/tool_wrapper_view"
                     android:layout_width="100dp"
