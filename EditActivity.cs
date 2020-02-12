@@ -415,32 +415,32 @@ namespace TabletArtco
                     {
                         case OperateType.FlipY:
                             {
-                                matrix.PostScale(1, -1);
+                                matrix.PreScale(-1, 1);
                                 break;
                             }
                         case OperateType.FlipX:
                             {
-                                matrix.PostScale(-1, 1);
+                                matrix.PreScale(1, -1);
                                 break;
                             }
                         case OperateType.RotateR:
                             {
-                                matrix.PostRotate(90);
+                                matrix.PreRotate(90);
                                 break;
                             }
                         case OperateType.RotateL:
                             {
-                                matrix.PostRotate(-90);
+                                matrix.PreRotate(-90);
                                 break;
                             }
                         case OperateType.Enlarge:
                             {
-                                matrix.PostScale(1.1f, 1.1f);
+                                matrix.PreScale(1.1f, 1.1f);
                                 break;
                             }
                         case OperateType.Narrow:
                             {
-                                matrix.PostScale(0.9f, 0.9f);
+                                matrix.PreScale(0.9f, 0.9f);
                                 break;
                             }
                         case OperateType.Eraser:
@@ -481,11 +481,15 @@ namespace TabletArtco
                         default:
                             break;
                     }
+                    //Bitmap newBitmp = Bitmap.CreateBitmap(bitmap.Width, bitmap.Height, Bitmap.Config.Argb8888);
+                    
 
+                    Bitmap newBM = Bitmap.CreateBitmap(bitmap, 0, 0, bitmap.Width, bitmap.Height, matrix, false);
+                    bitmap.Recycle();
+                    bitmap = newBM;
+                    matrix.Reset();
                 }
-                Bitmap newBM = Bitmap.CreateBitmap(bitmap, 0, 0, bitmap.Width, bitmap.Height, matrix, false);
-                bitmap.Recycle();
-                bitmap = newBM;
+                
                 //canvas = new Canvas(bitmap);
                 //enum OperateType { FlipX, FlipY, RotateR, RotateL, Enlarge, Narrow, Eraser, Draw, Clip, Move };
             }

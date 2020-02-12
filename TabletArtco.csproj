@@ -241,6 +241,7 @@
     <Compile Include="Views\DialogView.cs" />
     <Compile Include="Adapters\ListAdapter.cs" />
     <Compile Include="Model\Sound.cs" />
+    <Compile Include="TestActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -1644,6 +1645,10 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\xml_custom_bg.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\activity_test.xml">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>

@@ -8,8 +8,6 @@ using Android.Views;
 using Android.Widget;
 using Com.Bumptech.Glide;
 using Android.Content;
-using Com.Bumptech.Glide.Load.Model;
-using Java.Net;
 
 namespace TabletArtco
 {
@@ -31,6 +29,7 @@ namespace TabletArtco
             InitView();
         }
 
+        // init view
         private void InitView()
         {
             int width = ScreenUtil.ScreenWidth(this);
@@ -108,6 +107,7 @@ namespace TabletArtco
 
         }
 
+        // update listview
         private void UpdateView()
         {
             GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
@@ -164,6 +164,7 @@ namespace TabletArtco
             viewHolder.txtTv.Tag = position;
         }
 
+        // select sprite then back
         public void ClickItem(int position)
         {
             

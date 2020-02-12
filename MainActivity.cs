@@ -12,7 +12,8 @@ using Android.Graphics;
 
 namespace TabletArtco
 {
-    [Activity(Theme = "@style/AppTheme")]
+    [Activity(Theme = "@style/AppTheme", MainLauncher = true)]
+    //[Activity(Theme = "@style/AppTheme")]
     public class MainActivity : AppCompatActivity, Delegate, DataSource, UpdateDelegate, View.IOnDragListener
     {
         private static string Tag = "MainActivity";
@@ -52,6 +53,7 @@ namespace TabletArtco
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
+        
         [System.Obsolete]
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
@@ -86,7 +88,8 @@ namespace TabletArtco
                             });
                         })).Start();
                         break;
-                    }  
+                    }
+                // select background callback
                 case 1:
                     {
                         Bundle bundle = data.GetBundleExtra("bundle");
@@ -99,6 +102,7 @@ namespace TabletArtco
                         mediaManager.SetPath(mBackground.remoteVideoPath);
                         break;
                     }
+                // select background callback
                 case 2:
                     {
                         Bundle bundle = data.GetBundleExtra("bundle");
@@ -132,6 +136,7 @@ namespace TabletArtco
             DBManager.LoadSounds();
         }
 
+        // init view
         public void InitView()
         {
             InitTopButtonEvent();
@@ -159,24 +164,28 @@ namespace TabletArtco
                     {
                         case 0:
                             {
+                                // Sprite select Activity
                                 Intent intent = new Intent(this, typeof(PictureActivity));
                                 StartActivityForResult(intent, 0, null);
                                 break;
                             }
                         case 1:
                             {
+                                // Education select activity
                                 Intent intent = new Intent(this, typeof(EducationActivity));
                                 StartActivityForResult(intent, 1, null);
                                 break;
                             }
                         case 2:
                             {
+                                // Background  select activity
                                 Intent intent = new Intent(this, typeof(BackgroundActivity));
                                 StartActivityForResult(intent, 2, null);
                                 break;
                             }
                         case 3:
                             {
+                                // Sound select activity
                                 Intent intent = new Intent(this, typeof(SoundActivity));
                                 StartActivityForResult(intent, 3, null);
                                 break;
@@ -294,6 +303,7 @@ namespace TabletArtco
             ViewUtil.SetViewHeight(centerView, (int)(481 / 549.0 * height));
             int[] btsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
             int itemW = (int)(42 / 549.0 * height);
+            // home、play、stop、full button
             for (int i = 0; i < btsResIds.Length; i++)
             {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
@@ -306,11 +316,12 @@ namespace TabletArtco
                     {
                         case 0:
                             {
-
+                                // home button click
                                 break;
                             }
                         case 1:
                             {
+                                // play button click
                                 Android.Util.Log.Info(Tag, "Click play animation start");
                                 if (isPlay)
                                 {
@@ -325,6 +336,7 @@ namespace TabletArtco
                             }
                         case 2:
                             {
+                                // stop button click
                                 Android.Util.Log.Info(Tag, "Click play animation stop");
                                 if (!isPlay)
                                 {
@@ -337,6 +349,7 @@ namespace TabletArtco
                             }
                         case 3:
                             {
+                                //full button click
 
                                 break;
                             }
@@ -349,16 +362,15 @@ namespace TabletArtco
             ActivatedSprite.notFullSize = new Android.Util.Size((int)width-paddingL*2, (int)(481 / 549.0 * height));
             ActivatedSprite.fullSize = new Android.Util.Size(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this));
             ActivatedSprite.mUpdateDelegate = this;
-            //videoView
-            //surfaceView
-            
+
+            // video surfaceview
             SurfaceView surfaceView = FindViewById<SurfaceView>(Resource.Id.surfaceView);
             mediaManager = new MediaManager(surfaceView);
 
             RelativeLayout activate_block_wrapperview = FindViewById<RelativeLayout>(Resource.Id.activate_block_wrapperview);
             ScrollView activate_block_view = FindViewById<ScrollView>(Resource.Id.activate_block_view);
             ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0-ScreenUtil.dip2px(this, 8)));
-
+            // scale button
             FindViewById<ImageView>(Resource.Id.bt_scale).Click += (t, e) =>
             {
                 activateBlockScale = !activateBlockScale;
@@ -374,6 +386,7 @@ namespace TabletArtco
                 }
             };
 
+            // add variable button
             FindViewById<ImageView>(Resource.Id.bt_add).Click += (t, e) =>
             {
                 VariableInitDialog dialog = new VariableInitDialog(this, (name, value)=> {
@@ -382,6 +395,7 @@ namespace TabletArtco
                 dialog.Show();
             };
 
+            // clear block button
             FindViewById<ImageView>(Resource.Id.bt_clear_block).Click += (t, e) =>
             {
                 if (mSpriteIndex > -1)
@@ -402,6 +416,7 @@ namespace TabletArtco
             listView.Adapter = mSpriteAdapter;
         }
 
+        // main screen add animate sprite view
         public void addSpriteView() {
             FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
             containerView.RemoveAllViews();
@@ -420,6 +435,7 @@ namespace TabletArtco
             }
         }
 
+        // update main screen animate sprite imageview location and visibility
         public void UpdateMainView()
         {
             FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
@@ -438,6 +454,7 @@ namespace TabletArtco
             }
         }
 
+        // update bottom block views
         public void UpdateBlockView() {
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.block_view);
             int width = (int)(ScreenUtil.ScreenWidth(this) * 890 / 1280.0) - ScreenUtil.dip2px(this, 30);
@@ -500,6 +517,7 @@ namespace TabletArtco
                         int clickType = Block.GetClickType(block);
                         if (clickType != -1)
                         {
+                            // activateblock click event
                             view.Click += (t, e) =>
                             {
                                 if (clickType == 3 || clickType == 5 || clickType == 6 || clickType == 10)
@@ -533,6 +551,7 @@ namespace TabletArtco
                                     case 1:
                                     case 2:
                                         {
+                                            // change variable dialog, example set variable value or increase variable value
                                             if (Project.variableMap.Count<=0)
                                             {
                                                 ToastUtil.ShowToast(this, "你还没有添加变量");
@@ -556,6 +575,7 @@ namespace TabletArtco
                                     case 3:
                                     case 4:
                                         {
+
                                             SignalDialog dialog = new SignalDialog(this, (text) => {
                                                 block.text = text;
                                                 UpdateBlockView();
@@ -567,6 +587,7 @@ namespace TabletArtco
                                     case 5:
                                     case 6:
                                         {
+                                            // select collision image and select click image dialog
                                             if (clickType == 4 && Project.mSprites.Count == 1)
                                             {
                                                 ToastUtil.ShowToast(this, "至少选择两个精灵才会有碰撞");
@@ -600,6 +621,7 @@ namespace TabletArtco
                                             break;
                                         }
                                     case 7: {
+                                            // input speck text dialog
                                             SpeakDialog dialog = new SpeakDialog(this, (text) => {
                                                 block.text = text;
                                                 UpdateBlockView();
@@ -609,6 +631,7 @@ namespace TabletArtco
                                         }
                                     case 8:
                                     case 9: {
+                                            // click activate block to select background
                                             Intent intent = new Intent(this, clickType == 7 ? typeof(SoundActivity) : typeof(BackgroundActivity));
                                             Bundle bundle = new Bundle();
                                             bundle.PutInt("row", i);
@@ -627,6 +650,7 @@ namespace TabletArtco
                 }
             }
         }
+
 
         public void startAnimation() {
 
