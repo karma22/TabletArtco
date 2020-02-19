@@ -1,131 +1,154 @@
 ﻿using System;
-using Android.Graphics;
 using Android.Media;
-using Android.OS;
+using Android.Content;
 using Android.Runtime;
+using Android.Widget;
 using Android.Views;
-using System.Collections.Generic;
+using Android.Graphics;
+using Com.Bumptech.Glide;
+  
 namespace TabletArtco
 {
-    public class MediaManager: Java.Lang.Object ,ISurfaceHolderCallback, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnErrorListener
+    public class MediaManager : Java.Lang.Object, ISurfaceHolderCallback, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnErrorListener, MediaPlayer.IOnInfoListener, MediaPlayer.IOnSeekCompleteListener
     {
         private SurfaceView mSurfaceView;
+        private ImageView preImgIv;
         private MediaPlayer mediaPlayer;
-        //http://username:password@host:8080/directory/file?query#ref:
-        private string mPath = "http://103.120.226.173/artco/backgrounds/3%20Playgrounds.mp4";
+        private Context mContext;
+        private string mPath = null;//"http://103.120.226.173/artco/backgrounds/3%20Playgrounds.mp4"; //http://username:password@host:8080/directory/file?query#ref:
         private bool isOnPrepared = false;
         private bool isPlay = false;
-        private ISurfaceHolder surfaceHolder;
+        private bool isDefault = true;
+        private String remotePreviewImgPath = null;
+        private ISurfaceHolder mSurfaceHolder;
+       
 
-        public MediaManager(SurfaceView surfaceView)
+        public MediaManager(SurfaceView surfaceView, ImageView imgIv, Context cxt)
         {
             mSurfaceView = surfaceView;
+            preImgIv = imgIv;
+            mContext = cxt;
             InitPlayer();
-            
-            InitSurfaceView();
         }
 
-        public void SetPath(string path) {
-            mPath = path;
+        private void InitPlayer()
+        {
+            mSurfaceView.SetZOrderOnTop(false);
+            mSurfaceView.Holder.AddCallback(this);
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.SetOnCompletionListener(this);
+            mediaPlayer.SetOnErrorListener(this);
+            mediaPlayer.SetOnPreparedListener(this);
+            mediaPlayer.SetOnSeekCompleteListener(this);
+            Android.Net.Uri url = Android.Net.Uri.Parse("android.resource://" + mContext.PackageName + "/raw/" + Resource.Raw.default_video);
+            mediaPlayer.SetDataSource(mContext, url);
+            Play();
+        }
+
+        public void SetPath(string path, string img)
+        {
+            if (isDefault)
+            {
+                isDefault = false;
+                isPlay = false;
+            }
+            LogUtil.CustomLog("path:" + path + ", prepath:" + img);
+            string start = "http://www.playartco.com:8081/artco/backgrounds/";
+            mPath = start + Android.Net.Uri.Encode(path.Substring(start.Length));
+            remotePreviewImgPath = img;
             if (mediaPlayer != null)
             {
-                try {
-                    //Android.Net.Uri.Builder builder = new Android.Net.Uri.Builder();
-                    //builder.Path(mPath);
-                    //Android.Net.Uri uri = builder.Build();
-                    //IDictionary<string, string> dic = new Dictionary<string, string>();
-                    //dic.Add("Authorization", GlideUtil.GetAuthorization());
-                    //mediaPlayer.SetDataSource(mSurfaceView.Context, uri, dic);
+                try
+                {
+                    mediaPlayer.Stop();
+                    mediaPlayer.Release();
+                    mediaPlayer = null;
+                    mediaPlayer = new MediaPlayer();
+                    mediaPlayer.SetOnCompletionListener(this);
+                    mediaPlayer.SetOnErrorListener(this);
+                    mediaPlayer.SetOnPreparedListener(this);
+                    mediaPlayer.SetOnSeekCompleteListener(this);
                     mediaPlayer.SetDataSource(mPath);
-                } catch (Exception e) {
+                    if (mSurfaceView.Holder != null && mSurfaceView.Holder.IsCreating)
+                    {
+                        mediaPlayer.SetDisplay(mSurfaceView.Holder);
+                        mediaPlayer.PrepareAsync();
+                    }
+                    if (img != null)
+                    {
+                        Glide.With(mContext).Load(GlideUtil.GetGlideUrl(remotePreviewImgPath)).Into(preImgIv);
+                    }
+                    preImgIv.Visibility = ViewStates.Visible;
+                    isOnPrepared = false;
+                    if (isPlay)
+                    {
+                        Play();
+                    }
+                }
+                catch (Exception e)
+                {
                     LogUtil.CustomLog("Set path for mediaplayer error " + e.ToString());
                 }
             }
         }
 
-        private void InitSurfaceView() {
-            mSurfaceView.SetZOrderOnTop(false);
-            //mSurfaceView.Holder.SetType(SurfaceType.PushBuffers);
-            mSurfaceView.Holder.AddCallback(this);
-        }
-
-        private void InitPlayer() {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.SetOnCompletionListener(this);
-            mediaPlayer.SetOnErrorListener(this);
-            mediaPlayer.SetOnPreparedListener(this);
-            if (mPath != null)
-            {
-                SetPath(mPath);
-            }
-        }
-
         public void Play()
         {
-            if (mediaPlayer != null && !mediaPlayer.IsPlaying && mPath != null && isOnPrepared)
+            if (mediaPlayer != null && !mediaPlayer.IsPlaying && isOnPrepared && (isDefault || mPath != null))
             {
+                mediaPlayer.SeekTo(0);
                 mediaPlayer.Start();
+                isPlay = true;
             }
             else
-            {
+            { 
                 isPlay = true;
             }
         }
 
         public void Stop()
         {
+            isPlay = false;
             if (mediaPlayer != null && mediaPlayer.IsPlaying)
             {
                 mediaPlayer.Pause();
             }
         }
 
-        public void OnCompletion(MediaPlayer mp)
+        void ISurfaceHolderCallback.SurfaceCreated(ISurfaceHolder holder)
         {
-            try
+            mSurfaceHolder = holder;
+            LogUtil.CustomLog("SurfaceCreated");
+            preImgIv.Visibility = ViewStates.Visible;
+            if (mediaPlayer!= null)
             {
-                mp.SeekTo(0);
-                mp.Start();
+                mediaPlayer.SetDisplay(holder);
+                try
+                {
+                    mediaPlayer.PrepareAsync();
+                }
+                catch (Exception e)
+                {
+                    LogUtil.CustomLog("SurfaceCreated Exception", e.ToString());
+                }
             }
-            catch (Exception e)
-            {
-                LogUtil.CustomLog(e.ToString());
-            }
-            
         }
 
-        public bool OnError(MediaPlayer mp, [GeneratedEnum] MediaError what, int extra)
+        void ISurfaceHolderCallback.SurfaceChanged(ISurfaceHolder holder, [GeneratedEnum] Format format, int width, int height)
         {
-            return false;
+            LogUtil.CustomLog("SurfaceChanged", "holder: width" + width + ", height:" + height);
         }
 
-        public void SurfaceChanged(ISurfaceHolder holder, [GeneratedEnum] Format format, int width, int height)
+        void ISurfaceHolderCallback.SurfaceDestroyed(ISurfaceHolder holder)
         {
-            
-        }
-
-        public void SurfaceCreated(ISurfaceHolder holder)
-        {
-            surfaceHolder = holder;
-            mediaPlayer.SetDisplay(holder);
-            try
-            {
-                mediaPlayer.PrepareAsync();
-            }
-            catch (Exception e)
-            {
-                LogUtil.CustomLog(e.ToString());
-            }
-            
-        }
-
-        public void SurfaceDestroyed(ISurfaceHolder holder)
-        {
-            surfaceHolder = null;
+            LogUtil.CustomLog("SurfaceDestroyed", "SurfaceDestroyed");
         }
 
         void MediaPlayer.IOnPreparedListener.OnPrepared(MediaPlayer mp)
         {
+            LogUtil.CustomLog("OnPrepared", "OnPrepared");
+            preImgIv.Visibility = ViewStates.Visible;
+            mp.SetOnInfoListener(this);
             isOnPrepared = true;
             if (isPlay)
             {
@@ -133,6 +156,48 @@ namespace TabletArtco
             }
         }
 
+        bool MediaPlayer.IOnErrorListener.OnError(MediaPlayer mp, [GeneratedEnum] MediaError what, int extra)
+        {
+            LogUtil.CustomLog("OnError", ""+what);
+            return false;
+        }
 
+        bool MediaPlayer.IOnInfoListener.OnInfo(MediaPlayer mp, MediaInfo what, int extra)
+        {
+            LogUtil.CustomLog("MediaPlayer.OnInfo", "" + what);
+            if (what == MediaInfo.VideoRenderingStart) {
+                preImgIv.Visibility = ViewStates.Gone;
+            }
+            return true;
+        }
+
+        void MediaPlayer.IOnCompletionListener.OnCompletion(MediaPlayer mp)
+        {
+            LogUtil.CustomLog("MediaPlayer.OnCompletion", "OnCompletion");
+            try
+            {
+                if (!isDefault && isPlay)
+                {
+                    mp.SeekTo(0);
+                    mp.Start();
+                }
+                else
+                {
+                    isPlay = false;
+                    isDefault = false;
+                    preImgIv.Visibility = ViewStates.Visible;
+                }
+            }
+            catch (Exception e)
+            {
+                LogUtil.CustomLog(e.ToString());
+            }
+        }
+
+        public void OnSeekComplete(MediaPlayer mp)
+        {
+            LogUtil.CustomLog("MediaPlayer.OnSeekComplete", "OnSeekComplete");
+            preImgIv.Visibility = ViewStates.Gone;
+        }
     }
 }

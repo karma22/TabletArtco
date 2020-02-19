@@ -14,7 +14,7 @@ namespace TabletArtco
 {
 
     [Activity(Theme = "@style/AppTheme")]
-    public class MainActivity : AppCompatActivity, Delegate, DataSource, UpdateDelegate, View.IOnDragListener
+    public class MainActivity : AppCompatActivity, Delegate, DataSource, UpdateDelegate, View.IOnDragListener, View.IOnLongClickListener
     {
         private static string Tag = "MainActivity";
         private List<ActivatedSprite> spritesList = Project.mSprites;
@@ -27,6 +27,7 @@ namespace TabletArtco
         private bool isPlay;
         private MediaManager mediaManager;
         private bool activateBlockScale = false;
+        private View dragView;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -36,7 +37,6 @@ namespace TabletArtco
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             SetContentView(Resource.Layout.activity_main);
             //IWindowManager mWindowManager = (IWindowManager)this.GetSystemService(Context.WindowService);
-            
             LoadResources();
             InitView();
         }
@@ -99,7 +99,7 @@ namespace TabletArtco
                             return;
                         }
                         mBackground = background;
-                        mediaManager.SetPath(mBackground.remoteVideoPath);
+                        mediaManager.SetPath(mBackground.remoteVideoPath, mBackground.remotePreviewImgPath);
                         break;
                     }
                 // select background callback
@@ -297,10 +297,27 @@ namespace TabletArtco
             double width = ScreenUtil.ScreenWidth(this) * 890 / 1280.0;
             double height = ScreenUtil.ScreenHeight(this) * 545 / 800.0;
             int paddingL = (int)(18 / 913.0 * width);
-            int paddingB = (int)(19 / 549.0 * height);
-            mainView.SetPadding(paddingL, paddingB, paddingL, 0);
+            int paddingT = (int)(19 / 549.0 * height);
+            mainView.SetPadding(paddingL, paddingT, paddingL, 0);
             ViewUtil.SetViewHeight(mainView, (int)height);
             ViewUtil.SetViewHeight(centerView, (int)(481 / 549.0 * height));
+
+            RelativeLayout border_view = FindViewById<RelativeLayout>(Resource.Id.border_view);
+            ViewUtil.SetViewHeight(centerView, (int)(481 / 549.0 * height)+3);
+            FrameLayout leftBorderView = FindViewById<FrameLayout>(Resource.Id.left_border);
+            FrameLayout topBorderView = FindViewById<FrameLayout>(Resource.Id.top_border);
+            FrameLayout rightBorderView = FindViewById<FrameLayout>(Resource.Id.right_border);
+            FrameLayout bottomBorderView = FindViewById<FrameLayout>(Resource.Id.bottom_border);
+            ViewUtil.SetViewWidth(leftBorderView, paddingL);
+            ViewUtil.SetViewHeight(topBorderView, paddingT);
+            ViewUtil.SetViewWidth(rightBorderView, paddingL);
+            leftBorderView.SetOnDragListener(this);
+            topBorderView.SetOnDragListener(this);
+            rightBorderView.SetOnDragListener(this);
+            bottomBorderView.SetOnDragListener(this);
+
+
+
             int[] btsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
             int itemW = (int)(42 / 549.0 * height);
             // home、play、stop、full button
@@ -332,6 +349,8 @@ namespace TabletArtco
 
                                 //CrossMediaManager.Current.Play("https://672-3.vod.tv.itc.cn/sohu/v1/TmwGoKIsWBeHgB67yEW4gmdbW6c48KPLghAXeBvFhJXUyYbSoO27fSx.mp4?k=FtJelY&p=j9lvzSw3qm1UqpxUoLPUqSXiqpxmqpsdhRYRzSPWXZxIWhoGgY220Go70ScAZMx4gf&r=TUldziJCtpCmhWB3tSCGhWlvsmCUqmPWtWaizY&q=OpCBhW7IRYodRDvswmfCyY2sWhyHfhyt5G64fJXsWYeS0F2OfGWsWYdsZYoURDvsfp", MediaFileType.Video);
                                 mediaManager.Play();
+                                //VideoView videoView2 = FindViewById<VideoView>(Resource.Id.video_view);
+                                //videoView2.Start();
                                 break;
                             }
                         case 2:
@@ -345,6 +364,8 @@ namespace TabletArtco
                                 isPlay = false;
                                 Project.StopSprite();
                                 mediaManager.Stop();
+                                //VideoView videoView1 = FindViewById<VideoView>(Resource.Id.video_view);
+                                //videoView1.StopPlayback();
                                 break;
                             }
                         case 3:
@@ -364,8 +385,12 @@ namespace TabletArtco
             ActivatedSprite.mUpdateDelegate = this;
 
             // video surfaceview
+            //VideoView videoView = FindViewById<VideoView>(Resource.Id.video_view);
             SurfaceView surfaceView = FindViewById<SurfaceView>(Resource.Id.surfaceView);
-            mediaManager = new MediaManager(surfaceView);
+            ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
+            mediaManager = new MediaManager(surfaceView, imgIv, this);
+
+            FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
 
             RelativeLayout activate_block_wrapperview = FindViewById<RelativeLayout>(Resource.Id.activate_block_wrapperview);
             ScrollView activate_block_view = FindViewById<ScrollView>(Resource.Id.activate_block_view);
@@ -431,7 +456,17 @@ namespace TabletArtco
                 containerView.AddView(imgIv, layoutParams);
                 imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 imgList.Add(imgIv);
-                imgIv.SetOnDragListener(this);
+                imgIv.Tag = 100+i;
+                
+                imgIv.SetOnLongClickListener(this);
+            }
+            if (spritesList.Count==1)
+            {
+                ImageView bugIv = new ImageView(this);
+                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(10, 10);
+                layoutParams.LeftMargin = -100;
+                bugIv.SetOnLongClickListener(this);
+                containerView.AddView(bugIv, layoutParams);
             }
         }
 
@@ -495,6 +530,8 @@ namespace TabletArtco
                         layoutParams.LeftMargin = itemW + padding+margin + (itemW+margin)*(j%column);
                         layoutParams.TopMargin = originY;
                         blockView.AddView(view, layoutParams);
+                        view.SetOnLongClickListener(this);
+                        view.Tag = 10000 + i * 1000 + j;
                         List<Dictionary<string, string>> locationList = Block.TextViewLocations(block);
                         if (locationList != null && locationList.Count>0)
                         {
@@ -653,12 +690,18 @@ namespace TabletArtco
 
 
         public void startAnimation() {
-
+            
         }
 
         public void stopAnimation() {
             
         }
+
+        //public override bool OnTouchEvent(MotionEvent e)
+        //{
+        //    LogUtil.CustomLog(e.ToString());
+        //    return base.OnTouchEvent(e);
+        //}
 
         /*
          * ActivateSprite interface
@@ -669,6 +712,26 @@ namespace TabletArtco
             });
         }
 
+
+        bool View.IOnLongClickListener.OnLongClick(View v)
+        {
+            // 创建实现阴影的对象
+            View.DragShadowBuilder builder = new View.DragShadowBuilder(v);
+            //DragShadow Builder builder = new DragShadowBuilder(v);
+            /*开始拖拽并把view对象传递给系统。作为响应startDrag()方法的一部分，
+            *系统调用在View.DragShadowBuilder对象中定义的回调方法
+            *来获取拖拽影子。
+            */
+            dragView = v;
+            //builder.View.Alpha = 1;
+            v.StartDragAndDrop(null, builder, null, (int)DragFlags.Opaque);
+            //v.StartDragAndDrop(null, builder, null, 0);
+            //v.Alpha = 0.01f;
+            v.Visibility = ViewStates.Invisible;
+
+            return true;
+        }
+
         /*
          *
          * OnDrag interface
@@ -676,7 +739,119 @@ namespace TabletArtco
          */
         bool View.IOnDragListener.OnDrag(View v, DragEvent e)
         {
-            LogUtil.CustomLog(e.ToString());
+            bool result = true;
+
+            //获取拖拽的动作类型值
+            DragAction action = e.Action;
+            switch(action) {
+                case DragAction.Started:
+                    {
+                        //if (view.getId() == R.id.ivClock)
+                        //{
+                        //    Log.i("main", "开始拖拽clock");
+                        //}
+                        if ((int)dragView.Tag < 10000 && (v.Id == Resource.Id.left_border || v.Id==Resource.Id.top_border || v.Id == Resource.Id.right_border || v.Id == Resource.Id.bottom_border))
+                        {
+                            return false;
+                        }
+                        LogUtil.CustomLog("Started--------------------x:" + e.GetX() + ", y:" + e.GetY());
+                        break;
+                    }
+               
+                
+                case DragAction.Location:
+                    {
+                        //if (view.getId() == R.id.tvStart)
+                        //{
+                        //    Log.i("main", "clock仍在启动区");
+                        //}
+                        if (dragView != null && (int)dragView.Tag < 10000) 
+                        {
+                            FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
+                            if (e.GetX()<containerView.Left || e.GetY()<containerView.Top || e.GetX()>containerView.Left+containerView.Width || e.GetY()>containerView.Top+containerView.Height) 
+                            {
+                          
+                                return false;
+                            }
+                            Rect rect = new Rect(containerView.Left, containerView.Top, containerView.Width + containerView.Left, containerView.Height + containerView.Top);
+                        }
+                        LogUtil.CustomLog("Location--------------------x:" + e.GetX() + ", y:" + e.GetY());
+                        break;
+                    }
+                case DragAction.Drop:
+                    {
+
+
+
+                        //if (view.getId() == R.id.tvShare)
+                        //{
+
+                        //    Log.i("main", "分享clock");
+
+                        //}
+                        //else if(view.getId() == R.id.tvStart)
+                        //{
+
+                        //    Log.i("main", "启动clock");
+
+                        //}
+                        //else if(view.getId() == R.id.tvUninstall)
+                        //{
+
+                        //    Log.i("main", "卸载clock");
+
+                        //}
+                        
+                        
+
+                        LogUtil.CustomLog("Drop--------------------x:" + e.GetX() + ", y:" + e.GetY());
+                        break;
+                    }
+                case DragAction.Ended:
+                    {
+                        LogUtil.CustomLog("Ended--------------------x:" + e.GetX() + ", y:" + e.GetY());
+                        if (dragView != null) {
+                            if ((int)dragView.Tag<10000)
+                            {
+                                
+                                
+                            }
+                            v.Alpha = 1;
+                            dragView.Visibility = ViewStates.Visible;
+                        }                        
+                        //Log.i("main", "拖拽结束，在drop事件之后发生");
+                        break;
+                    }
+                case DragAction.Entered:
+                    {
+                        //if (view.getId() == R.id.tvStart)
+                        //{
+                        //    Log.i("main", "clock进入启动区");
+                        //}
+                        LogUtil.CustomLog("Entered--------------------x:" + e.GetX() + ", y:" + e.GetY());
+                        break;
+                    }
+                case DragAction.Exited:
+                    {
+                        //if (view.getId() == R.id.tvStart)
+                        //{
+                        //    Log.i("main", "clock离开启动区");
+                        //}
+                        //v.Visibility = ViewStates.Visible;
+                        if (dragView != null)
+                        {
+                            dragView.Visibility = ViewStates.Visible;
+                            v.Alpha = 1;
+                        }
+                        LogUtil.CustomLog("Exited--------------------x:" + e.GetX() + ", y:" + e.GetY());
+                        break;
+                    }
+                default:
+                    LogUtil.CustomLog("default--------------------x:" + e.GetX() + ", y:" + e.GetY());
+                    result =false;
+                    break;
+            }
+            //LogUtil.CustomLog(e.ToString());
             return true;
         }
 

@@ -104,7 +104,9 @@ namespace TabletArtco
         public static void CustomLog(string message) {
             if (isDebug)
             {
+                Android.Util.Log.Info("LogUtil", "\n");
                 Android.Util.Log.Info("LogUtil", message);
+                Android.Util.Log.Info("LogUtil", "\n");
             }
         }
 
@@ -112,7 +114,9 @@ namespace TabletArtco
         {
             if (isDebug)
             {
-                Android.Util.Log.Info(tag, message);
+                Android.Util.Log.Info("LogUtil", "\n");
+                Android.Util.Log.Info("LogUtil", "tag: " + tag + ",   message:" + message);
+                Android.Util.Log.Info("LogUtil", "\n");
             }
         }
     }
