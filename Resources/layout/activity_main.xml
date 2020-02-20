@@ -205,29 +205,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"/>
                 </FrameLayout>
-                <RelativeLayout
-                    android:id="@+id/border_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp">
-                    <FrameLayout
-                        android:id="@+id/left_border"
-                        android:layout_width="2dp"
-                        android:layout_height="match_parent"/>
-                    <FrameLayout
-                        android:id="@+id/top_border"
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"/>
-                    <FrameLayout
-                        android:id="@+id/right_border"
-                        android:layout_width="2dp"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentRight="true"/>
-                    <FrameLayout
-                        android:id="@+id/bottom_border"
-                        android:layout_width="match_parent"
-                        android:layout_height="3px"
-                        android:layout_alignParentBottom="true"/>
-                </RelativeLayout>
 				<RelativeLayout
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"

@@ -118,11 +118,23 @@ namespace TabletArtco
             return count;
         }
 
-        public void SetOriginPoint(int x, int y) {
-            originPoint.X = x;
-            originPoint.Y = y;
-            curPoint.X = x;
-            curPoint.Y = y;
+        public void AddToOriginPoint(int x, int y) {
+
+            Bitmap bitmap = originBitmapList[0];
+            int width = bitmap.Width;
+            int height = bitmap.Height;
+            int mW = notFullSize.Width - width + 1;
+            int mH = notFullSize.Height - height + 1;
+
+            int oX = originPoint.X + x;
+            int oY = originPoint.Y + y;
+            
+
+            originPoint.X = oX < 0 ? 0 : oX > mW ? mW : oX;
+            originPoint.Y = oY < 0 ? 0 : oY > mH ? mH : oY;
+            curPoint.X = originPoint.X;
+            curPoint.Y = originPoint.Y;
+            mUpdateDelegate?.UpdateView();
         }
 
         public void InvalidateStage()

@@ -242,6 +242,7 @@
     <Compile Include="Adapters\ListAdapter.cs" />
     <Compile Include="Model\Sound.cs" />
     <Compile Include="TestActivity.cs" />
+    <Compile Include="Views\DragImgView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
