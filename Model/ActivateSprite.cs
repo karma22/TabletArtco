@@ -107,6 +107,7 @@ namespace TabletArtco
             else {
                 list.Remove(list[column]);
             }
+            ResetRowColumn();
         }
 
         public bool ExchangeBlock(int row, int column, int r, int c) {
@@ -140,6 +141,7 @@ namespace TabletArtco
                     list.Remove(block);
                     list.Insert(c, block);
                 }
+                ResetRowColumn();
                 return true;
             }
             else
@@ -156,16 +158,29 @@ namespace TabletArtco
                 {
                     list1.Insert(c, block);
                 }
+                ResetRowColumn();
                 return true;
             }
-
-
         }
 
         //清除积木 clear block
         public void ClearCode()
         {
             mBlocks.RemoveRange(0, mBlocks.Count);
+            ResetRowColumn();
+        }
+
+        private void ResetRowColumn() {
+            for (int i = 0; i < mBlocks.Count; i++)
+            {
+                List<Block> list = mBlocks[i];
+                for (int j = 0; j < list.Count; j++)
+                {
+                    Block block = list[j];
+                    block.row = i;
+                    block.index = j;
+                }
+            }
         }
 
         public void ChangeMode()

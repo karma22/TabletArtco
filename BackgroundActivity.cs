@@ -15,6 +15,8 @@ namespace TabletArtco
         private int mItemW;
         private int mItemH;
         private int mIndex;
+
+        private Block block;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -22,7 +24,28 @@ namespace TabletArtco
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_grid);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
+            InitData();
             InitView();
+        }
+
+        private void InitData() {
+            Intent intent = this.Intent;
+            Bundle bundle = intent.GetBundleExtra("bundle");
+            int index = bundle.GetInt("index");
+            int row = bundle.GetInt("row");
+            int column = bundle.GetInt("column");
+            if (index != -1 && index<Project.mSprites.Count)
+            {
+                ActivatedSprite activatedSprite = Project.mSprites[index];
+                if (row != -1 && row<activatedSprite.mBlocks.Count)
+                {
+                    List<Block> list = activatedSprite.mBlocks[row];
+                    if (column != -1 && column<list.Count)
+                    {
+                        block = list[column];
+                    }
+                }
+            }
         }
 
         private void InitView()
@@ -162,11 +185,15 @@ namespace TabletArtco
             Bundle bundle = new Bundle();
             bundle.PutString("model", background.ToString());
             intent.PutExtra("bundle", bundle);
+            if (block != null)
+            {
+                block.text = background.name;
+                block.varName = background.remotePreviewImgPath;
+                block.varValue = background.remoteVideoPath;
+            }
             SetResult(Result.Ok, intent);
             Finish();
         }
-
-
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
         class ViewHolder : Java.Lang.Object

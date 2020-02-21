@@ -60,17 +60,12 @@ namespace TabletArtco
                     rawX = e.GetX();
                     rawY = e.GetY();
                     currentTime = Java.Lang.JavaSystem.CurrentTimeMillis();
-                    LogUtil.CustomLog("Down---x:" + e.GetX() + ", y: " + e.GetY());
                     break;
                 case MotionEventActions.Move:
                     if (time- nap > currentTime)
                     {
-                        //MoveAction?.Invoke(this, e.GetX()- rawX, e.GetY()- rawY);
-                        //rawX = e.GetX();
-                        //rawY = e.GetY();
                         MoveAction?.Invoke(this, e.GetX()-rawX, e.GetY()-rawY);
                     }
-                    LogUtil.CustomLog("Move---x:" + e.GetX() + ", y: " + e.GetY());
                     break;
                 case MotionEventActions.Up:
                     if (time - nap <= currentTime)
@@ -79,12 +74,8 @@ namespace TabletArtco
                     }
                     else
                     {
-                        //MoveAction?.Invoke(this, e.GetX() - rawX, e.GetY() - rawY);
-                        //rawX = e.GetX();
-                        //rawY = e.GetY();
                         MoveAction?.Invoke(this, e.GetX() - rawX, e.GetY() - rawY);
                     }
-                    LogUtil.CustomLog("Up---x:" + e.GetX() + ", y: " + e.GetY());
                     break;
             }
             return true;

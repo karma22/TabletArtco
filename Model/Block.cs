@@ -92,9 +92,9 @@ namespace TabletArtco
                     List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
                     Dictionary<string, string> dic = new Dictionary<string, string>();
                     dic.Add("x", 12 / 70.0 + "");
-                    dic.Add("y", 48 / 70.0 + "");
+                    dic.Add("y", 46 / 70.0 + "");
                     dic.Add("w", 47 / 70.0 + "");
-                    dic.Add("h", 10 / 70.0 + "");
+                    dic.Add("h", 15 / 70.0 + "");
                     dic.Add("text", string.IsNullOrEmpty(block.text) ? block.varName : block.text);
                     list.Add(dic);
                     return list;
@@ -108,9 +108,9 @@ namespace TabletArtco
                     List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
                     Dictionary<string, string> dic = new Dictionary<string, string>();
                     dic.Add("x", 12 / 70.0 + "");
-                    dic.Add("y", 48 / 70.0 + "");
+                    dic.Add("y", 46 / 70.0 + "");
                     dic.Add("w", 47 / 70.0 + "");
-                    dic.Add("h", 10 / 70.0 + "");
+                    dic.Add("h", 14 / 70.0 + "");
                     dic.Add("text", block.text);
                     list.Add(dic);
                     return list;
@@ -124,9 +124,9 @@ namespace TabletArtco
                     List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
                     Dictionary<string, string> dic = new Dictionary<string, string>();
                     dic.Add("x", 9 / 70.0 + "");
-                    dic.Add("y", 30 / 70.0 + "");
-                    dic.Add("w", 47 / 70.0 + "");
-                    dic.Add("h", 10 / 70.0 + "");
+                    dic.Add("y", 28 / 70.0 + "");
+                    dic.Add("w", 53 / 70.0 + "");
+                    dic.Add("h", 16 / 70.0 + "");
                     dic.Add("text", block.text);
                     list.Add(dic);
                     return list;
@@ -135,21 +135,21 @@ namespace TabletArtco
             List<string> FourList = new List<string> { "ControlChangeVal", "ControlSetVal"};
             if (FourList.Contains(block.name))
             {
-                if (!string.IsNullOrEmpty(block.text) && !string.IsNullOrEmpty(block.varName))
+                if (!string.IsNullOrEmpty(block.varName) && !string.IsNullOrEmpty(block.varValue))
                 {
                     List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
                     Dictionary<string, string> dic = new Dictionary<string, string>();
                     dic.Add("x", 27 / 100.0f + "");
-                    dic.Add("y", 27 / 100.0f + "");
-                    dic.Add("w", 60 / 100.0f + "");
-                    dic.Add("h", 19 / 100.0f + "");
+                    dic.Add("y", 24 / 100.0f + "");
+                    dic.Add("w", 63 / 100.0f + "");
+                    dic.Add("h", 24 / 100.0f + "");
                     dic.Add("text", block.varName);
                     Dictionary<string, string> dic1 = new Dictionary<string, string>();
-                    dic1.Add("x", 47 / 100.0f + "");
-                    dic1.Add("y", 60 / 100.0f + "");
-                    dic1.Add("w", 40 / 100.0f + "");
-                    dic1.Add("h", 19 / 100.0f + "");
-                    dic1.Add("text", block.text);
+                    dic1.Add("x", 42 / 100.0f + "");
+                    dic1.Add("y", 58 / 100.0f + "");
+                    dic1.Add("w", 46 / 100.0f + "");
+                    dic1.Add("h", 24 / 100.0f + "");
+                    dic1.Add("text", block.varValue);
                     list.Add(dic);
                     list.Add(dic1);
                     return list;

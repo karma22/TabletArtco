@@ -118,6 +118,16 @@ namespace TabletArtco
                         }
                         break;
                     }
+                case 8:
+                    {
+                        UpdateBlockView();
+                        break;
+                    }
+                case 9:
+                    {
+                        UpdateBlockView();
+                        break;
+                    }
                 case 10:
                     {
 
@@ -453,7 +463,6 @@ namespace TabletArtco
                     {
                         activatedSprite.AddToOriginPoint((int)x, (int)y);
                     }
-                    //LogUtil.CustomLog("x:" + x + ", y: " + y);
                 };
                 imgIv.ClickAction += (t) =>
                 {
@@ -542,7 +551,9 @@ namespace TabletArtco
                                 tvparams.LeftMargin = (int)x;
                                 tvparams.TopMargin = (int)y;
                                 tv.Text = dic["text"];
-                                tv.TextSize = h;
+                                tv.TextSize = h/2.8f;
+                                tv.SetPadding(0,0,0,0);
+                                tv.TextAlignment = TextAlignment.Center;
                                 view.AddView(tv, tvparams);
                             }
                         }
@@ -664,10 +675,11 @@ namespace TabletArtco
                                     case 8:
                                     case 9: {
                                             // click activate block to select background
-                                            Intent intent = new Intent(this, clickType == 7 ? typeof(SoundActivity) : typeof(BackgroundActivity));
+                                            Intent intent = new Intent(this, clickType == 8 ? typeof(SoundActivity) : typeof(BackgroundActivity));
                                             Bundle bundle = new Bundle();
-                                            bundle.PutInt("row", i);
-                                            bundle.PutInt("column", j);
+                                            bundle.PutInt("index", mSpriteIndex);
+                                            bundle.PutInt("row", block.row);
+                                            bundle.PutInt("column", block.index);
                                             intent.PutExtra("bundle", bundle);
                                             StartActivityForResult(intent, clickType, null);
                                             break;
@@ -743,7 +755,6 @@ namespace TabletArtco
                     }
                 case DragAction.Drop:
                     {
-                        LogUtil.CustomLog("Drop--------------------x:" + e.GetX() + ", y:" + e.GetY());
                         if (v.Id == Resource.Id.left_blocks_view_wrapper)
                         {
                             int tag = (int)dragView.Tag;
@@ -784,7 +795,6 @@ namespace TabletArtco
                                     r = firstY + r * add < y ? r : r - 1;
                                     int c = Math.Round((x - firstX) / add);
                                     c = firstX + c * add < x ? c : c - 1;
-                                    LogUtil.CustomLog("row==" + r + ", column == " + c);
                                     if (c<columnNum)
                                     {
                                         int cc = 0;
@@ -809,7 +819,6 @@ namespace TabletArtco
                                             }
                                             i++;
                                         }
-                                        LogUtil.CustomLog("row==" + r + ", column == " + c);
                                         if (activatedSprite.ExchangeBlock(row, column, r, c))
                                         {
                                             UpdateBlockView();
@@ -827,7 +836,6 @@ namespace TabletArtco
                         {
                             dragView.Visibility = ViewStates.Visible;
                         }
-                        LogUtil.CustomLog("Ended--------------------x:" + e.GetX() + ", y:" + e.GetY());
                         break;
                     }
                 case DragAction.Entered:
@@ -836,7 +844,6 @@ namespace TabletArtco
                     }
                 case DragAction.Exited:
                     {
-                        LogUtil.CustomLog("Exited--------------------x:" + e.GetX() + ", y:" + e.GetY());
                         break;
                     }
                 default:
