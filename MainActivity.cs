@@ -674,12 +674,14 @@ namespace TabletArtco
                                         }
                                     case 8:
                                     case 9: {
+                                            int tag = (int)view.Tag;
+                                            tag = tag - tag / 10000 * 10000;
                                             // click activate block to select background
                                             Intent intent = new Intent(this, clickType == 8 ? typeof(SoundActivity) : typeof(BackgroundActivity));
                                             Bundle bundle = new Bundle();
                                             bundle.PutInt("index", mSpriteIndex);
                                             bundle.PutInt("row", block.row);
-                                            bundle.PutInt("column", block.index);
+                                            bundle.PutInt("column", tag);
                                             intent.PutExtra("bundle", bundle);
                                             StartActivityForResult(intent, clickType, null);
                                             break;
