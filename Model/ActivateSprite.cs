@@ -93,7 +93,72 @@ namespace TabletArtco
             }
         }
 
-        public void DeleteBlock(Block block) {
+        public void DeleteBlock(int row, int column)
+        {
+            List<Block> list = mBlocks[row];
+            if (column == 0)
+            {
+                mBlocks.Remove(list);
+                if (curRow >= mBlocks.Count) {
+                    curRow = mBlocks.Count - 1;
+                }
+
+            }
+            else {
+                list.Remove(list[column]);
+            }
+        }
+
+        public bool ExchangeBlock(int row, int column, int r, int c) {
+            // same row and column
+            if (row == r && column == c)
+            {
+                return false;
+            }
+
+            if (c == 0)
+            {
+                return false;
+            }
+
+            if (row == r)
+            {
+                List<Block> list = mBlocks[row];
+                if (column >= list.Count && c >= list.Count)
+                {
+                    return false;
+                }
+                if (c > list.Count - 1)
+                {
+                    Block block = list[column];
+                    list.Remove(block);
+                    list.Add(block);
+                }
+                else
+                {
+                    Block block = list[column];
+                    list.Remove(block);
+                    list.Insert(c, block);
+                }
+                return true;
+            }
+            else
+            {
+                List<Block> list = mBlocks[row];
+                Block block = list[column];
+                list.Remove(block);
+                List<Block> list1 = mBlocks[r];
+                if (c >= list1.Count)
+                {
+                    list1.Add(block);
+                }
+                else
+                {
+                    list1.Insert(c, block);
+                }
+                return true;
+            }
+
 
         }
 
@@ -129,7 +194,6 @@ namespace TabletArtco
             int oX = originPoint.X + x;
             int oY = originPoint.Y + y;
             
-
             originPoint.X = oX < 0 ? 0 : oX > mW ? mW : oX;
             originPoint.Y = oY < 0 ? 0 : oY > mH ? mH : oY;
             curPoint.X = originPoint.X;

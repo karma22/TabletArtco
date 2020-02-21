@@ -149,6 +149,7 @@
                     android:src="@drawable/Button_effect_deactivation"/>
             </LinearLayout>
             <ScrollView
+                android:id="@+id/left_blocks_view_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="none"

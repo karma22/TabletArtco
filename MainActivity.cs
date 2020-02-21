@@ -239,7 +239,10 @@ namespace TabletArtco
                 };
             }
             ChangeLeftList(0);
+            FindViewById<ScrollView>(Resource.Id.left_blocks_view_wrapper).SetOnDragListener(this);
         }
+
+
 
         //change left blocks list
         public void ChangeLeftList(int index)
@@ -301,22 +304,6 @@ namespace TabletArtco
             mainView.SetPadding(paddingL, paddingT, paddingL, 0);
             ViewUtil.SetViewHeight(mainView, (int)height);
             ViewUtil.SetViewHeight(centerView, (int)(481 / 549.0 * height));
-
-            //RelativeLayout border_view = FindViewById<RelativeLayout>(Resource.Id.border_view);
-            //ViewUtil.SetViewHeight(centerView, (int)(481 / 549.0 * height)+3);
-            //FrameLayout leftBorderView = FindViewById<FrameLayout>(Resource.Id.left_border);
-            //FrameLayout topBorderView = FindViewById<FrameLayout>(Resource.Id.top_border);
-            //FrameLayout rightBorderView = FindViewById<FrameLayout>(Resource.Id.right_border);
-            //FrameLayout bottomBorderView = FindViewById<FrameLayout>(Resource.Id.bottom_border);
-            //ViewUtil.SetViewWidth(leftBorderView, paddingL);
-            //ViewUtil.SetViewHeight(topBorderView, paddingT);
-            //ViewUtil.SetViewWidth(rightBorderView, paddingL);
-            //leftBorderView.SetOnDragListener(this);
-            //topBorderView.SetOnDragListener(this);
-            //rightBorderView.SetOnDragListener(this);
-            //bottomBorderView.SetOnDragListener(this);
-
-
 
             int[] btsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
             int itemW = (int)(42 / 549.0 * height);
@@ -391,10 +378,11 @@ namespace TabletArtco
             mediaManager = new MediaManager(surfaceView, imgIv, this);
 
             FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
-            containerView.SetOnDragListener(this);
-
             RelativeLayout activate_block_wrapperview = FindViewById<RelativeLayout>(Resource.Id.activate_block_wrapperview);
             ScrollView activate_block_view = FindViewById<ScrollView>(Resource.Id.activate_block_view);
+            
+            FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.block_view);
+            blockView.SetOnDragListener(this);
             ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0-ScreenUtil.dip2px(this, 8)));
             // scale button
             FindViewById<ImageView>(Resource.Id.bt_scale).Click += (t, e) =>
@@ -469,20 +457,12 @@ namespace TabletArtco
                 };
                 imgIv.ClickAction += (t) =>
                 {
-
+                    if (!isPlay)
+                    {
+                        LongClickItem(i);
+                    }
                 };
-               
-                
-                //imgIv.SetOnLongClickListener(this);
             }
-            //if (spritesList.Count==1)
-            //{
-            //    ImageView bugIv = new ImageView(this);
-            //    FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(10, 10);
-            //    layoutParams.LeftMargin = -100;
-            //    bugIv.SetOnLongClickListener(this);
-            //    containerView.AddView(bugIv, layoutParams);
-            //}
         }
 
         // update main screen animate sprite imageview location and visibility
@@ -546,7 +526,7 @@ namespace TabletArtco
                         layoutParams.TopMargin = originY;
                         blockView.AddView(view, layoutParams);
                         view.SetOnLongClickListener(this);
-                        view.Tag = 10000 + i * 1000 + j;
+                        view.Tag =  i * 10000 + j;
                         List<Dictionary<string, string>> locationList = Block.TextViewLocations(block);
                         if (locationList != null && locationList.Count>0)
                         {
@@ -737,23 +717,8 @@ namespace TabletArtco
             *系统调用在View.DragShadowBuilder对象中定义的回调方法
             *来获取拖拽影子。
             */
-            if ((int)v.Tag < 10000)
-            {
-                FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
-                containerView.SetOnDragListener(this);
-                Window.DecorView.SetOnDragListener(null);
-            }
-            else
-            {
-                FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
-                containerView.SetOnDragListener(null);
-                Window.DecorView.SetOnDragListener(this);
-            }
             dragView = v;
-            //builder.View.Alpha = 1;
             v.StartDragAndDrop(null, builder, null, (int)DragFlags.Opaque);
-            //v.StartDragAndDrop(null, builder, null, 0);
-            //v.Alpha = 0.01f;
             v.Visibility = ViewStates.Invisible;
             return true;
         }
@@ -765,8 +730,6 @@ namespace TabletArtco
          */
         bool View.IOnDragListener.OnDrag(View v, DragEvent e)
         {
-            bool result = true;
-
             //获取拖拽的动作类型值
             DragAction action = e.Action;
             switch(action) {
@@ -776,67 +739,109 @@ namespace TabletArtco
                     }
                 case DragAction.Location:
                     {
-                        if (dragView != null && (int)dragView.Tag < 10000) 
-                        {
-                            FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
-                            if (e.GetX()<containerView.Left || e.GetY()<containerView.Top || e.GetX()>containerView.Left+containerView.Width || e.GetY()>containerView.Top+containerView.Height) 
-                            {
-                          
-                                
-                            }
-                            Rect rect = new Rect(containerView.Left, containerView.Top, containerView.Width + containerView.Left, containerView.Height + containerView.Top);
-                        }
-                        LogUtil.CustomLog("Location--------------------x:" + e.GetX() + ", y:" + e.GetY());
                         break;
                     }
                 case DragAction.Drop:
                     {
                         LogUtil.CustomLog("Drop--------------------x:" + e.GetX() + ", y:" + e.GetY());
+                        if (v.Id == Resource.Id.left_blocks_view_wrapper)
+                        {
+                            int tag = (int)dragView.Tag;
+                            int row = tag / 10000;
+                            int column = tag - row * 10000;
+                            ActivatedSprite activatedSprite = spritesList[mSpriteIndex];
+                            activatedSprite.DeleteBlock(row, column);
+                            UpdateBlockView();
+                            dragView = null;
+                        }
+                        else if (v.Id == Resource.Id.block_view)
+                        {
+                            int tag = (int)dragView.Tag;
+                            int row = tag / 10000;
+                            int column = tag - row * 10000;
+                            if (column != 0)
+                            {
+                                int width = (int)(ScreenUtil.ScreenWidth(this) * 890 / 1280.0) - ScreenUtil.dip2px(this, 30);
+                                int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - ScreenUtil.dip2px(this, 28));
+
+                                int margin = 10;
+                                int itemW = (int)((GridViewH - margin) / 2.0);
+                                LogUtil.CustomLog("itemW="+itemW + ", width=" + width);
+                                int padding = 10;
+                                int columnNum = (width - padding * 2) / (itemW + margin);
+                                padding = (width - columnNum * itemW - (columnNum - 1) * margin) / 2;
+                                columnNum = columnNum - 1;
+                                float x = e.GetX();
+                                float y = e.GetY();
+                                int firstX = itemW + padding + margin-margin/2;
+                                int firstY = -margin/2;
+                                int add = itemW + margin;
+                                if (x>firstX)
+                                {
+                                    ActivatedSprite activatedSprite = spritesList[mSpriteIndex];
+                                    List<List<Block>> blockList = activatedSprite.mBlocks;
+                                    int r = Math.Round((y - firstY) / add);
+                                    r = firstY + r * add < y ? r : r - 1;
+                                    int c = Math.Round((x - firstX) / add);
+                                    c = firstX + c * add < x ? c : c - 1;
+                                    LogUtil.CustomLog("row==" + r + ", column == " + c);
+                                    if (c<columnNum)
+                                    {
+                                        int cc = 0;
+                                        bool isTrue = true;
+                                        int i = 0;
+                                        while (isTrue) {
+                                            if (i < blockList.Count)
+                                            {
+                                                List<Block> list = blockList[i];
+                                                int temp = list.Count / columnNum + (list.Count % columnNum == 0 ? 0 : 1);
+                                                cc += temp;
+                                                if (r < cc)
+                                                {
+                                                    c = (r - (cc - temp)) * columnNum + c;
+                                                    r = i;
+                                                    isTrue = false;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                isTrue = false;
+                                            }
+                                            i++;
+                                        }
+                                        LogUtil.CustomLog("row==" + r + ", column == " + c);
+                                        if (activatedSprite.ExchangeBlock(row, column, r, c))
+                                        {
+                                            UpdateBlockView();
+                                            dragView = null;
+                                        }   
+                                    }
+                                }
+                            }
+                        }
                         break;
                     }
                 case DragAction.Ended:
                     {
-                        LogUtil.CustomLog("Ended--------------------x:" + e.GetX() + ", y:" + e.GetY());
-                        if (dragView != null) {
-                            if ((int)dragView.Tag<10000)
-                            {
-                                
-                                
-                            }
-                            v.Alpha = 1;
+                        if (dragView != null)
+                        {
                             dragView.Visibility = ViewStates.Visible;
-                        }                        
-                        //Log.i("main", "拖拽结束，在drop事件之后发生");
+                        }
+                        LogUtil.CustomLog("Ended--------------------x:" + e.GetX() + ", y:" + e.GetY());
                         break;
                     }
                 case DragAction.Entered:
                     {
-                        //if (view.getId() == R.id.tvStart)
-                        //{
-                        //    Log.i("main", "clock进入启动区");
-                        //}
-                        LogUtil.CustomLog("Entered--------------------x:" + e.GetX() + ", y:" + e.GetY());
                         break;
                     }
                 case DragAction.Exited:
                     {
-                        //v.Visibility = ViewStates.Visible;
-                        if (dragView != null)
-                        {
-                            dragView.Visibility = ViewStates.Visible;
-                            v.Alpha = 1;
-                        }
-                        
-                        return false;
                         LogUtil.CustomLog("Exited--------------------x:" + e.GetX() + ", y:" + e.GetY());
                         break;
                     }
                 default:
-                    LogUtil.CustomLog("default--------------------x:" + e.GetX() + ", y:" + e.GetY());
-                    result =false;
                     break;
             }
-            //LogUtil.CustomLog(e.ToString());
             return true;
         }
 

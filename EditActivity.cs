@@ -125,7 +125,7 @@ namespace TabletArtco
             {
 
             };
-            mCustomView.AddBitmap(operateList[0]);
+            //mCustomView.AddBitmap(operateList[0]);
             RelativeLayout.LayoutParams conParams = new RelativeLayout.LayoutParams(areaParams.Width, areaParams.Height);
             conParams.AddRule(LayoutRules.CenterInParent);
             areaView.AddView(mCustomView, conParams);
