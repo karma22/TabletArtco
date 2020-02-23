@@ -1673,7 +1673,11 @@
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\sprite_menu.xml">
+    <AndroidResource Include="Resources\drawable\xml_asprite_item_bg_n.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\xml_asprite_item_bg_s.xml">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
@@ -1686,7 +1690,6 @@
     <Folder Include="Manager\" />
     <Folder Include="Resources\animation\" />
     <Folder Include="Resources\raw\" />
-    <Folder Include="Resources\menu\" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\Stage_Default.mp4" />

@@ -517,9 +517,9 @@ namespace TabletArtco
             int column = (width - padding * 2) / (itemW + margin);
             padding = (width - column * itemW - (column - 1) * margin)/2;
             column = column - 1;
+            blockView.RemoveAllViews();
             if (mSpriteIndex > -1)
             {
-                blockView.RemoveAllViews();
                 ActivatedSprite activatedSprite = spritesList[mSpriteIndex];
                 List<List<Block>> blockList = activatedSprite.mBlocks;
 
@@ -886,7 +886,7 @@ namespace TabletArtco
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
             holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
             holder.nameTv = convertView.FindViewById<TextView>(Resource.Id.sprite_tv);
-            holder.bgIv.SetBackgroundResource(Resource.Drawable.xml_gridview_bg);    
+            holder.deleteFl = convertView.FindViewById<FrameLayout>(Resource.Id.delete_fl);
             convertView.Tag = holder;
             convertView.Click += (t, e) =>
             {
@@ -900,6 +900,25 @@ namespace TabletArtco
                 int position = (int)viewHolder.bgIv.Tag;
                 LongClickItem(position, (View)t);
             };
+            holder.deleteFl.Click += (t, e) =>
+            {
+                int position = (int) ((FrameLayout)t).Tag;
+                Project.mSprites.RemoveAt(position);
+                if (Project.mSprites.Count <= 0)
+                {
+                    mSpriteIndex = -1;
+                    mSpriteAdapter.NotifyDataSetChanged();
+                    addSpriteView();
+                    UpdateBlockView();
+                }
+                else
+                {
+                    mSpriteIndex = mSpriteIndex >= Project.mSprites.Count ? 0 : mSpriteIndex;
+                    mSpriteAdapter.NotifyDataSetChanged();
+                    addSpriteView();
+                    UpdateBlockView();
+                }
+            };
             return convertView;
         }
 
@@ -908,6 +927,9 @@ namespace TabletArtco
             ActivatedSprite sprite = spritesList[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             viewHolder.bgIv.Tag = position;
+            viewHolder.deleteFl.Tag = position;
+            
+            viewHolder.bgIv.SetBackgroundResource(position == mSpriteIndex ? Resource.Drawable.xml_asprite_item_bg_s : Resource.Drawable.xml_asprite_item_bg_n);
             Glide.With(this).Load(GlideUtil.GetGlideUrl(sprite.sprite.remotePath)).Into(viewHolder.imgIv);
             viewHolder.nameTv.Text = sprite.sprite.name;
         }
@@ -917,21 +939,12 @@ namespace TabletArtco
             if (mSpriteIndex == position)
             {
                 mLongPressSpriteIndex = position;
-                PopupMenu popupMenu = new PopupMenu(view.Context, view);
-                popupMenu.Menu.Add("克隆");
-                popupMenu.Menu.Add("保存");
-                popupMenu.Menu.Add("复制积木");
-                popupMenu.Menu.Add("粘贴积木");
-                popupMenu.Menu.Add("重新定位");
-                popupMenu.Menu.Add("往后送");
-                popupMenu.Menu.Add("编辑");
-
-                popupMenu.SetOnMenuItemClickListener(this);
-                popupMenu.Show();
+                ShowMenu(view);
             }
             else
             {
                 mSpriteIndex = position;
+                mSpriteAdapter.NotifyDataSetChanged();
                 UpdateBlockView();
             }
         }
@@ -939,6 +952,10 @@ namespace TabletArtco
         public void LongClickItem(int position, View view) 
         {
             mLongPressSpriteIndex = position;
+            ShowMenu(view);
+        }
+
+        public void ShowMenu(View view) {
             PopupMenu popupMenu = new PopupMenu(view.Context, view);
             popupMenu.Menu.Add("克隆");
             popupMenu.Menu.Add("保存");
@@ -1021,6 +1038,7 @@ namespace TabletArtco
             public ImageView bgIv;
             public ImageView imgIv;
             public TextView nameTv;
+            public FrameLayout deleteFl;
         }
     }
 }

@@ -26,4 +26,15 @@
         android:lines="1"
         android:layout_marginBottom="4dp"
         android:layout_alignParentBottom="true"/>
+    <FrameLayout
+        android:id="@+id/delete_fl"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true">
+        <ImageView
+             android:layout_width="20dp"
+             android:layout_height="20dp"
+             android:layout_gravity="center"
+             android:background="#f00"/>
+    </FrameLayout>
 </RelativeLayout>
