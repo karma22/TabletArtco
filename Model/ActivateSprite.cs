@@ -51,9 +51,15 @@ namespace TabletArtco
         public static UpdateDelegate mUpdateDelegate { get; set; }
 
 
-        public ActivatedSprite(Sprite s)
+        public ActivatedSprite(Sprite s, bool isClone = false)
         {
-            sprite = s;
+            sprite  = Sprite.ToSprite(s.ToString());
+            sprite.bitmap = s.bitmap;
+            if (isClone)
+            {
+                sprite.name = sprite.name+"1";
+            }
+            
             curbitmapList.Add(Bitmap.CreateBitmap(sprite.bitmap));
             originBitmapList.Add(sprite.bitmap);
             int width = sprite.bitmap.Width;
@@ -71,6 +77,14 @@ namespace TabletArtco
 
         }
 
+        public void AddBlocks(List<List<Block>> list) {
+            for (int i = 0; i < list.Count; i++)
+            {
+                mBlocks.Add(list[i]);
+            }
+            ResetRowColumn();
+        }
+
         //添加积木 add block
         public void AddBlock(Block block)
         {
@@ -84,7 +98,7 @@ namespace TabletArtco
             }
             else
             {
-                if (mBlocks.Count>0)
+                if (mBlocks.Count > 0)
                 {
                     List<Block> list = mBlocks[curRow];
                     block.row = curRow;
@@ -168,6 +182,19 @@ namespace TabletArtco
         {
             mBlocks.RemoveRange(0, mBlocks.Count);
             ResetRowColumn();
+        }
+
+        public void Location() {
+            Bitmap bitmap = originBitmapList[0];
+            int width = bitmap.Width;
+            int height = bitmap.Height;
+            int x = (int)(1 + Java.Lang.Math.Random() * (notFullSize.Width - width + 1));
+            int y = (int)(1 + Java.Lang.Math.Random() * (notFullSize.Height - height + 1));
+            curPoint.X = Java.Lang.Math.Abs(x);
+            curPoint.Y = Java.Lang.Math.Abs(y);
+            originPoint.X = curPoint.X;
+            originPoint.Y = curPoint.Y;
+            mUpdateDelegate?.UpdateView();
         }
 
         private void ResetRowColumn() {
@@ -280,7 +307,7 @@ namespace TabletArtco
                 }
 
             }
-            BlockThreadList.RemoveRange(0, mBlocks.Count);
+            BlockThreadList.RemoveRange(0, BlockThreadList.Count);
             for (int i = 0; i < originBitmapList.Count; i++)
             { 
                 Bitmap bitmap = curbitmapList[i];

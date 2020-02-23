@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/popup_clone"
+        android:title="克隆"/>
+    <item android:id="@+id/popup_save"
+        android:title="保存/>
+    <item android:id="@+id/popup_copy"
+        android:title="复制积木"/>
+    <item android:id="@+id/popup_paste"
+        android:title="粘贴积木"/>
+    <item android:id="@+id/popup_location"
+        android:title="重新定位"/>
+    <item android:id="@+id/popup_sendback"
+        android:title="往后送"/>
+</menu>

@@ -14,7 +14,7 @@ namespace TabletArtco
 {
 
     [Activity(Theme = "@style/AppTheme")]
-    public class MainActivity : AppCompatActivity, Delegate, DataSource, UpdateDelegate, View.IOnDragListener, View.IOnLongClickListener
+    public class MainActivity : AppCompatActivity, Delegate, DataSource, UpdateDelegate, View.IOnDragListener, View.IOnLongClickListener, PopupMenu.IOnMenuItemClickListener
     {
         private static string Tag = "MainActivity";
         private List<ActivatedSprite> spritesList = Project.mSprites;
@@ -24,6 +24,7 @@ namespace TabletArtco
         private SpriteAdapter mSpriteAdapter;
         private GridAdapter mBlockAdapter;
         private int mSpriteIndex = -1;
+        private int mLongPressSpriteIndex = -1;
         private bool isPlay;
         private MediaManager mediaManager;
         private bool activateBlockScale = false;
@@ -53,7 +54,6 @@ namespace TabletArtco
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
-        
         [System.Obsolete]
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
@@ -290,6 +290,15 @@ namespace TabletArtco
                     {
                         return;
                     }
+                    if (spritesList[mSpriteIndex].mBlocks.Count==0 && tag != 0)
+                    {
+                        Block b = new Block();
+                        b.resourceId = Block.blockTab0ResIds[0];
+                        b.name = Block.blockTab0ResIdStrs[0];
+                        b.tabIndex = 0;
+                        b.index = 0;
+                        spritesList[mSpriteIndex].AddBlock(b);
+                    }
                     Block block = new Block();
                     block.resourceId = resIds[tempIndex];
                     block.name = resIdStrs[tempIndex];
@@ -468,7 +477,11 @@ namespace TabletArtco
                 {
                     if (!isPlay)
                     {
-                        LongClickItem(i);
+                        Intent intent = new Intent(this, typeof(EditActivity));
+                        Bundle bundle = new Bundle();
+                        bundle.PutInt("position", i);
+                        intent.PutExtra("bundle", bundle);
+                        StartActivityForResult(intent, 10, null);
                     }
                 };
             }
@@ -866,25 +879,26 @@ namespace TabletArtco
 
         public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
         {
-            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
+            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_list_sprite, parent, false);
             int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
             ViewUtil.SetViewHeight(convertView, itemW);
             ViewHolder holder = new ViewHolder();
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
             holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
-            holder.bgIv.SetBackgroundResource(Resource.Drawable.xml_gridview_bg);
+            holder.nameTv = convertView.FindViewById<TextView>(Resource.Id.sprite_tv);
+            holder.bgIv.SetBackgroundResource(Resource.Drawable.xml_gridview_bg);    
             convertView.Tag = holder;
             convertView.Click += (t, e) =>
             {
                 ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
                 int position = (int)viewHolder.bgIv.Tag;
-                ClickItem(position);
+                ClickItem(position, (View)t);
             };
             convertView.LongClick += (t, e) =>
             {
                 ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
                 int position = (int)viewHolder.bgIv.Tag;
-                LongClickItem(position);
+                LongClickItem(position, (View)t);
             };
             return convertView;
         }
@@ -895,22 +909,110 @@ namespace TabletArtco
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             viewHolder.bgIv.Tag = position;
             Glide.With(this).Load(GlideUtil.GetGlideUrl(sprite.sprite.remotePath)).Into(viewHolder.imgIv);
+            viewHolder.nameTv.Text = sprite.sprite.name;
         }
 
-        public void ClickItem(int position)
+        public void ClickItem(int position, View view)
         {
-            mSpriteIndex = position;
-            UpdateBlockView();
+            if (mSpriteIndex == position)
+            {
+                mLongPressSpriteIndex = position;
+                PopupMenu popupMenu = new PopupMenu(view.Context, view);
+                popupMenu.Menu.Add("克隆");
+                popupMenu.Menu.Add("保存");
+                popupMenu.Menu.Add("复制积木");
+                popupMenu.Menu.Add("粘贴积木");
+                popupMenu.Menu.Add("重新定位");
+                popupMenu.Menu.Add("往后送");
+                popupMenu.Menu.Add("编辑");
+
+                popupMenu.SetOnMenuItemClickListener(this);
+                popupMenu.Show();
+            }
+            else
+            {
+                mSpriteIndex = position;
+                UpdateBlockView();
+            }
         }
 
-        public void LongClickItem(int position)
+        public void LongClickItem(int position, View view) 
         {
-            mSpriteIndex = position;
-            Intent intent = new Intent(this, typeof(EditActivity));
-            Bundle bundle = new Bundle();
-            bundle.PutInt("position", position);
-            intent.PutExtra("bundle", bundle);
-            StartActivityForResult(intent, 10, null);
+            mLongPressSpriteIndex = position;
+            PopupMenu popupMenu = new PopupMenu(view.Context, view);
+            popupMenu.Menu.Add("克隆");
+            popupMenu.Menu.Add("保存");
+            popupMenu.Menu.Add("复制积木");
+            popupMenu.Menu.Add("粘贴积木");
+            popupMenu.Menu.Add("重新定位");
+            popupMenu.Menu.Add("往后送");
+            popupMenu.Menu.Add("编辑");
+            popupMenu.SetOnMenuItemClickListener(this);
+            popupMenu.Show();
+        }
+
+        public bool OnMenuItemClick(IMenuItem item)
+        {
+            string title = item.ToString();
+            List<string> list = new List<string>() {"克隆","保存","复制积木","粘贴积木","重新定位","往后送", "编辑"};
+            int index = list.IndexOf(title);
+            switch (index) {
+                case 0:
+                    {
+                        ActivatedSprite activatedSprite = spritesList[mLongPressSpriteIndex];
+                        Project.AddSprite(activatedSprite.sprite, true);
+                        ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
+                        mSpriteAdapter.NotifyDataSetChanged();
+                        addSpriteView();
+                        UpdateBlockView();
+                        break;
+                    }
+                case 1:
+                    {
+                        break;
+                    }
+                case 2:
+                    {
+                        ActivatedSprite activatedSprite = spritesList[mLongPressSpriteIndex];
+                        Project.CopyBlocks(activatedSprite.mBlocks);
+                        ToastUtil.ShowToast(this, "复制积木成功");
+                        break;
+                    }
+                case 3:
+                    {
+                        ActivatedSprite activatedSprite = spritesList[mLongPressSpriteIndex];
+                        activatedSprite.AddBlocks(Project.PasteBlocks());
+                        UpdateBlockView();
+                        break;
+                    }
+                case 4:
+                    {
+                        ActivatedSprite activatedSprite = spritesList[mLongPressSpriteIndex];
+                        activatedSprite.Location();
+                        break;
+                    }
+                case 5:
+                    {
+                        ActivatedSprite activatedSprite = spritesList[mLongPressSpriteIndex];
+                        Project.mSprites.Remove(activatedSprite);
+                        Project.mSprites.Insert(0, activatedSprite);
+                        mSpriteAdapter.NotifyDataSetChanged();
+                        addSpriteView();
+                        UpdateBlockView();
+                        break;
+                    }
+                case 6:
+                    {
+                        Intent intent = new Intent(this, typeof(EditActivity));
+                        Bundle bundle = new Bundle();
+                        bundle.PutInt("position", mLongPressSpriteIndex);
+                        intent.PutExtra("bundle", bundle);
+                        StartActivityForResult(intent, 10, null);
+                        break;
+                    }
+                default: break;
+            }
+            return true;
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
@@ -918,6 +1020,7 @@ namespace TabletArtco
         {
             public ImageView bgIv;
             public ImageView imgIv;
+            public TextView nameTv;
         }
     }
 }

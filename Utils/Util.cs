@@ -125,7 +125,7 @@ namespace TabletArtco
     {
         public static void ShowToast(Context cxt, string message)
         {
-            Android.Widget.Toast.MakeText(cxt, "变量值不能为空", Android.Widget.ToastLength.Long).Show();
+            Android.Widget.Toast.MakeText(cxt, message, Android.Widget.ToastLength.Long).Show();
         }
     }
 

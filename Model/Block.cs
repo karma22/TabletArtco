@@ -201,5 +201,25 @@ namespace TabletArtco
         public string varName { get; set; }
         public string varValue { get; set; }
         public string activateSpriteId { get; set; }
+
+        public static Block Copy(Block block) {
+            Block b = new Block();
+            b.category = block.category;
+            b.inputState = block.inputState;
+            b.idx = block.idx;
+            b.remotePath = block.remotePath;
+
+            b.name = block.name;
+            b.resourceId = block.resourceId;
+            b.tabIndex = block.tabIndex;
+            b.row = block.row;
+            b.index = block.index;
+
+            b.text = block.text;
+            b.varName = block.varName;
+            b.varValue = block.varValue;
+            b.activateSpriteId = block.activateSpriteId;
+            return b;
+        }
     }
 }

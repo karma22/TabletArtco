@@ -34,18 +34,21 @@ namespace TabletArtco
         {
             Intent intent = this.Intent;
             Bundle bundle = intent.GetBundleExtra("bundle");
-            int index = bundle.GetInt("index");
-            int row = bundle.GetInt("row");
-            int column = bundle.GetInt("column");
-            if (index != -1 && index < Project.mSprites.Count)
+            if (bundle != null)
             {
-                ActivatedSprite activatedSprite = Project.mSprites[index];
-                if (row != -1 && row < activatedSprite.mBlocks.Count)
+                int index = bundle.GetInt("index");
+                int row = bundle.GetInt("row");
+                int column = bundle.GetInt("column");
+                if (index != -1 && index < Project.mSprites.Count)
                 {
-                    List<Block> list = activatedSprite.mBlocks[row];
-                    if (column != -1 && column < list.Count)
+                    ActivatedSprite activatedSprite = Project.mSprites[index];
+                    if (row != -1 && row < activatedSprite.mBlocks.Count)
                     {
-                        block = list[column];
+                        List<Block> list = activatedSprite.mBlocks[row];
+                        if (column != -1 && column < list.Count)
+                        {
+                            block = list[column];
+                        }
                     }
                 }
             }
