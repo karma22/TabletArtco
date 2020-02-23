@@ -243,6 +243,7 @@
     <Compile Include="Model\Sound.cs" />
     <Compile Include="TestActivity.cs" />
     <Compile Include="Views\DragImgView.cs" />
+    <Compile Include="Adapters\VariableAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -1678,6 +1679,10 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\xml_asprite_item_bg_s.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\item_center_variable.xml">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
