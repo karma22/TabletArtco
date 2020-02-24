@@ -794,8 +794,7 @@ namespace TabletArtco
 
         private void touch_up(float x, float y)
         {
-            mPath.LineTo(x, y);
-            EditTarget target = targetList[mIndex];
+            mPath.LineTo(x, y);            EditTarget target = targetList[mIndex];
             target.Draw(operateType, mPath, "#000000", curStrokeW);
             mPath.Reset();
             updateView();
