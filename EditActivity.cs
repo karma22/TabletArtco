@@ -125,7 +125,7 @@ namespace TabletArtco
             {
 
             };
-            //mCustomView.AddBitmap(operateList[0]);
+            mCustomView.AddBitmap(operateList[0]);
             RelativeLayout.LayoutParams conParams = new RelativeLayout.LayoutParams(areaParams.Width, areaParams.Height);
             conParams.AddRule(LayoutRules.CenterInParent);
             areaView.AddView(mCustomView, conParams);
@@ -387,7 +387,7 @@ namespace TabletArtco
             eraserPaint.SetStyle(Paint.Style.Stroke);
             eraserPaint.AntiAlias = true;
             eraserPaint.Alpha = 0;
-            eraserPaint.SetXfermode(new PorterDuffXfermode(PorterDuff.Mode.DstIn));
+            eraserPaint.SetXfermode(new PorterDuffXfermode(PorterDuff.Mode.Clear));
 
             drawPaint = new Paint();
             drawPaint.AntiAlias = true;
@@ -629,7 +629,6 @@ namespace TabletArtco
             targetList.Add(target);
             updateView();
         }
-
         // 删除照片
         public void DeleteBitmap(int position)
         {

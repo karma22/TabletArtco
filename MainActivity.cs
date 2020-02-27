@@ -503,6 +503,7 @@ namespace TabletArtco
                 }
             };
 
+            FindViewById<ImageView>(Resource.Id.bt_add).Visibility = ViewStates.Gone;
             // add variable button
             //FindViewById<ImageView>(Resource.Id.bt_add).Click += (t, e) =>
             //{

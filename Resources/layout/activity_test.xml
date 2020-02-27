@@ -7,8 +7,74 @@
 	android:layout_height="match_parent"
 	android:orientation="vertical"
 	android:background="@drawable/PictureEditing_Background">
-	<RelativeLayout
+	<!--Top view-->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/edit_bg"/>
+        android:layout_height="0px"
+        android:layout_weight="57"
+        android:gravity="center"
+        android:paddingTop="2px">
+        <ImageView
+            android:id="@+id/edit_logo_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/edit_logo"/>
+        <ImageView
+            android:id="@+id/edit_title_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/edit_title"/>    
+    </LinearLayout>
+    <!--Bottom view-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="743"
+        android:background="@android:color/transparent">
+        <LinearLayout
+            android:id="@+id/edit_list_wrapper"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="190">
+            <ListView
+                android:id="@+id/edit_material_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@null"
+                android:dividerHeight="8dp"
+                android:scrollbars="none"
+                android:background="@drawable/edit_bg"/>
+        </LinearLayout>
+        <!--middle view-->
+        <LinearLayout
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1090"
+            android:orientation="vertical"
+            android:background="@android:color/transparent">
+            <FrameLayout
+                android:id="@+id/area_wrapper_view"
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="600"
+                android:background="@drawable/edit_bg">
+                <RelativeLayout
+                    android:id="@+id/edit_area_view"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp">
+                    
+                </RelativeLayout>
+                <FrameLayout
+                    android:id="@+id/tool_wrapper_view"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"/>
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/edit_bt_content_view"
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="143">
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
