@@ -395,7 +395,40 @@ namespace TabletArtco
                                 {
                                     return;
                                 }
+
                                 // home button click
+                                MessageBoxDialog dialog = new MessageBoxDialog(this, "真的吗?", () => {
+                                    // initialize ActivatedSprite
+                                    Project.mSprites.RemoveRange(0, Project.mSprites.Count);
+                                    mSpriteIndex = -1;
+                                    mSpriteAdapter.NotifyDataSetChanged();
+                                    addSpriteView();
+                                    UpdateBlockView();
+
+                                    // initialize LeftButtons
+                                    ImageView imgBt;
+
+                                    int[] btsResIds = {
+                                        Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4
+                                    };
+                                    imgBt = FindViewById<ImageView>(btsResIds[0]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_coding1_Deactivation);
+                                    imgBt = FindViewById<ImageView>(btsResIds[1]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_coding2_activation);
+                                    imgBt = FindViewById<ImageView>(btsResIds[2]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_control_Deactivation);
+                                    imgBt = FindViewById<ImageView>(btsResIds[3]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_effect_Deactivation);
+                                    
+                                    ChangeLeftList(1);
+
+                                    // initialize Background
+
+                                    // initialize Variavles
+                                    Project.variableMap.Clear();
+                                    mVariableAdapter.NotifyDataSetChanged();
+                                });
+                                dialog.Show();
                                 break;
                             }
                         case 1:
@@ -845,7 +878,14 @@ namespace TabletArtco
             *来获取拖拽影子。
             */
             dragView = v;
-            v.StartDragAndDrop(null, builder, null, (int)DragFlags.Opaque);
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+            {
+                v.StartDragAndDrop(null, builder, null, (int)DragFlags.Opaque);
+            }
+            else
+            {
+                v.StartDrag(null, builder, null, (int)DragFlags.Opaque);
+            }
             v.Visibility = ViewStates.Invisible;
             return true;
         }

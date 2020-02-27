@@ -14,7 +14,7 @@ namespace TabletArtco
 
         private int mItemW;
         private int mItemH;
-        private int mIndex;
+        private int mIndex = 5;
 
         private Block block;
         protected override void OnCreate(Bundle savedInstanceState)

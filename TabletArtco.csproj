@@ -1483,230 +1483,336 @@
       </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\item_activate_block.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Button_choice_cameraBlue.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Button_choice_blockdelete02.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Slide.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Slide_stick.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\zoom_in.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\zoom_out.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\title.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\BlockGlass_small.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\BlockGlass_large.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\activity_dialog.axml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\dialog_variable_init.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\dialog_signal.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\dialog_variable_add.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\dialog_variable_set.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\dialog_collision_bg.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\dialog_press_bg.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\dialog_set_value.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\item_variable.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Contblock_ChangeVal.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Contblock_SetVal.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Eventblock_ClickSprite.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Eventblock_CollisionEdge.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Eventblock_RecvSignal.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Eventblock_Start.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Eventblock_Touch.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\dialog_signal.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\dialog_speak.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\dialog_rename.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\dialog_save_project.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\dialog_save_sprite.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\dialog_var_init.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\dialog_var_change.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\dialog_var_select.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\dialog_img_select.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\var_add.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\speak_bg.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\dialog_speak.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\item_sound.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\sound_bg.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Revision_line.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\xml_custom_bg.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\activity_test.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\raw\default_video.mp4">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\raw\Stage_Default.wav">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\transpant.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\home_bg.png">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\item_list_sprite.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\xml_asprite_item_bg_n.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\xml_asprite_item_bg_s.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\item_center_variable.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\xml_variable_item_bg.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\xml_variable_value_item_bg.xml">
-      <SubType></SubType>
-      <Generator></Generator>
+      <SubType>
+      </SubType>
+      <Generator>
+      </Generator>
     </AndroidResource>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Views\" />
-    <Folder Include="Utils\" />
-    <Folder Include="Model\" />
-    <Folder Include="Manager\" />
+    <AndroidResource Include="Resources\drawable\dialog_msgbox.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Resources\animation\" />
-    <Folder Include="Resources\raw\" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\Stage_Default.mp4" />
     <AndroidAsset Include="Assets\Stage_Default.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\dialog_msgbox.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
