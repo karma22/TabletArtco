@@ -53,8 +53,10 @@ namespace TabletArtco
                 isPlay = false;
             }
             LogUtil.CustomLog("path:" + path + ", prepath:" + img);
-            string start = "http://www.playartco.com:8081/artco/backgrounds/";
-            mPath = start + Android.Net.Uri.Encode(path.Substring(start.Length));
+            //string start = "http://www.playartco.com:8081/artco/backgrounds/";
+            //mPath = start + Android.Net.Uri.Encode(path.Substring(start.Length));
+            preImgIv.Visibility = ViewStates.Gone;
+            mPath = path;
             remotePreviewImgPath = img;
             if (mediaPlayer != null)
             {
@@ -74,11 +76,11 @@ namespace TabletArtco
                         mediaPlayer.SetDisplay(mSurfaceView.Holder);
                         mediaPlayer.PrepareAsync();
                     }
-                    if (img != null)
-                    {
-                        Glide.With(mContext).Load(GlideUtil.GetGlideUrl(remotePreviewImgPath)).Into(preImgIv);
-                    }
-                    preImgIv.Visibility = ViewStates.Visible;
+                    //if (img != null)
+                    //{
+                    //    Glide.With(mContext).Load(GlideUtil.GetGlideUrl(remotePreviewImgPath)).Into(preImgIv);
+                    //}
+                    //preImgIv.Visibility = ViewStates.Visible;
                     isOnPrepared = false;
                     if (isPlay)
                     {
@@ -115,11 +117,17 @@ namespace TabletArtco
             }
         }
 
+        public void ClickHomeButton()
+        {
+            preImgIv.Visibility = ViewStates.Visible;
+            mPath = null;
+        }
+
         void ISurfaceHolderCallback.SurfaceCreated(ISurfaceHolder holder)
         {
             mSurfaceHolder = holder;
             LogUtil.CustomLog("SurfaceCreated");
-            preImgIv.Visibility = ViewStates.Visible;
+            //preImgIv.Visibility = ViewStates.Visible;
             if (mediaPlayer!= null)
             {
                 mediaPlayer.SetDisplay(holder);
@@ -147,9 +155,11 @@ namespace TabletArtco
         void MediaPlayer.IOnPreparedListener.OnPrepared(MediaPlayer mp)
         {
             LogUtil.CustomLog("OnPrepared", "OnPrepared");
-            preImgIv.Visibility = ViewStates.Visible;
+            //preImgIv.Visibility = ViewStates.Visible;
             mp.SetOnInfoListener(this);
             isOnPrepared = true;
+
+            mp.SeekTo(0);
             if (isPlay)
             {
                 mp.Start();

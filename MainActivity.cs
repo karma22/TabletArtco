@@ -117,6 +117,7 @@ namespace TabletArtco
                         {
                             
                         }
+                        mediaManager.SetPath(mBackground.remoteVideoPath, mBackground.remotePreviewImgPath);
                         break;
                     }
                 case 8:
@@ -423,6 +424,7 @@ namespace TabletArtco
                                     ChangeLeftList(1);
 
                                     // initialize Background
+                                    mediaManager.ClickHomeButton();
 
                                     // initialize Variavles
                                     Project.variableMap.Clear();
