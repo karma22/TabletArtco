@@ -8,6 +8,9 @@ using Android.Graphics;
 using System.Collections.Generic;
 using Android.Content;
 using Android.Util;
+using Android.Runtime;
+using Java.Lang;
+using Com.Bumptech.Glide;
 
 namespace TabletArtco
 {
@@ -20,7 +23,7 @@ namespace TabletArtco
         private List<Bitmap> originList = new List<Bitmap>();
         private List<Bitmap> operateList = new List<Bitmap>();
         private int mIndex = -1;
-        private CustomView mCustomView;
+        private EditView editView;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -32,6 +35,48 @@ namespace TabletArtco
             initData();
             InitView();
         }
+
+        [System.Obsolete]
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            if (data == null)
+            {
+                return;
+            }
+            switch (requestCode)
+            {
+                //Select Sprite callback
+                case 1:
+                    {
+                        Bundle bundle = data.GetBundleExtra("bundle");
+                        Sprite sprite = Sprite.ToSprite(bundle.GetString("model"));
+                        if (sprite == null)
+                        {
+                            return;
+                        }
+                        Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
+                        editView.InsertBitmap(bitmap);
+                        //new Thread(new Runnable(() =>
+                        //{
+                        //    Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
+                        //    RunOnUiThread(() => {
+                        //        Project.AddSprite(sprite);
+                        //        mSpriteIndex = spritesList.Count - 1;
+                        //        ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
+                        //        mSpriteAdapter.NotifyDataSetChanged();
+                        //        UpdateBlockView();
+                        //        addSpriteView();
+                        //    });
+                        //})).Start();
+                        break;
+                    }
+                
+                default:
+                    break;
+            }
+        }
+
 
         // image List
         private void initData() {
@@ -120,15 +165,15 @@ namespace TabletArtco
             areaView.LayoutParameters = areaParams;
             areaView.SetBackgroundResource(Resource.Drawable.xml_edit_bg);
 
-            mCustomView = new CustomView(this);
-            mCustomView.mAction = (list) =>
+            editView = new EditView(this);
+            editView.mAction = (list) =>
             {
 
             };
-            mCustomView.SetSrcBitmap(operateList[0]);
+            editView.SetSrcBitmap(operateList[0]);
             RelativeLayout.LayoutParams conParams = new RelativeLayout.LayoutParams(areaParams.Width, areaParams.Height);
             conParams.AddRule(LayoutRules.CenterInParent);
-            areaView.AddView(mCustomView, conParams);
+            areaView.AddView(editView, conParams);
 
             //right tool area
             FrameLayout toolView = FindViewById<FrameLayout>(Resource.Id.tool_wrapper_view);
@@ -139,7 +184,7 @@ namespace TabletArtco
             toolParams.LeftMargin = (int)(w - toolW - (topMargin * 2));
             toolView.LayoutParameters = toolParams;
 
-            String[] colors = {
+            System.String[] colors = {
                 "#000000","", "", "",
                 "#880016", "#b97a57", "#300088", "#ab57b9",
                 "#ed1b24", "#feaec9", "#7c1ded", "#bbaefe",
@@ -249,18 +294,23 @@ namespace TabletArtco
                 imgBt.Click += (t, e) =>
                 {
                     int tag = (int) ((ImageView)t).Tag;
-                    if (tag < 11)
+                    
+                    OperateType[] types = { OperateType.FlipX, OperateType.FlipY, OperateType.RotateR, OperateType.RotateL,
+                                            OperateType.Enlarge, OperateType.Narrow, OperateType.Eraser, OperateType.Draw,
+                                            OperateType.RectCut, OperateType.FreeCut, OperateType.Add, OperateType.Previous, OperateType.Next
+                                            };
+                    OperateType type = types[tag];
+                    if (type == OperateType.Add)
                     {
-                        OperateType[] types = { OperateType.FlipX, OperateType.FlipY, OperateType.RotateR, OperateType.RotateL,
-                                                OperateType.Enlarge, OperateType.Narrow, OperateType.Eraser, OperateType.Draw,
-                                                OperateType.RectCut, OperateType.FreeCut, OperateType.Add
-                                              };
-                        mCustomView.Operate(types[tag]);
+                        Intent intent = new Intent(this, typeof(PictureActivity));
+                        StartActivityForResult(intent, 1, null);
+                    }
+                    else {
+                        editView.Operate(types[tag]);
                     }
                 };
             }
         }
-
 
         /*
          * 
@@ -337,645 +387,6 @@ namespace TabletArtco
     }
 
 
-    // Operate type
-    enum OperateType { FlipY, FlipX, RotateR, RotateL, Enlarge, Narrow, Eraser, Draw, RectCut, FreeCut, Add, Back, Forward, Move, Rotate};
-
-    // Edit step
-    class EditStep {
-        public OperateType operateType;
-
-        // 放大参数
-        public float scale;
-
-        // 移动参数
-        public float moveX;
-        public float moveY;
-
-        // 旋转参数
-        public float rotate;
-
-        // 擦除和画线参数
-        public Path path; // 也包含裁剪
-        public string color;
-        public int strokewidth;
-        
-        public EditStep(OperateType type)
-        {
-            operateType = type;
-        }
-
-        public EditStep(OperateType type, Path p, string c, int w)
-        {
-            operateType = type;
-            color = c;
-            path = p;
-            strokewidth = w;
-        }
-    }
-
-    class ImageUtil {
-
-        public static Bitmap FlipX(Bitmap src) {
-            Matrix matrix = new Matrix();
-            matrix.SetScale(-1, 1);
-            Bitmap newBM = Bitmap.CreateBitmap(src, 0, 0, src.Width, src.Height, matrix, false);
-            src.Recycle();
-            return newBM;
-        }
-
-        public static Bitmap FlipY(Bitmap src)
-        {
-            Matrix matrix = new Matrix();
-            matrix.SetScale(1, -1);
-            Bitmap newBM = Bitmap.CreateBitmap(src, 0, 0, src.Width, src.Height, matrix, false);
-            src.Recycle();
-            return newBM;
-        }
-       
-        public static Bitmap Rotate(Bitmap src, float degree)
-        {
-            Matrix matrix = new Matrix();
-            matrix.SetRotate(degree);
-            Bitmap newBM = Bitmap.CreateBitmap(src, 0, 0, src.Width, src.Height, matrix, false);
-            src.Recycle();
-            return newBM;
-        }
-
-        public static Bitmap Scale(Bitmap src, float scale)
-        {
-            Matrix matrix = new Matrix();
-            matrix.SetScale(scale, scale);
-            Bitmap newBM = Bitmap.CreateBitmap(src, 0, 0, src.Width, src.Height, matrix, false);
-            src.Recycle();
-            return newBM;
-        }
-
-        public static Bitmap ScaleFliter(Bitmap src, float scale)
-        {
-            Bitmap newBM = Bitmap.CreateScaledBitmap(src, (int)(src.Width*scale), (int)(src.Height*scale), true);
-            src.Recycle();
-            return newBM;
-        }
-
-        public static Bitmap Eraser(Bitmap src, Path path, float w) {
-            Paint eraserPaint = new Paint();
-            eraserPaint.SetStyle(Paint.Style.Stroke);
-            eraserPaint.AntiAlias = true;
-            eraserPaint.Alpha = 0;
-            eraserPaint.SetXfermode(new PorterDuffXfermode(PorterDuff.Mode.Clear));
-            eraserPaint.StrokeWidth = w;
-            Canvas canvas = new Canvas(src);
-            canvas.DrawPath(path, eraserPaint);
-            return src;
-        }
-
-        public static Bitmap Draw(Bitmap src, Path path, float w, Color color)
-        {
-            Paint paint = new Paint();
-            paint.SetStyle(Paint.Style.Stroke);
-            paint.AntiAlias = true;
-            paint.StrokeWidth = w;
-            paint.Color = color;
-            Canvas canvas = new Canvas(src);
-            canvas.DrawPath(path, paint);
-            return src;
-        }
-
-        public static List<Bitmap> Clip(Bitmap src, Path path) {
-            Bitmap bitmap = Bitmap.CreateBitmap(src);
-            Paint eraserPaint = new Paint();
-            eraserPaint.SetStyle(Paint.Style.Fill);
-            eraserPaint.AntiAlias = true;
-            eraserPaint.Alpha = 0;
-            eraserPaint.SetXfermode(new PorterDuffXfermode(PorterDuff.Mode.Clear));
-            Canvas canvas = new Canvas(bitmap);
-            canvas.DrawPath(path, eraserPaint);
-
-            Bitmap bitmap1 = Bitmap.CreateBitmap(src.Width, src.Height, Bitmap.Config.Argb8888);
-            Canvas c = new Canvas(bitmap1);
-            c.ClipPath(path);
-            c.DrawBitmap(bitmap, null, new Rect(0, 0, src.Width, src.Height), new Paint());
-
-            RectF rect = new RectF();
-            path.ComputeBounds(rect, false);
-            int width = (int) (src.Width > rect.Left + rect.Width() ? rect.Width() : Math.Max(0, src.Width - rect.Left));
-            int height = (int)(src.Height > rect.Top + rect.Height() ? rect.Height() : Math.Max(0, src.Height - rect.Top));
-            Bitmap b = Bitmap.CreateBitmap(bitmap1, (int)Math.Min(rect.Left, src.Width), (int)Math.Min(rect.Top, src.Height), width, height);
-            bitmap1.Recycle();
-            src.Recycle();
-            return new List<Bitmap>() { bitmap, b };
-        }
-    }
-
-    class EditBitmap
-    {
-        private Bitmap src;
-        private List<EditStep> stepList;
-        private Bitmap curBitmap;
-        private Path clipPath;
-        public float curMoveX;
-        public float curMoveY;
-        public float scale = 1;
-        private int stepIndex = 0;
-
-        public EditBitmap(Bitmap bitmap) {
-            src = bitmap;
-            stepList = new List<EditStep>();
-        }
-
-        public EditBitmap(Bitmap bitmap, Path path)
-        {
-            src = bitmap;
-            stepList = new List<EditStep>();
-            clipPath = new Path(path);
-            stepIndex = -1;
-        }
-
-        // 添加操作行为，只限FlipX, FlipY, RotateR, RotateL, Enlarge, Narrow
-        public void Operate(OperateType type)
-        {
-            stepIndex += 1;
-            stepList.Add(new EditStep(type));
-        }
-
-        // 擦除和画线
-        public void Draw(OperateType type, Path path, string color, int width)
-        {
-            stepIndex += 1;
-            stepList.Add(new EditStep(type ,new Path(path), color, width));
-        }
-
-        public Bitmap currentBitmap(bool isBorder = false)
-        {
-            Bitmap bitmap = Bitmap.CreateBitmap(src);
-            if (stepList.Count == 0)
-            {
-                bitmap = ImageUtil.ScaleFliter(bitmap, 3);
-                //bitmap = ImageUtil.Scale(bitmap, 3);
-                return bitmap;
-            }
-            scale = 1;
-            curMoveX = 0;
-            curMoveY = 0;
-            for (int i = 0; i < stepList.Count ; i++)
-            {
-                if (i < stepIndex) {
-                    EditStep step = stepList[i];
-                    switch (step.operateType)
-                    {
-                        case OperateType.FlipX:
-                            {
-                                bitmap = ImageUtil.FlipX(bitmap);
-                                break;
-                            }
-                        case OperateType.FlipY:
-                            {
-                                bitmap = ImageUtil.FlipY(bitmap);
-                                break;
-                            }
-                        case OperateType.RotateR:
-                            {
-                                bitmap = ImageUtil.Rotate(bitmap, 90);
-                                break;
-                            }
-                        case OperateType.RotateL:
-                            {
-                                bitmap = ImageUtil.Rotate(bitmap, -90);
-                                break;
-                            }
-                        case OperateType.Enlarge:
-                            {
-                                scale = scale * 1.1f;
-                                break;
-                            }
-                        case OperateType.Narrow:
-                            {
-                                scale = scale / 1.1f;
-                                break;
-                            }
-                        case OperateType.Eraser:
-                            {
-                                bitmap = ImageUtil.Eraser(bitmap, step.path, step.strokewidth);
-                                break;
-                            }
-                        case OperateType.Draw:
-                            {
-                                bitmap = ImageUtil.Draw(bitmap, step.path, step.strokewidth, Color.ParseColor(step.color));
-                                break;
-                            }
-                        case OperateType.Move:
-                            {
-                                curMoveX += step.moveX;
-                                curMoveY += step.moveY;
-                                break;
-                            }
-                        case OperateType.RectCut:
-                        case OperateType.FreeCut:
-                            {
-
-                                break;
-                            }
-                        case OperateType.Add:
-                            {
-                                break;
-                            }
-                        default:
-                            break;
-                    }
-                }   
-            }
-            if (stepIndex == stepList.Count)
-            {
-
-            }
-            bitmap = ImageUtil.ScaleFliter(bitmap, 3);
-            //bitmap = ImageUtil.Scale(bitmap, 3);
-            return bitmap;
-        }
-
-        public void Recycle() {
-            src.Recycle();
-        }
-    }
-
-    class EditLayer
-    {
-        private List<EditBitmap> list;
-        private int index = 0;
-        public float scale
-        {
-            get
-            {
-                return list[0].scale;
-            }
-        }
-
-        public EditLayer(Bitmap bitmap)
-        {
-            list = new List<EditBitmap>();
-            EditBitmap editBitmap = new EditBitmap(bitmap);
-            list.Add(editBitmap);
-        }
-
-        public List<EditBitmap> EditBitmapList()
-        {
-            if (index == 0)
-            {
-                return new List<EditBitmap>() { list[0] };
-            }
-            return list;
-        }
-
-        // 添加操作行为，只限FlipX, FlipY, RotateR, RotateL, Enlarge, Narrow
-        public void Operate(OperateType type)
-        {
-            list[index].Operate(type);
-        }
-
-        // 擦除或画线
-        public void Draw(OperateType type, Path path, string color, int width)
-        {
-            list[index].Draw(type, new Path(path), color, width);
-        }
-
-        // 裁剪
-        public void Clip(Path path)
-        {
-
-        }
-
-        // 加入图片
-        public void Add(Bitmap bitmap)
-        {
-
-        }
-
-        // 移动
-        public void Move(int x, int y)
-        {
-
-        }
-
-        public void Recycle() {
-            
-        }
-    }
-
-    class EditTarget
-    {
-        private List<EditLayer> layerlist;
-        private int layerIndex = 0;
-        public float scale
-        {
-            get
-            {
-                float temp = 1;
-                for (int i = 0; i < layerIndex+1; i++)
-                {
-                   temp *= layerlist[i].scale;
-                }
-                return temp;
-            }
-        }
-
-        public EditTarget(Bitmap bitmap) {
-            EditLayer editLayer = new EditLayer(bitmap);
-            layerlist = new List<EditLayer>();
-            layerlist.Add(editLayer);
-        }
-
-        // 获取当前图片
-        public List<EditBitmap> EditBitmapList() {
-            EditLayer editLayer = layerlist[layerIndex];
-            return editLayer.EditBitmapList();
-        }
-
-        // 添加操作行为，只限FlipX, FlipY, RotateR, RotateL, Enlarge, Narrow
-        public void Operate(OperateType type) {
-            EditLayer editLayer = layerlist[layerIndex];
-            editLayer.Operate(type);
-        }
-
-        // 擦除或画线
-        public void Draw(OperateType type, Path path, string color, int width)
-        {
-            EditLayer editLayer = layerlist[layerIndex];
-            editLayer.Draw(type, new Path(path), color, width);
-        }
-
-        // 裁剪
-        public void Clip(Path path) {
-
-        }
-
-        // 加入图片
-        public void Add(Bitmap bitmap)
-        {
-
-        }
-
-        // 移动
-        public void Move(int x, int y) {
-            
-        }
-
-        // 前进一步
-        public void nextStep()
-        {
-
-        }
-
-        // 后退一步
-        public void previousStep()
-        {
-
-        }
-
-        public void Recycle() {
-
-        }
-    }
-
-    // draw image view
-    class CustomView : ImageView {
-        private Context mCxt;
-
-        private int mWidth;
-        private int mHeight;
-
-        private Bitmap bBitmap;
-        private Bitmap tBitmap;
-        private Canvas curCanvas;
-        private List<EditBitmap> list;
-
-        private string curColor = "#000000";
-        private int curStrokeW = 10;
-        private Paint mPaint;
-        public Action<List<Bitmap>> mAction { get; set; }
-
-
-        public EditTarget editTarget = null;
-        public Bitmap srcBm;
-        private OperateType operateType;
-        private Path mPath = new Path();
-        private Path drawPath = new Path();
-        private Path cutPath = new Path();
-
-
-        // 触摸相关事件
-        private float mX;
-        private float mY;
-        float TOUCH_TOLERANCE = 2;
-
-        public CustomView(Context context) : base(context)
-        {
-            Initialize(context);
-        }
-
-        public CustomView(Context context, IAttributeSet attrs) : base(context, attrs)
-        {
-            Initialize(context);
-        }
-
-        public CustomView(Context context, IAttributeSet attrs, int defStyle) : base(context, attrs, defStyle)
-        {
-            Initialize(context);
-        }
-
-        private void Initialize(Context context)
-        {
-            mCxt = context;
-        }
-
-        protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-        {
-            base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-            mWidth = measure(widthMeasureSpec);
-            mHeight = measure(heightMeasureSpec);
-            if (bBitmap != null)
-            {
-                mWidth = (int) (bBitmap.Width * editTarget.scale);
-                mHeight = (int) (bBitmap.Height * editTarget.scale);
-            }
-            SetMeasuredDimension(mWidth, mHeight);
-        }
-
-        private int measure(int measureSpec)
-        {
-            MeasureSpecMode specMode = MeasureSpec.GetMode(measureSpec);
-            int specSize = MeasureSpec.GetSize(measureSpec);
-            //设置一个默认值，就是这个View的默认宽度为500，这个看我们自定义View的要求
-            int result = 500;
-            if (specMode == MeasureSpecMode.AtMost)
-            {//相当于我们设置为wrap_content
-                result = specSize;
-            }
-            else if (specMode == MeasureSpecMode.Exactly)
-            {//相当于我们设置为match_parent或者为一个具体的值
-                result = specSize;
-            }
-            return result;
-        }
-
-        public override void Draw(Canvas canvas)
-        {
-            if (bBitmap != null)
-            {
-                RectF r = new RectF(0, 0, mWidth, mHeight);
-                canvas.DrawBitmap(bBitmap, null, r, mPaint);
-                if (curCanvas != null && !mPath.IsEmpty)
-                {
-                    if (operateType == OperateType.Draw)
-                    {
-                        SetPaint(curColor, curStrokeW, null);
-                    }
-                    else
-                    {
-                        SetPaint(curColor, curStrokeW, new PorterDuffXfermode(PorterDuff.Mode.Clear));
-                    }
-                    curCanvas.DrawPath(mPath, mPaint);
-                }
-                // 边框
-                SetPaint();
-                canvas.DrawRect(new Rect(0, 0, mWidth, mHeight), mPaint);
-            }
-        }
-
-        public void SetPaint(string color = "#000000", int w = 6, Xfermode xfermode = null) {
-            if (mPaint == null)
-            {
-                mPaint = new Paint();
-                //mPaint.AntiAlias = true;
-                mPaint.SetStyle(Paint.Style.Stroke);
-                
-            }
-            mPaint.Color = Color.ParseColor(color);
-            mPaint.StrokeWidth = w;
-            mPaint.SetXfermode(xfermode);
-        }
-
-        public void SetSrcBitmap(Bitmap bitmap) {
-            srcBm?.Recycle();
-            srcBm = Bitmap.CreateBitmap(bitmap);
-            editTarget?.Recycle();
-            if (editTarget == null)
-            {
-                editTarget = new EditTarget(srcBm);
-            }
-            updateView();
-        }
-
-        // 添加操作图片
-        public void AddBitmap(Bitmap bitmap)
-        {
-            updateView();
-        }
-     
-        // 当前图片插入图片
-        public void InsertBitmap(Bitmap bitmap)
-        {
-            if (editTarget == null)
-            {
-                return;
-            }
-            editTarget.Add(bitmap);
-            updateView();
-        }
-
-        public void Operate(OperateType type)
-        {    
-            switch (type)
-            {
-                case OperateType.FlipX:
-                case OperateType.FlipY:
-                case OperateType.RotateR:
-                case OperateType.RotateL:
-                case OperateType.Enlarge:
-                case OperateType.Narrow:
-                    editTarget?.Operate(type);
-                    break;
-                default:
-                    break;
-            }
-            operateType = type;
-            updateView();
-        }
-
-        public void updateView() {
-            bBitmap?.Recycle();
-            tBitmap?.Recycle();
-            EditTarget target = editTarget;
-            list = target?.EditBitmapList();
-            bBitmap = list[0].currentBitmap();
-            tBitmap = list.Count > 1 ? list[1].currentBitmap() : null;
-            RequestLayout();
-            curCanvas = new Canvas(bBitmap);
-            Invalidate();
-        }
-
-        public override bool OnTouchEvent(MotionEvent e)
-        {
-            if (operateType == OperateType.Draw || operateType == OperateType.Eraser || operateType == OperateType.RectCut || operateType == OperateType.FreeCut)
-            {
-                switch (e.Action)
-                {
-                    case MotionEventActions.Down:
-                        touch_start(e.GetX(), e.GetY());
-                        break;
-                    case MotionEventActions.Move:
-                        touch_move(e.GetX(), e.GetY());
-                        break;
-                    case MotionEventActions.Up:
-                        touch_up(e.GetX(), e.GetY());
-                        break;
-                }
-            }
-            
-            return true;
-        }
-
-        // touch begin
-        private void touch_start(float x, float y)
-        {
-            mPath.Reset();
-            drawPath.Reset();
-            float scale = editTarget.scale;
-            float scaleTwo = 3 * scale;
-            mPath.MoveTo(x/scale, y/scale);
-            drawPath.MoveTo(x/scaleTwo, y/ scaleTwo);
-            mX = x;
-            mY = y;
-        }
-
-        // touch move
-        private void touch_move(float x, float y)
-        {
-
-            float dx = Math.Abs(x - mX);
-            float dy = Math.Abs(y - mY);
-            if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE)
-            {
-                float scale = editTarget.scale;
-                float scaleTwo = 3 * scale;
-                mPath.LineTo(x / scale, y / scale);
-                drawPath.LineTo(x / scaleTwo, y / scaleTwo);
-                Invalidate();
-            }
-        }
-
-        // touch end
-        private void touch_up(float x, float y)
-        {
-            float scale = editTarget.scale;
-            float scaleTwo = 3 * scale;
-            mPath.LineTo(x / scale, y / scale);
-            drawPath.LineTo(x / scaleTwo, y / scaleTwo);
-            editTarget?.Draw(operateType, drawPath, curColor, curStrokeW/3);
-            mPath.Reset();
-            drawPath.Reset();
-            updateView();
-        }
-    }
 }
 
 

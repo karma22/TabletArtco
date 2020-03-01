@@ -74,7 +74,6 @@ namespace TabletArtco
                         {
                             return;
                         }
-
                         new Thread(new Runnable(() =>
                         {
                             Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
