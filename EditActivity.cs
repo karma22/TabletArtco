@@ -24,6 +24,8 @@ namespace TabletArtco
         private List<Bitmap> operateList = new List<Bitmap>();
         private int mIndex = -1;
         private EditView editView;
+        private SpriteAdapter mAdapter;
+        private ImageView curColorIv;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -47,6 +49,28 @@ namespace TabletArtco
             switch (requestCode)
             {
                 //Select Sprite callback
+                case 0:
+                    {
+                        Bundle bundle = data.GetBundleExtra("bundle");
+                        Sprite sprite = Sprite.ToSprite(bundle.GetString("model"));
+                        if (sprite == null)
+                        {
+                            return;
+                        }
+                        new Thread(new Runnable(() =>
+                        {
+                            Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
+                            RunOnUiThread(() =>
+                            {
+                                originList.Add(bitmap);
+                                operateList.Add(Bitmap.CreateBitmap(bitmap));
+                                mIndex = operateList.Count - 1;
+                                editView.SetSrcBitmap(bitmap);
+                                mAdapter.NotifyDataSetChanged();
+                            });
+                        })).Start();
+                        break;
+                    }
                 case 1:
                     {
                         Bundle bundle = data.GetBundleExtra("bundle");
@@ -55,20 +79,14 @@ namespace TabletArtco
                         {
                             return;
                         }
-                        Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
-                        editView.InsertBitmap(bitmap);
-                        //new Thread(new Runnable(() =>
-                        //{
-                        //    Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
-                        //    RunOnUiThread(() => {
-                        //        Project.AddSprite(sprite);
-                        //        mSpriteIndex = spritesList.Count - 1;
-                        //        ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
-                        //        mSpriteAdapter.NotifyDataSetChanged();
-                        //        UpdateBlockView();
-                        //        addSpriteView();
-                        //    });
-                        //})).Start();
+                        new Thread(new Runnable(() =>
+                        {
+                            Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
+                            RunOnUiThread(() =>
+                            {
+                                editView.InsertBitmap(bitmap);
+                            });
+                        })).Start();
                         break;
                     }
                 
@@ -130,8 +148,8 @@ namespace TabletArtco
             int itemW = listW - 30;
             ListView listView = FindViewById<ListView>(Resource.Id.edit_material_list);
             listView.SetPadding(30, 28, 45, 50);
-            listView.Adapter = new SpriteAdapter(this, this);
-
+            mAdapter = new SpriteAdapter(this, this);
+            listView.Adapter = mAdapter;
         }
 
         private void InitToolView()
@@ -205,12 +223,27 @@ namespace TabletArtco
                 colorParams.TopMargin = colorMargin + (i / 4 * (colorH + colorMargin));
                 colorParams.LeftMargin = colorMargin + (i % 4 * (colorW + colorMargin));
                 ImageView imgIv = new ImageView(this);
+                imgIv.Tag = i;
                 imgIv.LayoutParameters = colorParams;
                 imgIv.SetBackgroundColor(Color.ParseColor(colors[i]));
                 toolView.AddView(imgIv);
+                if (i == 0)
+                {
+                    curColorIv = imgIv;
+                }
+                else
+                {
+                    imgIv.Click += (t, e) =>
+                    {
+                        int position = (int)((ImageView)t).Tag;
+                        string color = colors[position];
+                        curColorIv.SetBackgroundColor(Color.ParseColor(color));
+                        editView.curColor = color;
+                    };
+                }
             }
 
-            //The center of two button
+            //The center of two button  色盘 吸管
             int cW = (int)((toolW - topMargin * 3) / 2.0);
             int cMargin = (int)(295 / 543.0 * wrapperH);
             int[] cIds = { Resource.Drawable.Button_pallet, Resource.Drawable.Button_spoid };
@@ -222,14 +255,19 @@ namespace TabletArtco
                 ImageView imgIv = new ImageView(this);
                 imgIv.LayoutParameters = btParams;
                 imgIv.SetImageResource(cIds[i]);
+                imgIv.Click += (t, e) =>
+                {
+
+                };
                 toolView.AddView(imgIv);
             }
 
-            //366
+            //366 宽度 颜色
             int sTopMargin = (int)(366 / 543.0 * wrapperH);
             int sW = (int)(((colorW * 4) + (colorMargin * 2)) / 2.0);
             int sH = (int)(28 / 63.0 * sW);
-            for (int i = 0; i < cIds.Length; i++)
+            sW = sW * 2;
+            for (int i = 0; i < 1; i++)
             {
                 FrameLayout.LayoutParams btParams = new FrameLayout.LayoutParams(sW, sH);
                 btParams.TopMargin = sTopMargin;
@@ -254,7 +292,7 @@ namespace TabletArtco
                 }
             }
 
-            //The bottom of three button
+            //The bottom of three button  复制 打开图片 恢复
             int[] resIds = { Resource.Drawable.Button_PictureCopy, Resource.Drawable.Button_PictureOpen, Resource.Drawable.Button_Restore };
             int btH = (int)(46 / 144.0 * toolW);
             int btTopMargin = (int)(2 / 144.0 * toolW);
@@ -263,9 +301,52 @@ namespace TabletArtco
                 FrameLayout.LayoutParams btParams = new FrameLayout.LayoutParams(toolW, btH);
                 btParams.TopMargin = wrapperH - ((2 - i) * (btH + btTopMargin)) - btH;
                 ImageView imgIv = new ImageView(this);
+                imgIv.Tag = i;
                 imgIv.LayoutParameters = btParams;
                 imgIv.SetImageResource(resIds[i]);
                 toolView.AddView(imgIv);
+                imgIv.Click += (t, e) =>
+                {
+                    int tag = (int)((ImageView)t).Tag;
+                    switch (tag)
+                    {
+                        case 0:
+                            {
+                                Bitmap oldB = operateList[mIndex];
+                                operateList.Remove(oldB);
+                                Bitmap bitmap = editView.CurBitmap();
+                                operateList.Insert(mIndex, bitmap);
+                                operateList.Add(Bitmap.CreateBitmap(bitmap));
+                                originList.Add(Bitmap.CreateBitmap(bitmap));
+                                mIndex = operateList.Count - 1;
+                                editView.SetSrcBitmap(bitmap);
+                                oldB.Recycle();
+                                mAdapter.NotifyDataSetChanged();
+                                break;
+                            }
+                        case 1:
+                            {
+                                Intent intent = new Intent(this, typeof(PictureActivity));
+                                StartActivityForResult(intent, 0, null);
+                                break;
+                            }
+                        case 2:
+                            {
+                                Bitmap srcB = originList[mIndex];
+                                Bitmap oldB = operateList[mIndex];
+                                operateList.Remove(oldB);
+                                operateList.Insert(mIndex, Bitmap.CreateBitmap(srcB));
+                                editView.SetSrcBitmap(srcB);
+                                mAdapter.NotifyDataSetChanged();
+                                oldB.Recycle();
+                                break;
+                            }
+
+                        default:
+                            break;
+                    }
+
+                };
             }
         }
 
@@ -324,8 +405,10 @@ namespace TabletArtco
 
         public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
         {
-            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
-           
+
+            View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_list_sprite, parent, false);
+            //int itemW = (int)(ScreenUtil.ScreenWidth(this) * 146 / 1280.0 - ScreenUtil.dip2px(this, 24));
+
             int sw = ScreenUtil.ScreenWidth(this);
             double width = sw * 190 / 1280.0;
             int listW = (int)((190 - 60) / 1280.0 * sw);
@@ -335,47 +418,63 @@ namespace TabletArtco
             ViewHolder holder = new ViewHolder();
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
             holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
+            holder.nameTv = convertView.FindViewById<TextView>(Resource.Id.sprite_tv);
+            holder.deleteFl = convertView.FindViewById<FrameLayout>(Resource.Id.delete_fl);
             convertView.Tag = holder;
             convertView.Click += (t, e) =>
             {
                 ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
-                //ClickItem(position);
+                int position = (int)viewHolder.bgIv.Tag;
+                ClickItem(position);
+            };
+            holder.deleteFl.Click += (t, e) =>
+            {
+                int position = (int)(((FrameLayout)t).Tag);
+                ClickDeleteView(position);
             };
             return convertView;
         }
 
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
-            //List<List<Sprite>> sprites = Sprite._sprites;
-            //if (mIndex >= sprites.Count)
-            //{
-            //    return;
-            //}
-            //List<Sprite> list = sprites[mIndex];
             Bitmap bitmap = operateList[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             viewHolder.imgIv.SetImageBitmap(bitmap);
-            //Glide.With(this).Load(sprite.remotePath).Into(viewHolder.imgIv);
-            //viewHolder.txtTv.Text = sprite.name;
-            //viewHolder.txtTv.Tag = position;
+            viewHolder.bgIv.Tag = position;
+            viewHolder.deleteFl.Tag = position;
+            viewHolder.nameTv.Text = "" + (position + 1);
+            viewHolder.bgIv.SetBackgroundResource(position == mIndex ? Resource.Drawable.xml_asprite_item_bg_s : Resource.Drawable.xml_asprite_item_bg_n);
+            viewHolder.deleteFl.Visibility = position == 0 ? ViewStates.Gone : ViewStates.Visible;
         }
 
         public void ClickItem(int position)
         {
-            //Android.Util.Log.Info("position", "position===" + position);
-            //List<List<Sprite>> sprites = Sprite._sprites;
-            //if (mIndex >= sprites.Count)
-            //{
-            //    return;
-            //}
-            //List<Sprite> list = sprites[mIndex];
-            //Sprite sprite = list[position];
-            //Intent intent = new Intent();
-            //Bundle bundle = new Bundle();
-            //bundle.PutString("model", sprite.ToString());
-            //intent.PutExtra("bundle", bundle);
-            //SetResult(Result.Ok, intent);
-            //Finish();
+            if (mIndex == position)
+            {
+                return;
+            }
+            Bitmap bitmap = operateList[mIndex];
+            operateList.Remove(bitmap);
+            operateList.Insert(mIndex, editView.CurBitmap());
+            bitmap.Recycle();
+            editView.SetSrcBitmap(operateList[position]);
+            mIndex = position;
+            mAdapter.NotifyDataSetChanged();
+        }
+
+        public void ClickDeleteView(int position) {
+            Bitmap src = originList[position];
+            Bitmap bitmap = operateList[position];
+            originList.Remove(src);
+            operateList.Remove(bitmap);
+            src.Recycle();
+            bitmap.Recycle();
+            if (position == mIndex)
+            {
+                editView.SetSrcBitmap(operateList[position - 1]);
+                mIndex = position - 1;
+            }
+            mAdapter.NotifyDataSetChanged();
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
@@ -383,9 +482,10 @@ namespace TabletArtco
         {
             public ImageView bgIv;
             public ImageView imgIv;
+            public TextView nameTv;
+            public FrameLayout deleteFl;
         }
     }
-
 
 }
 

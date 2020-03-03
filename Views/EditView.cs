@@ -88,33 +88,16 @@ namespace TabletArtco
             p.SetXfermode(new PorterDuffXfermode(PorterDuff.Mode.Clear));
             Canvas canvas = new Canvas(bitmap);
             canvas.DrawPath(path, p);
-
-            //Bitmap bitmap1 = Bitmap.CreateBitmap(src.Width, src.Height, Bitmap.Config.Argb8888);
-            //Canvas c = new Canvas(bitmap1);
-            //c.ClipPath(path);
-            //c.DrawBitmap(bitmap, null, new Rect(0, 0, src.Width, src.Height), new Paint());
-
-
-
             
             Bitmap bitmap1 = Bitmap.CreateBitmap(src.Width, src.Height, Bitmap.Config.Argb8888);
             Canvas c = new Canvas(bitmap1);
             c.ClipPath(path);
             c.DrawBitmap(src, 0, 0, new Paint());
-            //c.DrawBitmap(src, new Rect(0, 0, src.Width, src.Height), new RectF(0, 0, src.Width, src.Height), p);
-
-            //RectF r1 = new RectF();
-            //path.ComputeBounds(r1, false);
-            //Rect r2 = new Rect(0, 0, src.Width, src.Height);
-            //Rect rect = new Rect(Math.Max(r1.Left, r2.Left), Math.Max(r1.Top, r2.Top), Math.Min())
-
+            
             RectF rect = new RectF();
             path.ComputeBounds(rect, false);
             Bitmap b = Bitmap.CreateBitmap(bitmap1, (int)rect.Left, (int)rect.Top, (int)(rect.Right - rect.Left), (int)(rect.Bottom - rect.Top), null, true);
 
-            //int width = (int)(src.Width > rect.Left + rect.Width() ? rect.Width() : Math.Max(0, src.Width - rect.Left));
-            //int height = (int)(src.Height > rect.Top + rect.Height() ? rect.Height() : Math.Max(0, src.Height - rect.Top));
-            //Bitmap b = Bitmap.CreateBitmap(bitmap1, (int)Math.Min(rect.Left, src.Width), (int)Math.Min(rect.Top, src.Height), width, height);
             bitmap1.Recycle();
             src.Recycle();
             return new List<Bitmap>() { bitmap, b };
@@ -203,10 +186,7 @@ namespace TabletArtco
         public void Operate(OperateType type)
         {
             // 添加新的步骤时，将当前步骤后面的记录清除掉
-            if (stepIndex != stepList.Count - 1)
-            {
-                stepList.RemoveRange(stepIndex + 1, stepList.Count - stepIndex - 1);
-            }
+            RemoveNextSteps();
             stepIndex += 1;
             stepList.Add(new EditStep(type));
         }
@@ -215,10 +195,7 @@ namespace TabletArtco
         public void Draw(OperateType type, Path path, string color, int width)
         {
             // 添加新的步骤时，将当前步骤后面的记录清除掉
-            if (stepIndex != stepList.Count - 1)
-            {
-                stepList.RemoveRange(stepIndex + 1, stepList.Count - stepIndex - 1);
-            }
+            RemoveNextSteps();
             stepIndex += 1;
             stepList.Add(new EditStep(type, new Path(path), color, width));
         }
@@ -335,7 +312,7 @@ namespace TabletArtco
         public bool PreviousStep()
         {
             // 当前已不能后退一步
-            if (stepIndex == -2)
+            if (stepIndex == -1)
             {
                 return false;
             }
@@ -352,6 +329,13 @@ namespace TabletArtco
                 return true;
             }
             return false;
+        }
+
+        public void RemoveNextSteps() {
+            if (stepIndex != stepList.Count - 1)
+            {
+                stepList.RemoveRange(stepIndex + 1, stepList.Count - stepIndex - 1);
+            }
         }
 
         // 资源回收
@@ -490,6 +474,12 @@ namespace TabletArtco
             return bitmap;
         }
 
+        public void RemoveNextSteps() {
+            RemoveBitmap();
+            EditBitmap item = list[0];
+            item.RemoveNextSteps();
+        }
+
         // 移除后面的操作步骤
         private void RemoveBitmap()
         {
@@ -555,6 +545,7 @@ namespace TabletArtco
             EditLayer editLayer = layerlist[layerIndex];
             if (editLayer.list.Count == 2)
             {
+                editLayer.RemoveNextSteps();
                 Bitmap b = editLayer.LayerImage();
                 EditLayer layer = new EditLayer(b);
                 layerlist.Add(layer);
@@ -571,6 +562,7 @@ namespace TabletArtco
         {
             RemoveLayers();
             EditLayer editLayer = layerlist[layerIndex];
+            editLayer.RemoveNextSteps();
             Bitmap bitmap = editLayer.LayerImage();
             List<Bitmap> bitmaps = ImageUtil.Clip(bitmap, path);
             EditLayer layer = new EditLayer(bitmaps[0]);
@@ -585,6 +577,7 @@ namespace TabletArtco
             RemoveLayers();
             bitmap = ImageUtil.Scale(bitmap, 1/scale);
             EditLayer editLayer = layerlist[layerIndex];
+            editLayer.RemoveNextSteps();
             Bitmap b = editLayer.LayerImage();
             EditLayer layer = new EditLayer(b);
             RectF rect = new RectF(0, 0, bitmap.Width, bitmap.Height);
@@ -669,8 +662,8 @@ namespace TabletArtco
         private Canvas curCanvas;
         private List<EditBitmap> list;
 
-        private string curColor = "#000000";
-        private int curStrokeW = 10;
+        public string curColor { get; set; } = "#000000";
+        private int curStrokeW { get; set; } = 10;
         private Paint mPaint;
         public Action<List<Bitmap>> mAction { get; set; }
 
@@ -737,11 +730,11 @@ namespace TabletArtco
 
         public override void Draw(Canvas canvas)
         {
-            if (bBitmap != null)
+            if (bBitmap != null && !bBitmap.IsRecycled)
             {
                 RectF r = new RectF(0, 0, mWidth, mHeight);
                 canvas.DrawBitmap(bBitmap, null, r, mPaint);
-                if (tBitmap != null)
+                if (tBitmap != null && !tBitmap.IsRecycled)
                 {
                     EditBitmap editBitmap = list[1];
                     PointF p = new PointF(editBitmap.borderRect.CenterX(), editBitmap.borderRect.CenterY());
@@ -785,10 +778,7 @@ namespace TabletArtco
             srcBm?.Recycle();
             srcBm = Bitmap.CreateBitmap(bitmap);
             editTarget?.Recycle();
-            if (editTarget == null)
-            {
-                editTarget = new EditTarget(srcBm);
-            }
+            editTarget = new EditTarget(srcBm);
             updateView();
         }
 
@@ -828,12 +818,20 @@ namespace TabletArtco
             updateView();
         }
 
+        public Bitmap CurBitmap() {
+            return editTarget?.EditLayer().LayerImage();
+        }
+
         public void updateView()
         {
             bBitmap?.Recycle();
             tBitmap?.Recycle();
             EditTarget target = editTarget;
             list = target?.EditBitmapList();
+            if (list == null || list.Count<=0)
+            {
+                return;
+            }
             bBitmap = list[0].currentBitmap();
             tBitmap = list.Count > 1 ? list[1].currentBitmap() : null;
             RequestLayout();
@@ -946,8 +944,8 @@ namespace TabletArtco
             }
             else if (operateType == OperateType.RectCut)
             {
-                int width = bBitmap != null ? bBitmap.Width / 3 : 0;
-                int height = bBitmap != null ? bBitmap.Height / 3 : 0;
+                //int width = bBitmap != null ? bBitmap.Width / 3 : 0;
+                //int height = bBitmap != null ? bBitmap.Height / 3 : 0;
                 mPath.Reset();
                 imgPath.Reset();
                 RectF r = new RectF();
