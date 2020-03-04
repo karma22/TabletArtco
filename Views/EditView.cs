@@ -105,7 +105,7 @@ namespace TabletArtco
     }
 
     // Operate type
-    enum OperateType { FlipY, FlipX, RotateR, RotateL, Enlarge, Narrow, Eraser, Draw, RectCut, FreeCut, Add, Previous, Next, Move, Rotate };
+    enum OperateType { FlipY, FlipX, RotateR, RotateL, Enlarge, Narrow, Eraser, Draw, RectCut, FreeCut, Add, Previous, Next, Move, Rotate, Straw };
 
     // Edit step
     class EditStep
@@ -666,12 +666,14 @@ namespace TabletArtco
         private int curStrokeW { get; set; } = 10;
         private Paint mPaint;
         public Action<List<Bitmap>> mAction { get; set; }
+        public Action<string> colorAction { get; set; }
 
         public EditTarget editTarget = null;
         public Bitmap srcBm;
         private OperateType operateType;
         private Path mPath = new Path();   //当前绘制path
-        private Path imgPath = new Path(); //绘制到bitmap上的path        
+        private Path imgPath = new Path(); //绘制到bitmap上的path
+        private Bitmap colorBm = null;
 
         // 触摸相关事件
         private float mX;
@@ -816,6 +818,11 @@ namespace TabletArtco
             }
             operateType = type;
             updateView();
+            if (type == OperateType.Straw)
+            {
+                colorBm?.Recycle();
+                colorBm = CurBitmap();
+            }
         }
 
         public Bitmap CurBitmap() {
@@ -839,9 +846,36 @@ namespace TabletArtco
             Invalidate();
         }
 
+        public void GetColorOfBitmap(float x, float y) {
+            if (colorBm != null && !colorBm.IsRecycled)
+            {
+                int w = colorBm.Width;
+                int h = colorBm.Height;
+                float scale = mWidth * 1.0f / w;
+                int tx = (int) (x / scale);
+                int ty = (int) (y / scale);
+                if (0 <= tx && 0 <= ty && tx <= w && ty <= h)
+                {
+                    int pixel = colorBm.GetPixel(tx, ty);
+                    int a = Color.GetAlphaComponent(pixel);
+                    int r = Color.GetRedComponent(pixel);
+                    int g = Color.GetGreenComponent(pixel);
+                    int b = Color.GetBlueComponent(pixel);
+                    String Rgb = "#" + ToColorComponent(r) + ToColorComponent(g) + ToColorComponent(b);
+                    colorAction?.Invoke(Rgb);
+                    curColor = Rgb;
+                }    
+            }
+        }
+
+        public string ToColorComponent(int temp) {
+            string c = Java.Lang.Integer.ToHexString(temp);
+            return c.Length == 1 ? "0" + c : c;
+        }
+
         public override bool OnTouchEvent(MotionEvent e)
         {
-            if (operateType == OperateType.Draw || operateType == OperateType.Eraser || operateType == OperateType.RectCut || operateType == OperateType.FreeCut)
+            if (operateType == OperateType.Draw || operateType == OperateType.Eraser || operateType == OperateType.RectCut || operateType == OperateType.FreeCut || operateType == OperateType.Straw)
             {
                 switch (e.Action)
                 {
@@ -865,14 +899,19 @@ namespace TabletArtco
         {
             mX = x;
             mY = y;
-            float scale = editTarget.scale;
-            float scaleTwo = 3 * scale;
-            mPath.Reset();
-            imgPath.Reset();
+            
             if (operateType == OperateType.Draw || operateType == OperateType.Eraser || operateType == OperateType.FreeCut)
             {
+                float scale = editTarget.scale;
+                float scaleTwo = 3 * scale;
+                mPath.Reset();
+                imgPath.Reset();
                 mPath.MoveTo(x / scale, y / scale);
                 imgPath.MoveTo(x / scaleTwo, y / scaleTwo);
+            }
+            else if (operateType == OperateType.Straw)
+            {
+                GetColorOfBitmap(x, y);
             }
         }
 
@@ -908,6 +947,10 @@ namespace TabletArtco
                     r.Bottom = Math.Max(mY, y);
                     mPath.AddRect(new RectF(r.Left / scale, r.Top / scale, r.Right / scale, r.Bottom / scale), Path.Direction.Cw);
                     imgPath.AddRect(new RectF(r.Left / scaleTwo, r.Top / scaleTwo, r.Right / scaleTwo, r.Bottom / scaleTwo), Path.Direction.Cw);
+                }
+                else if (operateType == OperateType.Straw)
+                {
+                    GetColorOfBitmap(x, y);
                 }
             }
         }
@@ -959,6 +1002,10 @@ namespace TabletArtco
                 mPath.Reset();
                 imgPath.Reset();
                 updateView();
+            }
+            else if (operateType == OperateType.Straw)
+            {
+                GetColorOfBitmap(x, y);
             }
         }
     }

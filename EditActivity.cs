@@ -184,9 +184,9 @@ namespace TabletArtco
             areaView.SetBackgroundResource(Resource.Drawable.xml_edit_bg);
 
             editView = new EditView(this);
-            editView.mAction = (list) =>
+            editView.colorAction = (color) =>
             {
-
+                curColorIv?.SetBackgroundColor(Color.ParseColor(color));
             };
             editView.SetSrcBitmap(operateList[0]);
             RelativeLayout.LayoutParams conParams = new RelativeLayout.LayoutParams(areaParams.Width, areaParams.Height);
@@ -253,11 +253,28 @@ namespace TabletArtco
                 btParams.TopMargin = cMargin;
                 btParams.LeftMargin = topMargin + i * (topMargin + cW);
                 ImageView imgIv = new ImageView(this);
+                imgIv.Tag = i;
                 imgIv.LayoutParameters = btParams;
                 imgIv.SetImageResource(cIds[i]);
                 imgIv.Click += (t, e) =>
                 {
-
+                    int tag = (int)((ImageView)t).Tag;
+                    switch (tag) {
+                        case 0:
+                            {
+                                ColorPickerDialog dialog = new ColorPickerDialog(this);
+                                dialog.Show();
+                                break;
+                            }
+                        case 1:
+                            {
+                                editView.Operate(OperateType.Straw);
+                                break;
+                            }
+                        default: {
+                                break;//nothing
+                            }
+                    }
                 };
                 toolView.AddView(imgIv);
             }
