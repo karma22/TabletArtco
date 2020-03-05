@@ -245,9 +245,9 @@
     <Compile Include="Views\DragImgView.cs" />
     <Compile Include="Adapters\VariableAdapter.cs" />
     <Compile Include="Views\EditView.cs" />
-    <Compile Include="Views\ColorPickerView1.cs" />
     <Compile Include="Views\ColorPickerDialog.cs" />
     <Compile Include="Views\ColorPickerView.cs" />
+    <Compile Include="Views\ConfirmDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -1707,6 +1707,22 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\xml_bt_bg.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\edit_down.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\xml_edit_bt_bg.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\dialog_confirm.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\dialog_confirm.xml">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>

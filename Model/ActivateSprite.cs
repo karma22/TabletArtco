@@ -24,7 +24,6 @@ namespace TabletArtco
         public Point originPoint { get; set; } = new Point(0, 0);
 
         
-
         // animation arguments
         public bool isVisible { get; set; } = true;
         public Point curPoint { get; set; } = new Point(0, 0);
@@ -61,7 +60,7 @@ namespace TabletArtco
             }
             
             curbitmapList.Add(Bitmap.CreateBitmap(sprite.bitmap));
-            originBitmapList.Add(sprite.bitmap);
+            originBitmapList.Add(Bitmap.CreateBitmap(sprite.bitmap));
             int width = sprite.bitmap.Width;
             int height = sprite.bitmap.Height;
             int x = (int)(1 + Java.Lang.Math.Random() * (notFullSize.Width - width + 1));
@@ -75,6 +74,24 @@ namespace TabletArtco
         public ActivatedSprite(string sprite)
         {
 
+        }
+
+        public void SetSrcBitmapList(List<Bitmap> list) {
+            for (int i = originBitmapList.Count-1; i>=0; i--)
+            {
+                Bitmap bitmap = originBitmapList[i];
+                originBitmapList.Remove(bitmap);
+                bitmap.Recycle();
+
+                Bitmap b = curbitmapList[i];
+                curbitmapList.Remove(b);
+                b.Recycle();
+            }
+            for (int i = 0; i < list.Count; i++)
+            {
+                originBitmapList.Add(list[i]);
+                curbitmapList.Add(Bitmap.CreateBitmap(list[i]));
+            }
         }
 
         public void AddBlocks(List<List<Block>> list) {

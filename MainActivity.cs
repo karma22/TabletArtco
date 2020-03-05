@@ -43,6 +43,13 @@ namespace TabletArtco
             InitView();
         }
 
+        protected override void OnResume()
+        {
+            base.OnResume();
+            UpdateMainView();
+            mSpriteAdapter.NotifyDataSetChanged();
+        }
+
         protected override void OnPause()
         {
             base.OnPause();
@@ -577,11 +584,12 @@ namespace TabletArtco
                 };
                 imgIv.ClickAction += (t) =>
                 {
+                    int tag = (int)((DragImgView)t).Tag;
                     if (!isPlay)
                     {
                         Intent intent = new Intent(this, typeof(EditActivity));
                         Bundle bundle = new Bundle();
-                        bundle.PutInt("position", i);
+                        bundle.PutInt("position", tag-100);
                         intent.PutExtra("bundle", bundle);
                         StartActivityForResult(intent, 10, null);
                     }
@@ -1032,9 +1040,15 @@ namespace TabletArtco
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             viewHolder.bgIv.Tag = position;
             viewHolder.deleteFl.Tag = position;
-            
             viewHolder.bgIv.SetBackgroundResource(position == mSpriteIndex ? Resource.Drawable.xml_asprite_item_bg_s : Resource.Drawable.xml_asprite_item_bg_n);
-            Glide.With(this).Load(GlideUtil.GetGlideUrl(sprite.sprite.remotePath)).Into(viewHolder.imgIv);
+            if (sprite.originBitmapList.Count > 0)
+            {
+                viewHolder.imgIv.SetImageBitmap(sprite.originBitmapList[0]);
+            }
+            else
+            {
+                Glide.With(this).Load(GlideUtil.GetGlideUrl(sprite.sprite.remotePath)).Into(viewHolder.imgIv);
+            }
             viewHolder.nameTv.Text = sprite.sprite.name;
         }
 

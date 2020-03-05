@@ -11,6 +11,8 @@ using Android.Util;
 using Android.Runtime;
 using Java.Lang;
 using Com.Bumptech.Glide;
+using Android.Text;
+using Android.Views.InputMethods;
 
 namespace TabletArtco
 {
@@ -18,7 +20,7 @@ namespace TabletArtco
 
     // Edit Image Activity
     [Activity(Theme = "@style/AppTheme")]
-    public class EditActivity : Activity, Delegate, DataSource
+    public class EditActivity : Activity, Delegate, DataSource, PopupMenu.IOnMenuItemClickListener, Android.Text.ITextWatcher, TextView.IOnEditorActionListener
     {
         private List<Bitmap> originList = new List<Bitmap>();
         private List<Bitmap> operateList = new List<Bitmap>();
@@ -26,7 +28,11 @@ namespace TabletArtco
         private EditView editView;
         private SpriteAdapter mAdapter;
         private ImageView curColorIv;
-        
+
+        ActivatedSprite mActivatedSprite = null;
+
+        private EditText widthEt;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -95,6 +101,32 @@ namespace TabletArtco
             }
         }
 
+        public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
+        {
+            if (keyCode == Keycode.Back)
+            {
+                ConfirmDialog dialog = new ConfirmDialog(this);
+                dialog.callbackAction = (confirm) =>
+                {
+                    if (confirm)
+                    {
+                        Bitmap oldB = operateList[mIndex];
+                        operateList.Remove(oldB);
+                        Bitmap bitmap = editView.CurBitmap();
+                        operateList.Insert(mIndex, bitmap);
+                        mActivatedSprite.SetSrcBitmapList(operateList);
+                        for (int i = 0; i < originList.Count; i++)
+                        {
+                            originList[i].Recycle();
+                        }
+                    }
+                    Finish();
+                };
+                dialog.Show();
+                return false;
+            }
+            return false;
+        }
 
         // image List
         private void initData() {
@@ -103,14 +135,14 @@ namespace TabletArtco
             int position = bundle.GetInt("position");
             if (position<Project.mSprites.Count)
             {
-                ActivatedSprite sprite = Project.mSprites[position];
-                for (int i = 0; i < sprite.originBitmapList.Count; i++)
+                mActivatedSprite = Project.mSprites[position];
+                for (int i = 0; i < mActivatedSprite.originBitmapList.Count; i++)
                 {
-                    Bitmap bitmap = Bitmap.CreateBitmap(sprite.originBitmapList[i]);
+                    Bitmap bitmap = Bitmap.CreateBitmap(mActivatedSprite.originBitmapList[i]);
                     originList.Add(bitmap);
                     operateList.Add(Bitmap.CreateBitmap(bitmap));
                 }
-                if (sprite.originBitmapList.Count>0)
+                if (mActivatedSprite.originBitmapList.Count>0)
                 {
                     mIndex = 0;
                 }
@@ -296,14 +328,54 @@ namespace TabletArtco
                 btParams.LeftMargin = colorMargin + i * (colorMargin + sW);
                 if (i == 0)
                 {
-                    TextView textTv = new TextView(this);
-                    textTv.LayoutParameters = btParams;
-                    textTv.SetBackgroundResource(Resource.Drawable.edit_size_bg);
-                    textTv.Text = "10";
-                    textTv.Gravity = GravityFlags.CenterVertical;
-                    textTv.SetPadding(4, 0, 4, 0);
-                    textTv.TextSize = (float)(sH / 4.0);
-                    toolView.AddView(textTv);
+                    widthEt = new EditText(this);
+                    widthEt.LayoutParameters = btParams;
+                    widthEt.SetBackgroundResource(Resource.Drawable.edit_size_bg);
+                    widthEt.Text = "10";
+                    widthEt.Gravity = GravityFlags.CenterVertical;
+                    widthEt.SetPadding(4, 0, 4, 0);
+                    widthEt.TextSize = (float)(sH / 4.0);
+                    widthEt.InputType = InputTypes.ClassNumber;
+                    toolView.Focusable = true;
+                    toolView.FocusableInTouchMode = true;
+                    toolView.AddView(widthEt);
+                    widthEt.FocusChange += (v, hasFocus) =>
+                    {
+                        if (!widthEt.HasFocus)
+                        {
+                            widthEt.Text = widthEt.Text.Length <= 0 ? "10" : widthEt.Text;
+                            editView.curStrokeW = int.Parse(widthEt.Text);
+                        }
+                    };
+                    widthEt.SetOnEditorActionListener(this);
+                    
+                    widthEt.AddTextChangedListener(this);
+
+                    FrameLayout.LayoutParams imgParams = new FrameLayout.LayoutParams(sH, sH);
+                    imgParams.TopMargin = sTopMargin;
+                    imgParams.LeftMargin = colorMargin + i * (colorMargin + sW) + sW-sH;
+                    ImageView imageIv = new ImageView(this);
+                    imageIv.LayoutParameters = imgParams;
+                    imageIv.SetPadding(3, 3, 3, 3);
+                    imageIv.SetImageResource(Resource.Drawable.edit_down);
+                    toolView.AddView(imageIv);
+
+                    imageIv.Click += (t, e) =>
+                    {
+                        PopupMenu popupMenu = new PopupMenu(imageIv.Context, imageIv);
+                        popupMenu.Menu.Add("5");
+                        popupMenu.Menu.Add("10");
+                        popupMenu.Menu.Add("15");
+                        popupMenu.Menu.Add("20");
+                        popupMenu.Menu.Add("25");
+                        popupMenu.Menu.Add("30");
+                        popupMenu.Menu.Add("35");
+                        popupMenu.Menu.Add("40");
+                        popupMenu.Menu.Add("45");
+                        popupMenu.Menu.Add("50");
+                        popupMenu.SetOnMenuItemClickListener(this);
+                        popupMenu.Show();
+                    };
                 }
                 else
                 {
@@ -390,14 +462,15 @@ namespace TabletArtco
                 layoutParams.LeftMargin = i * itemW + 8;
                 layoutParams.TopMargin = 8;
                 ImageView imgBt = new ImageView(this);
-                imgBt.SetBackgroundResource(resIds[i]);
+                imgBt.SetImageResource(resIds[i]);
                 imgBt.LayoutParameters = layoutParams;
                 imgBt.Tag = i;
+                imgBt.SetPadding(5,5,0,0);
                 contentView.AddView(imgBt);
                 imgBt.Click += (t, e) =>
                 {
                     int tag = (int) ((ImageView)t).Tag;
-                    
+                    UpdateOperateViews(tag);
                     OperateType[] types = { OperateType.FlipX, OperateType.FlipY, OperateType.RotateR, OperateType.RotateL,
                                             OperateType.Enlarge, OperateType.Narrow, OperateType.Eraser, OperateType.Draw,
                                             OperateType.RectCut, OperateType.FreeCut, OperateType.Add, OperateType.Previous, OperateType.Next
@@ -413,6 +486,64 @@ namespace TabletArtco
                     }
                 };
             }
+        }
+
+        private void UpdateOperateViews(int tag)
+        {
+            FrameLayout contentView = FindViewById<FrameLayout>(Resource.Id.edit_bt_content_view);
+            for (int i = 0; i < contentView.ChildCount; i++)
+            {
+                ImageView imgBt = (ImageView)contentView.GetChildAt(i);
+                imgBt.SetBackgroundResource(tag!=i ? 0 : Resource.Drawable.xml_edit_bt_bg);
+            }
+        }
+
+        public void AfterTextChanged(IEditable s)
+        {
+            if (widthEt.Text.Length>4)
+            {
+                widthEt.Text = widthEt.Text.Substring(0, 4);
+                widthEt.SetSelection(widthEt.Text.Length);
+            }
+            while (widthEt.Text.Length>0  && widthEt.Text.Substring(0, 1) == "0")
+            {
+                widthEt.Text = widthEt.Text.Substring(1);
+            }
+            widthEt.SetSelection(widthEt.Text.Length);
+            if (widthEt.Text.Length>0)
+            {
+                editView.curStrokeW = int.Parse(widthEt.Text);
+            }
+            LogUtil.CustomLog(widthEt.Text);
+        }
+
+        public void BeforeTextChanged(ICharSequence s, int start, int count, int after)
+        {
+            
+        }
+
+        public void OnTextChanged(ICharSequence s, int start, int before, int count)
+        {
+            
+        }
+
+        bool TextView.IOnEditorActionListener.OnEditorAction(TextView v, ImeAction actionId, KeyEvent e)
+        {
+            if (actionId == ImeAction.Done)
+            {
+                v.ClearFocus();
+                return true;
+            }
+            return false;
+        }
+
+        /*PopMenuView interface*/
+        public bool OnMenuItemClick(IMenuItem item)
+        {
+            string title = item.ToString();
+            widthEt.Text = title;
+            editView.curStrokeW = int.Parse(widthEt.Text);
+            return true;
         }
 
         /*

@@ -59,6 +59,7 @@ namespace TabletArtco
             eraserPaint.SetStyle(Paint.Style.Stroke);
             eraserPaint.AntiAlias = true;
             eraserPaint.Alpha = 0;
+            eraserPaint.StrokeCap = Paint.Cap.Round;
             eraserPaint.SetXfermode(new PorterDuffXfermode(PorterDuff.Mode.Clear));
             eraserPaint.StrokeWidth = w;
             Canvas canvas = new Canvas(src);
@@ -73,6 +74,7 @@ namespace TabletArtco
             paint.AntiAlias = true;
             paint.StrokeWidth = w;
             paint.Color = color;
+            paint.StrokeCap = Paint.Cap.Round;
             Canvas canvas = new Canvas(src);
             canvas.DrawPath(path, paint);
             return src;
@@ -663,7 +665,7 @@ namespace TabletArtco
         private List<EditBitmap> list;
 
         public string curColor { get; set; } = "#000000";
-        private int curStrokeW { get; set; } = 10;
+        public int curStrokeW { get; set; } = 10;
         private Paint mPaint;
         public Action<List<Bitmap>> mAction { get; set; }
         public Action<string> colorAction { get; set; }
@@ -674,6 +676,9 @@ namespace TabletArtco
         private Path mPath = new Path();   //当前绘制path
         private Path imgPath = new Path(); //绘制到bitmap上的path
         private Bitmap colorBm = null;
+        private bool mIsMove = false;
+        private float moveX;
+        private float moveY;
 
         // 触摸相关事件
         private float mX;
@@ -744,6 +749,7 @@ namespace TabletArtco
                     p.Y = (p.Y + editBitmap.curMoveY) * 3 * editTarget.scale;
                     RectF rect = new RectF(0, 0, tBitmap.Width * editTarget.scale * editBitmap.scale, tBitmap.Height * editTarget.scale * editBitmap.scale);
                     rect.Offset(p.X - rect.CenterX(), p.Y - rect.CenterY());
+                    rect.Offset(moveX, moveY);
                     canvas.DrawBitmap(tBitmap, null, rect, mPaint);
                 }
                 if (curCanvas != null && !mPath.IsEmpty)
@@ -768,6 +774,7 @@ namespace TabletArtco
                 mPaint = new Paint();
                 //mPaint.AntiAlias = true;
                 mPaint.SetStyle(Paint.Style.Stroke);
+                mPaint.StrokeCap = Paint.Cap.Round;
 
             }
             mPaint.Color = Color.ParseColor(color);
@@ -859,25 +866,40 @@ namespace TabletArtco
                     int pixel = colorBm.GetPixel(tx, ty);
                     Color color = new Color(pixel);
                     string Rgb = ColorUtil.ColorToString(color);
-                    //int a = Color.GetAlphaComponent(pixel);
-                    //int r = Color.GetRedComponent(pixel);
-                    //int g = Color.GetGreenComponent(pixel);
-                    //int b = Color.GetBlueComponent(pixel);
-                    //String Rgb = "#" + ToColorComponent(r) + ToColorComponent(g) + ToColorComponent(b);
                     colorAction?.Invoke(Rgb);
                     curColor = Rgb;
                 }    
             }
         }
 
-        //public string ToColorComponent(int temp) {
-        //    string c = Java.Lang.Integer.ToHexString(temp);
-        //    return c.Length == 1 ? "0" + c : c;
-        //}
+        public bool isMove(MotionEvent e) {
+            if (tBitmap != null && !tBitmap.IsRecycled)
+            {
+                float x = e.GetX();
+                float y = e.GetY();
+                EditBitmap editBitmap = list[1];
+                PointF p = new PointF(editBitmap.borderRect.CenterX(), editBitmap.borderRect.CenterY());
+                p.X = (p.X + editBitmap.curMoveX) * 3 * editTarget.scale;
+                p.Y = (p.Y + editBitmap.curMoveY) * 3 * editTarget.scale;
+                RectF rect = new RectF(0, 0, tBitmap.Width * editTarget.scale * editBitmap.scale, tBitmap.Height * editTarget.scale * editBitmap.scale);
+                rect.Offset(p.X - rect.CenterX(), p.Y - rect.CenterY());
+                if (rect.Left<= x && rect.Top<=y && x<=rect.Right && y<=rect.Bottom)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
 
         public override bool OnTouchEvent(MotionEvent e)
         {
-            if (operateType == OperateType.Draw || operateType == OperateType.Eraser || operateType == OperateType.RectCut || operateType == OperateType.FreeCut || operateType == OperateType.Straw)
+            
+            if (e.Action == MotionEventActions.Down)
+            {
+                mIsMove = isMove(e);
+            }
+            if (operateType == OperateType.Draw || operateType == OperateType.Eraser || operateType == OperateType.RectCut || operateType == OperateType.FreeCut || operateType == OperateType.Straw || mIsMove)
             {
                 switch (e.Action)
                 {
@@ -891,9 +913,10 @@ namespace TabletArtco
                         touch_up(e.GetX(), e.GetY());
                         break;
                 }
+                return true;
             }
-
-            return true;
+            return false;
+            
         }
 
         // touch begin
@@ -901,7 +924,6 @@ namespace TabletArtco
         {
             mX = x;
             mY = y;
-            
             if (operateType == OperateType.Draw || operateType == OperateType.Eraser || operateType == OperateType.FreeCut)
             {
                 float scale = editTarget.scale;
@@ -920,6 +942,12 @@ namespace TabletArtco
         // touch move
         private void touch_move(float x, float y)
         {
+            if (mIsMove) {
+                moveX = x - mX;
+                moveY = y - mY;
+                Invalidate();
+            }
+
             if (x < 0 || x > mWidth || y < 0 || y > mHeight)
             {
                 return;
@@ -954,18 +982,31 @@ namespace TabletArtco
                 {
                     GetColorOfBitmap(x, y);
                 }
+               
             }
         }
 
         // touch end
         private void touch_up(float x, float y)
         {
+            float scale = editTarget.scale;
+            float scaleTwo = 3 * scale;
+            if (mIsMove)
+            {
+                moveX = x - mX;
+                moveY = y - mY;
+                editTarget?.Move((int)(moveX / scaleTwo), (int)(moveY / scaleTwo));
+                moveX = 0;
+                moveY = 0;
+                mIsMove = false;
+                updateView();
+            }
+
             if (x < 0 || x > mWidth || y < 0 || y > mHeight)
             {
                 return;
             }
-            float scale = editTarget.scale;
-            float scaleTwo = 3 * scale;
+            
             if (operateType == OperateType.Draw || operateType == OperateType.Eraser || operateType == OperateType.FreeCut)
             {
 
