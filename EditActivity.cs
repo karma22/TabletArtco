@@ -26,7 +26,7 @@ namespace TabletArtco
         private EditView editView;
         private SpriteAdapter mAdapter;
         private ImageView curColorIv;
-
+        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -262,7 +262,12 @@ namespace TabletArtco
                     switch (tag) {
                         case 0:
                             {
-                                ColorPickerDialog dialog = new ColorPickerDialog(this);
+                                ColorPickerDialog dialog = new ColorPickerDialog(this, Color.ParseColor(editView.curColor));
+                                dialog.colorAction = (color) =>
+                                {
+                                    curColorIv.SetBackgroundColor(Color.ParseColor(color));
+                                    editView.curColor = color;
+                                };
                                 dialog.Show();
                                 break;
                             }

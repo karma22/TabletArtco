@@ -163,7 +163,7 @@ namespace TabletArtco
             mDrawingOffset = calculateRequiredOffset();//计算所需位移
 
             initPaintTools();//初始化画笔、画布
-            SetFocusable(ViewFocusability.Focusable);//设置可获取焦点
+            //SetFocusable(ViewFocusability.Focusable);//设置可获取焦点
 
             //setFocusableInTouchMode(true);//设置在被触摸时会获取焦点
 
@@ -197,7 +197,6 @@ namespace TabletArtco
             mSatValTrackerPaint.StrokeWidth = 2f * mDensity;
             mSatValTrackerPaint.AntiAlias = true;
 
-            //mHueTrackerPaint.setColor(mSliderTrackerColor);
             mHueTrackerPaint.Color = Color.ParseColor(mSliderTrackerColor);
             mHueTrackerPaint.SetStyle(Style.Stroke);
             mHueTrackerPaint.StrokeWidth = 2f * mDensity;
@@ -264,10 +263,10 @@ namespace TabletArtco
             //初始化选择器的位置
             Point p = satValToPoint(mSat, mVal);
             //绘制显示SV值的选择器
-            mSatValTrackerPaint.Color = Color.ParseColor("000000");
+            mSatValTrackerPaint.Color = Color.ParseColor("#000000");
             canvas.DrawCircle(p.X, p.Y, mSVTrackerRadius - 1f * mDensity, mSatValTrackerPaint);
             //绘制外圆
-            mSatValTrackerPaint.Color = Color.ParseColor("dddddd");
+            mSatValTrackerPaint.Color = Color.ParseColor("#dddddd");
             canvas.DrawCircle(p.X, p.Y, mSVTrackerRadius, mSatValTrackerPaint);
         }
 
@@ -582,7 +581,7 @@ namespace TabletArtco
             mHueRect = new RectF(left, top, right, bottom);
         }
 
-       
+
         /**
          * 设置边框颜色
          *
@@ -633,15 +632,14 @@ namespace TabletArtco
         public void setColor(string color, bool callback)
         {
             float[] hsv = new float[3];
-            Color.ColorToHSV(Color.ParseColor(color), hsv) ;
+            Color.ColorToHSV(Color.ParseColor(color), hsv);
             mHue = hsv[0];
             mSat = hsv[1];
             mVal = hsv[2];
-            //if (callback && mListener != null)
-            //{
-            //    mListener.onColorChanged(Color.HSVToColor(new float[] { mHue, mSat, mVal }));
-            //}
-            onColorChanged?.Invoke(Color.HSVToColor(new float[] { mHue, mSat, mVal }));
+            if (callback)
+            {
+                onColorChanged?.Invoke(Color.HSVToColor(new float[] { mHue, mSat, mVal }));
+            }
             Invalidate();
         }
 

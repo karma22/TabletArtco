@@ -857,21 +857,23 @@ namespace TabletArtco
                 if (0 <= tx && 0 <= ty && tx <= w && ty <= h)
                 {
                     int pixel = colorBm.GetPixel(tx, ty);
-                    int a = Color.GetAlphaComponent(pixel);
-                    int r = Color.GetRedComponent(pixel);
-                    int g = Color.GetGreenComponent(pixel);
-                    int b = Color.GetBlueComponent(pixel);
-                    String Rgb = "#" + ToColorComponent(r) + ToColorComponent(g) + ToColorComponent(b);
+                    Color color = new Color(pixel);
+                    string Rgb = ColorUtil.ColorToString(color);
+                    //int a = Color.GetAlphaComponent(pixel);
+                    //int r = Color.GetRedComponent(pixel);
+                    //int g = Color.GetGreenComponent(pixel);
+                    //int b = Color.GetBlueComponent(pixel);
+                    //String Rgb = "#" + ToColorComponent(r) + ToColorComponent(g) + ToColorComponent(b);
                     colorAction?.Invoke(Rgb);
                     curColor = Rgb;
                 }    
             }
         }
 
-        public string ToColorComponent(int temp) {
-            string c = Java.Lang.Integer.ToHexString(temp);
-            return c.Length == 1 ? "0" + c : c;
-        }
+        //public string ToColorComponent(int temp) {
+        //    string c = Java.Lang.Integer.ToHexString(temp);
+        //    return c.Length == 1 ? "0" + c : c;
+        //}
 
         public override bool OnTouchEvent(MotionEvent e)
         {

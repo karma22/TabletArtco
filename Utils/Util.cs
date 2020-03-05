@@ -129,6 +129,33 @@ namespace TabletArtco
         }
     }
 
+    public class ColorUtil
+    {
+        public static string ColorToString(Color color)
+        {
+            int r = color.R;
+            int g = color.G;
+            int b = color.B;
+
+            string cR = Java.Lang.Integer.ToHexString(r);
+            cR = cR.Length == 1 ? "0" + cR : cR;
+
+            string cG = Java.Lang.Integer.ToHexString(g);
+            cG = cG.Length == 1 ? "0" + cG : cG;
+
+            string cB = Java.Lang.Integer.ToHexString(b);
+            cB = cB.Length == 1 ? "0" + cB : cB;
+
+            return "#" + cR + cG + cB;
+        }
+
+
+        public static Color HSVToColor(float mHue, float mSat, float mVal)
+        {
+            return Color.HSVToColor(new float[] { mHue, mSat, mVal });
+        }
+    }
+
 
 
 }

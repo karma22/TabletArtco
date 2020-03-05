@@ -40,15 +40,19 @@ namespace TabletArtco
 {
     public class ColorPickerDialog {
 
-        public Context mCxt;
-        public AlertDialog dialog = null;
-        
-        
-        
-        public ColorPickerDialog(Context context)
+        private Context mCxt;
+        private AlertDialog dialog = null;
+        private ColorPickerView colorPickerView = null;
+        private View contentView;
+        private string curColor;
+
+        public System.Action<string> colorAction { get; set; }
+
+        public ColorPickerDialog(Context context, Color color)
         {
             mCxt = context;
-            initView(context);
+            init(context);
+            setCurColor(color);
         }
 
         public void Show()
@@ -62,38 +66,72 @@ namespace TabletArtco
         }
 
         //信号输入
-        private void initView(Context context)
+        private void init(Context context)
         {
-            
-            View contentView = LayoutInflater.From(context).Inflate(Resource.Layout.dialog_picker_color, null, false);
-            //RelativeLayout view = contentView.FindViewById<RelativeLayout>(Resource.Id.SignalView);
-            //view.Visibility = ViewStates.Visible;
+            contentView = LayoutInflater.From(context).Inflate(Resource.Layout.dialog_picker_color, null, false);
+            FrameLayout conView = contentView.FindViewById<FrameLayout>(Resource.Id.colorPickerView_wrapper);
+            FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, FrameLayout.LayoutParams.MatchParent);
+            colorPickerView = new ColorPickerView(context);
+            conView.AddView(colorPickerView, p);
+            colorPickerView.SetLayerType(LayerType.Software, new Paint());
             dialog = new AlertDialog.Builder(context).SetView(contentView).Create();
-            //TextView closeBt = view.FindViewById<TextView>(Resource.Id.tv_close);
-            //TextView cancelBt = view.FindViewById<TextView>(Resource.Id.tv_cancel);
-            //TextView confirmBt = view.FindViewById<TextView>(Resource.Id.tv_confirm);
-            //EditText textEt = view.FindViewById<EditText>(Resource.Id.et_signal);
-            //closeBt.Click += (t, e) =>
-            //{
-            //    dialog.Dismiss();
-            //};
-            //cancelBt.Click += (t, e) =>
-            //{
-            //    dialog.Dismiss();
-            //};
-            //confirmBt.Click += (t, e) =>
-            //{
-            //    if (textEt.Text.Length <= 0)
-            //    {
-            //        Toast.MakeText(context, "输入内容不能为空", ToastLength.Long);
-            //        return;
-            //    }
-            //    //mAction?.Invoke(textEt.Text);
-            //    dialog.Dismiss();
-            //};
-            //dialog.Window.SetLayout(ScreenUtil.dip2px(context, 343), ScreenUtil.dip2px(context, 157));
+
+
+            int[] ids = { Resource.Id.colorHEt, Resource.Id.colorSEt, Resource.Id.colorSEt, Resource.Id.rgbREt, Resource.Id.rgbGEt, Resource.Id.rgbBEt, Resource.Id.colorEt };
+            for (int i = 0; i < ids.Length; i++)
+            {
+                EditText editText = contentView.FindViewById<EditText>(ids[i]);
+                editText.Focusable = false;
+                editText.FocusableInTouchMode = false;
+            }
+
+            colorPickerView.onColorChanged = (color) =>
+            {
+                SetNewColor(color);
+            };
+            
+            contentView.FindViewById<TextView>(Resource.Id.cancelBt).Click += (t, e) =>
+            {
+                dialog.Dismiss();
+            };
+            contentView.FindViewById<TextView>(Resource.Id.confirmBt).Click += (t, e) =>
+            {
+                colorAction?.Invoke(curColor);
+                dialog.Dismiss();
+            };
             dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
         }
+
+        public void setCurColor(Color color) {
+            ImageView curIv = contentView.FindViewById<ImageView>(Resource.Id.curColorIv);
+            curIv?.SetBackgroundColor(color);
+            colorPickerView?.setColor(ColorUtil.ColorToString(color));
+            SetNewColor(color);
+        }
+
+        public void SetNewColor(Color color) {
+            ImageView newIv = contentView.FindViewById<ImageView>(Resource.Id.newColorIv);
+            newIv?.SetBackgroundColor(color);
+            UpdateView(color);
+        }
+
+        public void UpdateView(Color color) {
+            int mHue = (int)color.GetHue();
+            int mSat = (int)(color.GetSaturation()*100);
+            int mVal = (int)(color.GetBrightness()*100);
+            contentView.FindViewById<EditText>(Resource.Id.colorHEt).Text = "" + mHue;
+            contentView.FindViewById<EditText>(Resource.Id.colorSEt).Text = "" + mSat;
+            contentView.FindViewById<EditText>(Resource.Id.colorBEt).Text = "" + mVal;
+
+            contentView.FindViewById<EditText>(Resource.Id.rgbREt).Text = "" + color.R;
+            contentView.FindViewById<EditText>(Resource.Id.rgbGEt).Text = "" + color.G;
+            contentView.FindViewById<EditText>(Resource.Id.rgbBEt).Text = "" + color.B;
+
+            contentView.FindViewById<EditText>(Resource.Id.colorEt).Text = ColorUtil.ColorToString(color).Substring(1);
+
+            curColor = ColorUtil.ColorToString(color);
+        }
+
     }
 
 }

@@ -245,8 +245,9 @@
     <Compile Include="Views\DragImgView.cs" />
     <Compile Include="Adapters\VariableAdapter.cs" />
     <Compile Include="Views\EditView.cs" />
-    <Compile Include="Views\ColorPickerView.cs" />
+    <Compile Include="Views\ColorPickerView1.cs" />
     <Compile Include="Views\ColorPickerDialog.cs" />
+    <Compile Include="Views\ColorPickerView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -1702,6 +1703,10 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\xml_input_bg.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\xml_bt_bg.xml">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
