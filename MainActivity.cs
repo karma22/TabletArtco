@@ -123,6 +123,7 @@ namespace TabletArtco
                         {
                             
                         }
+                        mediaManager.SetPath(mBackground.remoteVideoPath, mBackground.remotePreviewImgPath);
                         break;
                     }
                 case 8:
@@ -401,7 +402,41 @@ namespace TabletArtco
                                 {
                                     return;
                                 }
+
                                 // home button click
+                                MessageBoxDialog dialog = new MessageBoxDialog(this, "真的吗?", () => {
+                                    // initialize ActivatedSprite
+                                    Project.mSprites.RemoveRange(0, Project.mSprites.Count);
+                                    mSpriteIndex = -1;
+                                    mSpriteAdapter.NotifyDataSetChanged();
+                                    addSpriteView();
+                                    UpdateBlockView();
+
+                                    // initialize LeftButtons
+                                    ImageView imgBt;
+
+                                    int[] btsResIds = {
+                                        Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4
+                                    };
+                                    imgBt = FindViewById<ImageView>(btsResIds[0]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_coding1_Deactivation);
+                                    imgBt = FindViewById<ImageView>(btsResIds[1]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_coding2_activation);
+                                    imgBt = FindViewById<ImageView>(btsResIds[2]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_control_Deactivation);
+                                    imgBt = FindViewById<ImageView>(btsResIds[3]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_effect_Deactivation);
+                                    
+                                    ChangeLeftList(1);
+
+                                    // initialize Background
+                                    mediaManager.ClickHomeButton();
+
+                                    // initialize Variavles
+                                    Project.variableMap.Clear();
+                                    mVariableAdapter.NotifyDataSetChanged();
+                                });
+                                dialog.Show();
                                 break;
                             }
                         case 1:
@@ -755,9 +790,8 @@ namespace TabletArtco
                                         }
                                     
                                     case 5:
-                                    case 6:
                                         {
-                                            // select collision image and select click image dialog
+                                            // select collision image dialog
                                             if (clickType == 4 && Project.mSprites.Count == 1)
                                             {
                                                 ToastUtil.ShowToast(this, "至少选择两个精灵才会有碰撞");
@@ -780,7 +814,7 @@ namespace TabletArtco
                                                 idlist.RemoveRange(mSpriteIndex, 1);
                                             }
 
-                                            ImageSelectDialog dialog = new ImageSelectDialog(this, clickType>4, (selectIndex) => {
+                                            ImageSelectDialog dialog = new ImageSelectDialog(this, clickType > 4, (selectIndex) => {
                                                 block.text = titlelist[selectIndex];
                                                 block.activateSpriteId = idlist[selectIndex];
                                                 UpdateBlockView();
@@ -790,7 +824,7 @@ namespace TabletArtco
                                             dialog.Show();
                                             break;
                                         }
-                                    case 7: {
+                                    case 6: {
                                             // input speck text dialog
                                             SpeakDialog dialog = new SpeakDialog(this, (text) => {
                                                 block.text = text;
@@ -799,8 +833,8 @@ namespace TabletArtco
                                             dialog.Show();
                                             break;
                                         }
-                                    case 8:
-                                    case 9: {
+                                    case 7:
+                                    case 8: {
                                             int tag = (int)view.Tag;
                                             tag = tag - tag / 10000 * 10000;
                                             // click activate block to select background
@@ -853,7 +887,14 @@ namespace TabletArtco
             *来获取拖拽影子。
             */
             dragView = v;
-            v.StartDragAndDrop(null, builder, null, (int)DragFlags.Opaque);
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+            {
+                v.StartDragAndDrop(null, builder, null, (int)DragFlags.Opaque);
+            }
+            else
+            {
+                v.StartDrag(null, builder, null, (int)DragFlags.Opaque);
+            }
             v.Visibility = ViewStates.Invisible;
             return true;
         }

@@ -105,7 +105,7 @@ namespace TabletArtco
         //添加积木 add block
         public void AddBlock(Block block)
         {
-            if (block.name.Equals("ControlStart") || block.name.Equals("ControlRecvSig") || block.name.Equals("ControlTouch") || block.name.Equals("ControlClickSprite"))
+            if (block.name.Equals("ControlStart") || block.name.Equals("ControlRecvSig") || block.name.Equals("ControlTouch") || block.name.Equals("ControlClickSprite") || block.name.Equals("EventblockInputKey") || block.name.Equals("EventblockClone"))
             {
                 List<Block> list = new List<Block>();
                 list.Add(block);

@@ -473,4 +473,46 @@ namespace TabletArtco
             dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
         }
     }
+
+    /***********************************************************************************
+    ************************************************************************************
+    * 
+    * MessageBoxDialog
+    * 
+    ************************************************************************************
+    ************************************************************************************/
+    class MessageBoxDialog : ParentDialog
+    {
+        Action mAction;
+
+        public MessageBoxDialog(Context context, string msg, Action action) : base(context)
+        {
+            mAction = action;
+            initView(context, msg);
+        }
+
+        private void initView(Context context, string msg)
+        {
+            View contentView = LayoutInflater.From(context).Inflate(Resource.Layout.dialog_msgbox, null, false);
+            RelativeLayout view = contentView.FindViewById<RelativeLayout>(Resource.Id.SignalView);
+            view.Visibility = ViewStates.Visible;
+            dialog = new AlertDialog.Builder(context).SetView(contentView).Create();
+            TextView cancelBt = view.FindViewById<TextView>(Resource.Id.tv_cancel);
+            TextView confirmBt = view.FindViewById<TextView>(Resource.Id.tv_confirm);
+            TextView msgTv = view.FindViewById<TextView>(Resource.Id.tv_message);
+            msgTv.Text = msg;
+
+            cancelBt.Click += (t, e) =>
+            {
+                dialog.Dismiss();
+            };
+            confirmBt.Click += (t, e) =>
+            {
+                mAction?.Invoke();
+                dialog.Dismiss();
+            };
+            dialog.Window.SetLayout(ScreenUtil.dip2px(context, 343), ScreenUtil.dip2px(context, 157));
+            dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
+        }
+    }
 }
