@@ -48,6 +48,7 @@ namespace TabletArtco
         List<Java.Lang.Thread> BlockThreadList { get; set; } = new List<Java.Lang.Thread>();
 
         public static UpdateDelegate mUpdateDelegate { get; set; }
+        public static System.Action<string> SoundAction { get; set; }
 
 
         public ActivatedSprite(Sprite s, bool isClone = false)
@@ -450,8 +451,8 @@ namespace TabletArtco
                     else if (blockName.Equals("ControlTime1")) Thread.Sleep((int)(1 * 100.0f));
                     else if (blockName.Equals("ControlTime2")) Thread.Sleep((int)(5 * 100.0f));
                     else if (blockName.Equals("ControlTimeN")) SleepVariable(block.text);
-                    //else if (blockName.Equals("ControlSpeak")) ControlSpeak(block.text);
-                    //else if (blockName.Equals("ControlSound")) EffectSoundPlay(sprite._codes[tab][idx]._inputTextbox.Text);
+                    else if (blockName.Equals("ControlSpeak")) ControlSpeak(block.text);
+                    else if (blockName.Equals("ControlSound")) SoundPlayer(block.varValue);
                     //else if (blockName.Equals("GameRight")) TurnAndMoveForward(5);
                     //else if (blockName.Equals("GameDown")) TurnAndMoveForward(6);
                     //else if (blockName.Equals("GameLeft")) TurnAndMoveForward(7);
@@ -1352,7 +1353,7 @@ namespace TabletArtco
         }
 
         // Speak text
-        public void ControlSpeak(ActivatedSprite sprite, string text)
+        public void ControlSpeak(string text)
         {
             speakText = text;
             InvalidateStage();
@@ -1360,6 +1361,19 @@ namespace TabletArtco
             speakText = null;
             InvalidateStage();
             Thread.Sleep(500);
+        }
+
+        public void SoundPlayer(string text)
+        {
+            SoundAction?.Invoke(text);
+            Thread.Sleep(2000);
+            //soundText = text;
+            //LogUtil.CustomLog("1111");
+
+            //InvalidateStage();
+            //LogUtil.CustomLog("3333");
+            //Thread.Sleep(2000);
+            //soundText = null;
         }
     }
 }

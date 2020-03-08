@@ -99,7 +99,7 @@
                                 android:text="H:"
                                 android:textSize="14sp"
                                 android:textColor="#ffffff"/>
-							<EditText
+							<TextView
                                 android:id="@+id/colorHEt"
 								android:layout_width="54.0dp"
 								android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
 								android:text="S:"
 								android:textSize="14sp"
 								android:textColor="#ffffff"/>
-                            <EditText
+                            <TextView
                                 android:id="@+id/colorSEt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -165,7 +165,7 @@
                                 android:text="B:"
                                 android:textSize="14sp"
                                 android:textColor="#ffffff"/>
-                            <EditText
+                            <TextView
                                 android:id="@+id/colorBEt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -198,7 +198,7 @@
                                 android:textColor="#fff"
                                 android:paddingRight="1dp"
                                 android:text="#"/>
-                            <EditText
+                            <TextView
                                 android:id="@+id/colorEt"
 						        android:layout_width="54.0dp"
 						        android:layout_height="wrap_content"
@@ -243,7 +243,7 @@
                                 android:text="R:"
                                 android:textSize="14sp"
                                 android:textColor="#ffffff"/>
-                            <EditText
+                            <TextView
                                 android:id="@+id/rgbREt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
@@ -268,7 +268,7 @@
                                 android:text="G:"
                                 android:textSize="14sp"
                                 android:textColor="#ffffff"/>
-                            <EditText
+                            <TextView
                                 android:id="@+id/rgbGEt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -292,7 +292,7 @@
                                 android:text="B:"
                                 android:textSize="14sp"
                                 android:textColor="#ffffff"/>
-                            <EditText
+                            <TextView
                                 android:id="@+id/rgbBEt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

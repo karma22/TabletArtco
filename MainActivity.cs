@@ -47,6 +47,7 @@ namespace TabletArtco
         {
             base.OnResume();
             UpdateMainView();
+            AddSpriteView();
             mSpriteAdapter.NotifyDataSetChanged();
         }
 
@@ -91,7 +92,7 @@ namespace TabletArtco
                                 ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
                                 mSpriteAdapter.NotifyDataSetChanged();
                                 UpdateBlockView();
-                                addSpriteView();
+                                AddSpriteView();
                             });
                         })).Start();
                         break;
@@ -177,10 +178,12 @@ namespace TabletArtco
                 ViewUtil.SetViewSize(imgBt, (int)(height * 73 / 70.0), height);
                 imgBt.Click += (t, e) =>
                 {
+                    new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
                     if (isPlay)
                     {
                         return;
                     }
+                    
                     switch ((int)((ImageView)t).Tag)
                     {
                         case 0:
@@ -232,6 +235,7 @@ namespace TabletArtco
                 ViewUtil.SetViewSize(imgBt, itemW, (int)(itemW * 45.0 / 55));
                 imgBt.Click += (t, e) =>
                 {
+                    new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
                     if (isPlay)
                     {
                         return;
@@ -291,6 +295,7 @@ namespace TabletArtco
                 blockView.AddView(imgIv);
                 imgIv.Click += (t, e) =>
                 {
+                    new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
                     if (isPlay)
                     {
                         return;
@@ -347,11 +352,13 @@ namespace TabletArtco
                     imgIv.Click += (t, e) =>
                     {
                         int tag = (int)((ImageView)t).Tag;
+                        new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
                         switch (tag) {
                             case 0:
                                 {
                                     VariableInitDialog dialog = new VariableInitDialog(this, (name, value) => {
                                         Project.variableMap[name] = value;
+                                        mVariableAdapter.NotifyDataSetChanged();
                                     });
                                     dialog.Show();
                                     break;
@@ -393,6 +400,7 @@ namespace TabletArtco
                 imgBt.Click += (t, e) =>
                 {
                     int tag = (int)((ImageView)t).Tag;
+                    new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
                     switch (tag)
                     {
                         case 0:
@@ -432,6 +440,7 @@ namespace TabletArtco
                                 isPlay = false;
                                 Project.StopSprite();
                                 mediaManager.Stop();
+                                SoundPlayer.StopAll();
                                 //VideoView videoView1 = FindViewById<VideoView>(Resource.Id.video_view);
                                 //videoView1.StopPlayback();
                                 break;
@@ -455,6 +464,15 @@ namespace TabletArtco
             ActivatedSprite.notFullSize = new Android.Util.Size((int)width-paddingL*2, (int)(481 / 549.0 * height));
             ActivatedSprite.fullSize = new Android.Util.Size(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this));
             ActivatedSprite.mUpdateDelegate = this;
+            ActivatedSprite.SoundAction = (sound) =>
+            {
+                RunOnUiThread(() => {
+                    if (isPlay)
+                    {
+                        new SoundPlayer(this).Play(sound);
+                    }
+                });
+            };
 
             // video surfaceview
             //VideoView videoView = FindViewById<VideoView>(Resource.Id.video_view);
@@ -496,6 +514,7 @@ namespace TabletArtco
                 {
                     return;
                 }
+                new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
                 activateBlockScale = !activateBlockScale;
                 if (activateBlockScale)
                 {
@@ -530,6 +549,7 @@ namespace TabletArtco
                 {
                     return;
                 }
+                new SoundPlayer(this).PlayLocal(SoundPlayer.all_clear);
                 if (mSpriteIndex > -1)
                 {
                     ActivatedSprite activatedSprite = spritesList[mSpriteIndex];
@@ -549,24 +569,24 @@ namespace TabletArtco
             FindViewById<ImageView>(Resource.Id.bt_delete).Click += (t, e) =>
             {
                 if (!isPlay) {
+                    new SoundPlayer(this).PlayLocal(SoundPlayer.all_clear);
                     Project.mSprites.RemoveRange(0, Project.mSprites.Count);
                     mSpriteIndex = -1;
                     mSpriteAdapter.NotifyDataSetChanged();
-                    addSpriteView();
+                    AddSpriteView();
                     UpdateBlockView();
                 }
             };
         }
 
         // main screen add animate sprite view
-        public void addSpriteView() {
+        public void AddSpriteView() {
             FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
             containerView.RemoveAllViews();
             imgList.RemoveRange(0, imgList.Count);
             for (int i = 0; i < spritesList.Count; i++)
             {
                 ActivatedSprite activatedSprite = spritesList[i];
-
                 DragImgView imgIv = new DragImgView(this);
                 FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(activatedSprite.curSize.Width, activatedSprite.curSize.Height);
                 layoutParams.LeftMargin = activatedSprite.curPoint.X;
@@ -842,7 +862,7 @@ namespace TabletArtco
             });
         }
 
-
+        [System.Obsolete]
         bool View.IOnLongClickListener.OnLongClick(View v)
         {
             // 创建实现阴影的对象
@@ -852,8 +872,12 @@ namespace TabletArtco
             *系统调用在View.DragShadowBuilder对象中定义的回调方法
             *来获取拖拽影子。
             */
+            if (isPlay)
+            {
+                return false;
+            }
             dragView = v;
-            v.StartDragAndDrop(null, builder, null, (int)DragFlags.Opaque);
+            v.StartDrag(null, builder, null, (int)DragFlags.Opaque);
             v.Visibility = ViewStates.Invisible;
             return true;
         }
@@ -881,6 +905,7 @@ namespace TabletArtco
                             int column = tag - row * 10000;
                             ActivatedSprite activatedSprite = spritesList[mSpriteIndex];
                             activatedSprite.DeleteBlock(row, column);
+                            new SoundPlayer(this).PlayLocal(SoundPlayer.all_clear);
                             UpdateBlockView();
                             dragView = null;
                         }
@@ -940,9 +965,10 @@ namespace TabletArtco
                                         }
                                         if (activatedSprite.ExchangeBlock(row, column, r, c))
                                         {
+                                            new SoundPlayer(this).PlayLocal(SoundPlayer.move_success);
                                             UpdateBlockView();
                                             dragView = null;
-                                        }   
+                                        }
                                     }
                                 }
                             }
@@ -953,6 +979,7 @@ namespace TabletArtco
                     {
                         if (dragView != null)
                         {
+                            new SoundPlayer(this).PlayLocal(SoundPlayer.move_fail);
                             dragView.Visibility = ViewStates.Visible;
                         }
                         break;
@@ -990,6 +1017,7 @@ namespace TabletArtco
             convertView.Tag = holder;
             convertView.Click += (t, e) =>
             {
+                new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
                 if (isPlay)
                 {
                     return;
@@ -1014,20 +1042,21 @@ namespace TabletArtco
                 {
                     return;
                 }
+                new SoundPlayer(this).PlayLocal(SoundPlayer.all_clear);
                 int position = (int) ((FrameLayout)t).Tag;
                 Project.mSprites.RemoveAt(position);
                 if (Project.mSprites.Count <= 0)
                 {
                     mSpriteIndex = -1;
                     mSpriteAdapter.NotifyDataSetChanged();
-                    addSpriteView();
+                    AddSpriteView();
                     UpdateBlockView();
                 }
                 else
                 {
                     mSpriteIndex = mSpriteIndex >= Project.mSprites.Count ? 0 : mSpriteIndex;
                     mSpriteAdapter.NotifyDataSetChanged();
-                    addSpriteView();
+                    AddSpriteView();
                     UpdateBlockView();
                 }
             };
@@ -1098,7 +1127,7 @@ namespace TabletArtco
                         Project.AddSprite(activatedSprite.sprite, true);
                         ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
                         mSpriteAdapter.NotifyDataSetChanged();
-                        addSpriteView();
+                        AddSpriteView();
                         UpdateBlockView();
                         break;
                     }
@@ -1132,7 +1161,7 @@ namespace TabletArtco
                         Project.mSprites.Remove(activatedSprite);
                         Project.mSprites.Insert(0, activatedSprite);
                         mSpriteAdapter.NotifyDataSetChanged();
-                        addSpriteView();
+                        AddSpriteView();
                         UpdateBlockView();
                         break;
                     }

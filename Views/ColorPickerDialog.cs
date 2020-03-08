@@ -55,13 +55,13 @@ namespace TabletArtco
             dialog = new AlertDialog.Builder(context).SetView(contentView).Create();
 
 
-            int[] ids = { Resource.Id.colorHEt, Resource.Id.colorSEt, Resource.Id.colorSEt, Resource.Id.rgbREt, Resource.Id.rgbGEt, Resource.Id.rgbBEt, Resource.Id.colorEt };
-            for (int i = 0; i < ids.Length; i++)
-            {
-                EditText editText = contentView.FindViewById<EditText>(ids[i]);
-                editText.Focusable = false;
-                editText.FocusableInTouchMode = false;
-            }
+            //int[] ids = { Resource.Id.colorHEt, Resource.Id.colorSEt, Resource.Id.colorSEt, Resource.Id.rgbREt, Resource.Id.rgbGEt, Resource.Id.rgbBEt, Resource.Id.colorEt };
+            //for (int i = 0; i < ids.Length; i++)
+            //{
+                //EditText editText = contentView.FindViewById<EditText>(ids[i]);
+                //editText.Focusable = false;
+                //editText.FocusableInTouchMode = false;
+            //}
 
             colorPickerView.onColorChanged = (color) =>
             {
@@ -97,15 +97,25 @@ namespace TabletArtco
             int mHue = (int)color.GetHue();
             int mSat = (int)(color.GetSaturation()*100);
             int mVal = (int)(color.GetBrightness()*100);
-            contentView.FindViewById<EditText>(Resource.Id.colorHEt).Text = "" + mHue;
-            contentView.FindViewById<EditText>(Resource.Id.colorSEt).Text = "" + mSat;
-            contentView.FindViewById<EditText>(Resource.Id.colorBEt).Text = "" + mVal;
+            //contentView.FindViewById<EditText>(Resource.Id.colorHEt).Text = "" + mHue;
+            //contentView.FindViewById<EditText>(Resource.Id.colorSEt).Text = "" + mSat;
+            //contentView.FindViewById<EditText>(Resource.Id.colorBEt).Text = "" + mVal;
 
-            contentView.FindViewById<EditText>(Resource.Id.rgbREt).Text = "" + color.R;
-            contentView.FindViewById<EditText>(Resource.Id.rgbGEt).Text = "" + color.G;
-            contentView.FindViewById<EditText>(Resource.Id.rgbBEt).Text = "" + color.B;
+            //contentView.FindViewById<EditText>(Resource.Id.rgbREt).Text = "" + color.R;
+            //contentView.FindViewById<EditText>(Resource.Id.rgbGEt).Text = "" + color.G;
+            //contentView.FindViewById<EditText>(Resource.Id.rgbBEt).Text = "" + color.B;
 
-            contentView.FindViewById<EditText>(Resource.Id.colorEt).Text = ColorUtil.ColorToString(color).Substring(1);
+            //contentView.FindViewById<EditText>(Resource.Id.colorEt).Text = ColorUtil.ColorToString(color).Substring(1);
+
+            contentView.FindViewById<TextView>(Resource.Id.colorHEt).Text = "" + mHue;
+            contentView.FindViewById<TextView>(Resource.Id.colorSEt).Text = "" + mSat;
+            contentView.FindViewById<TextView>(Resource.Id.colorBEt).Text = "" + mVal;
+
+            contentView.FindViewById<TextView>(Resource.Id.rgbREt).Text = "" + color.R;
+            contentView.FindViewById<TextView>(Resource.Id.rgbGEt).Text = "" + color.G;
+            contentView.FindViewById<TextView>(Resource.Id.rgbBEt).Text = "" + color.B;
+
+            contentView.FindViewById<TextView>(Resource.Id.colorEt).Text = ColorUtil.ColorToString(color).Substring(1);
 
             curColor = ColorUtil.ColorToString(color);
         }

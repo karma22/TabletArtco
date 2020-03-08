@@ -248,6 +248,7 @@
     <Compile Include="Views\ColorPickerDialog.cs" />
     <Compile Include="Views\ColorPickerView.cs" />
     <Compile Include="Views\ConfirmDialog.cs" />
+    <Compile Include="Manager\SoundPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -1723,6 +1724,34 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\dialog_confirm.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\raw\all_clear.wav">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\raw\arrive_dest.wav">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\raw\block_link.wav">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\raw\mouse_click.wav">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\raw\move_fail.wav">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\raw\move_success.wav">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\raw\recycle.wav">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>

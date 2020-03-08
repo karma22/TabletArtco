@@ -174,7 +174,7 @@ namespace TabletArtco
                 string name = datas[i + 1];
                 //int idx = int.Parse(datas[i + 2]);
                 int category = int.Parse(datas[i + 3]);
-                string localPath = "./" + datas[i + 4];
+                string localPath = imgPath + datas[i + 4];
 
                 for (; category >= Sound._sounds.Count;)
                     Sound._sounds.Add(new List<Sound>());

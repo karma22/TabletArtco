@@ -7754,22 +7754,43 @@ namespace TabletArtco
 		{
 			
 			// aapt resource value: 0x7F0E0000
-			public const int default_video = 2131623936;
+			public const int all_clear = 2131623936;
 			
 			// aapt resource value: 0x7F0E0001
-			public const int lb_voice_failure = 2131623937;
+			public const int arrive_dest = 2131623937;
 			
 			// aapt resource value: 0x7F0E0002
-			public const int lb_voice_no_input = 2131623938;
+			public const int block_link = 2131623938;
 			
 			// aapt resource value: 0x7F0E0003
-			public const int lb_voice_open = 2131623939;
+			public const int default_video = 2131623939;
 			
 			// aapt resource value: 0x7F0E0004
-			public const int lb_voice_success = 2131623940;
+			public const int lb_voice_failure = 2131623940;
 			
 			// aapt resource value: 0x7F0E0005
-			public const int Stage_Default = 2131623941;
+			public const int lb_voice_no_input = 2131623941;
+			
+			// aapt resource value: 0x7F0E0006
+			public const int lb_voice_open = 2131623942;
+			
+			// aapt resource value: 0x7F0E0007
+			public const int lb_voice_success = 2131623943;
+			
+			// aapt resource value: 0x7F0E0008
+			public const int mouse_click = 2131623944;
+			
+			// aapt resource value: 0x7F0E0009
+			public const int move_fail = 2131623945;
+			
+			// aapt resource value: 0x7F0E000A
+			public const int move_success = 2131623946;
+			
+			// aapt resource value: 0x7F0E000B
+			public const int recycle = 2131623947;
+			
+			// aapt resource value: 0x7F0E000C
+			public const int Stage_Default = 2131623948;
 			
 			static Raw()
 			{
