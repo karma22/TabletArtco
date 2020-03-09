@@ -11,20 +11,15 @@ namespace TabletArtco
 
     class Project
     {
+        // all backgrounds list
         public static List<Background> backgroundsList { get; set; } = new List<Background>();
+        // all sprites list
         public static List<ActivatedSprite> mSprites { get; set; } = new List<ActivatedSprite>();
-        public static List<List<Block>> blocksList = new List<List<Block>>();
-        public static Dictionary<string, string> variableMap = new Dictionary<string, string>();
-        public static Dictionary<string, string> curVariableMap = new Dictionary<string, string>();
-        public static List<string> signalList = new List<string>();
-
-        public static bool isMove { get; set; }
-        public static int curSpriteNum { get; set; } = -1;
-        
-        public static List<string> blocksBuffer { get; set; } = new List<string>();
+        // Copy blocks list
+        public static List<List<Block>> blocksList = new List<List<Block>>(); 
+        // sprite animation thread
         public static List<Java.Lang.Thread> codeThreadList { get; set; } = new List<Java.Lang.Thread>();
 
-       
         public static void SpriteSizeChange(bool isFool)
         {
             for (int i = 0; i < mSprites.Count; i++)
@@ -33,12 +28,14 @@ namespace TabletArtco
             }
         }
 
+        // Add Sprite
         public static void AddSprite(Sprite sprite, bool isClone = false)
         {
             ActivatedSprite activatedSprite = new ActivatedSprite(sprite, isClone);
             mSprites.Add(activatedSprite);
         }
 
+        // Copy Blocks
         public static void CopyBlocks(List<List<Block>> list) {
             blocksList.RemoveRange(0, blocksList.Count);
             for (int i = 0; i < list.Count; i++)
@@ -54,6 +51,7 @@ namespace TabletArtco
             }
         }
 
+        // Paste Blocks
         public static List<List<Block>> PasteBlocks() {
             List<List<Block>> list = new List<List<Block>>();
             for (int i = 0; i < blocksList.Count; i++)
@@ -70,9 +68,9 @@ namespace TabletArtco
             return list;
         }
 
+        // Run Sprite Animation
         public static void RunSprite()
         {
-
             Android.Util.Log.Info("RunCode", "-----------------------");
             for (int i = 0; i < Project.mSprites.Count; i++)
             {
@@ -91,6 +89,7 @@ namespace TabletArtco
             }
         }
 
+        // Stop Sprite Animation
         public static void StopSprite()
         {
             Android.Util.Log.Info("StopCode", "-----------------------");
@@ -102,6 +101,53 @@ namespace TabletArtco
             }
             codeThreadList.RemoveRange(0, codeThreadList.Count);
         }
+    }
+
+    class Variable {
+        // variable init value
+        public static Dictionary<string, string> variableMap = new Dictionary<string, string>();
+        // variable current value
+        public static Dictionary<string, string> curVariableMap = new Dictionary<string, string>();
+
+        // add variable
+        public static void AddVariable(string name, string value)
+        {
+            variableMap.Add(name, value);
+        }
+
+        // delete variable
+        public static void RemoveVariable(string name)
+        {
+            variableMap.Remove(name);
+        }
+
+        // clear all variable
+        public static void ClearVariable()
+        {
+            variableMap.Clear();
+        }
+
+        // init current variable
+        public static void InitCurVariable()
+        {
+            curVariableMap.Clear();
+            foreach (string name in variableMap.Keys)
+            {
+                curVariableMap.Add(name, curVariableMap[name]);
+            }
+        }
+    }
+
+    class Signal {
+        
+        public static void SendSignal(string signalName) {
+            for (int i = 0; i < Project.mSprites.Count; i++)
+            {
+                ActivatedSprite activatedSprite = Project.mSprites[i];
+                activatedSprite.ReceiveSignal(signalName);
+            }
+        }
 
     }
+
 }

@@ -106,7 +106,7 @@ namespace TabletArtco
         //添加积木 add block
         public void AddBlock(Block block)
         {
-            if (block.name.Equals("ControlStart") || block.name.Equals("ControlRecvSig") || block.name.Equals("ControlTouch") || block.name.Equals("ControlClickSprite"))
+            if (block.name.Equals("ControlStart") || block.name.Equals("ControlRecvSig") || block.name.Equals("ControlTouch") || block.name.Equals("ControlClickSprite") || block.name.Equals("EventblockInputKey") || block.name.Equals("EventblockClone"))
             {
                 List<Block> list = new List<Block>();
                 list.Add(block);
@@ -233,6 +233,10 @@ namespace TabletArtco
             
         }
 
+        public void ReceiveSignal(string signal) {
+
+        }
+
         public int GetBlockCount() {
             int count = 0;
             for (int i = 0; i < mBlocks.Count; i++)
@@ -343,6 +347,17 @@ namespace TabletArtco
             {
                 mUpdateDelegate.UpdateView();
             }
+
+            for (int i = 0; i < mBlocks.Count; i++)
+            {
+                List<Block> list = mBlocks[i];
+                for (int j = 0; j < list.Count; j++)
+                {
+                    Block block = list[j];
+                    block.signalCount = 0;
+                    block.signalOn = false;
+                }
+            }
             LogUtil.CustomLog("Reset");
         }
 
@@ -354,35 +369,47 @@ namespace TabletArtco
                 return;
             }
             List<Block> list = mBlocks[index];
-            //START:
             int loopCnt = 0;
             int loopStartIdx = -1;
             int idx = 0;
             while (isAnimationTag) {
                 try
                 {
-                //SAVE:
                     if (!isAnimationTag) break;
                     if (idx >= list.Count) {
                         Thread.Sleep(10);
+                        if (list.Count>0 && isEvent(list[0].name))
+                        {
+                            idx = 0;
+                        } 
                         continue;
                     }
                     Block block = list[idx];
                     string blockName = list[idx].name;
-                    LogUtil.CustomLog("------------------" + idx + "----------" + block.name);
-                    
-                    if (blockName.Equals("ControlLoop"))
+
+                    if (isEvent(blockName))
+                    {
+                        if (block.signalCount == 0)
+                        {
+                            Thread.Sleep(10);
+                            continue;
+                        }
+                        else
+                        {
+                            block.signalCount--;
+                        }
+                    }
+                    else if (blockName.Equals("ControlLoop"))
                     {
                         loopCnt = 0;
                         loopStartIdx = -1;
                         idx = -1;
-                        //goto SAVE;
                     }
                     else if (blockName.Equals("ControlLoopN") || blockName.Equals("GameLoopN"))
                     {
                         if (!System.Int32.TryParse(block.text, out int n))
                         {
-
+                            n = 1;
                         }
                         else if (n == 0) { }
                         else
@@ -390,20 +417,17 @@ namespace TabletArtco
                             if (++loopCnt != n)
                             {
                                 idx = loopStartIdx;
-                                //goto SAVE;
                             }
                             else
                             {
                                 loopStartIdx = idx;
                                 loopCnt = 0;
-                                //continue;
                             }
                         }
                     }
                     else if (blockName.Equals("ControlFlag"))
                     {
                         loopStartIdx = idx;
-                        //continue;
                     }
                     else if (blockName.Equals("MoveRDownN")) MoveVariable(MoveArrow.RightDown, block.text);
                     else if (blockName.Equals("MoveRUpN")) MoveVariable(MoveArrow.RightUp, block.text);
@@ -453,6 +477,7 @@ namespace TabletArtco
                     else if (blockName.Equals("ControlTimeN")) SleepVariable(block.text);
                     else if (blockName.Equals("ControlSpeak")) ControlSpeak(block.text);
                     else if (blockName.Equals("ControlSound")) SoundPlayer(block.varValue);
+
                     //else if (blockName.Equals("GameRight")) TurnAndMoveForward(5);
                     //else if (blockName.Equals("GameDown")) TurnAndMoveForward(6);
                     //else if (blockName.Equals("GameLeft")) TurnAndMoveForward(7);
@@ -460,39 +485,26 @@ namespace TabletArtco
                     //else if (blockName.Equals("GameJump")) ArrowJump();
 
                     Java.Lang.Thread.Sleep(10);
-
                 }
                 catch (Java.Lang.Exception e)
                 {
-
-                    //ActivatedSprite.mciSendString("close wav", null, 0, IntPtr.Zero);
-                    //lock (sprite._lockObj)
-                    //{
-                    //    sprite._spriteBit[sprite._curSpriteNum] = new Bitmap(sprite.GetSpriteBit());
-                    //    sprite.curAngle = 0.0f;
-                    //    sprite._speakText = null;
-                    //    sprite.isVisible = true;
-                    //}
                     Reset();
                 }
                 idx++;
             }
-            //for (idx = 0; idx < list.Count; idx++, LogUtil.CustomLog(idx+""))
-            //{
-                
-            //}
-            //}
         }
 
 
-
-
-
-
-
-
-
-
+        private bool isEvent(string name) {
+            for (int i = 1; i < Block.blockTab0ResIdStrs.Length; i++)
+            {
+                if (name.Equals(Block.blockTab0ResIdStrs[i]))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
 
         /*============================================================================================*/

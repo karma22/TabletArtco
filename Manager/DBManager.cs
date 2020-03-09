@@ -12,7 +12,9 @@ namespace TabletArtco
         //public static string _address { get; } = "www.playartco.com:8081";
         //public static string _rootDir { get; } = "artco";
         //public static string _ip { get; } = "http://103.120.226.173:8081";
-        public static string _host { get; } = "http://www.playartco.com:8081";
+        //public static string _host { get; } = "http://www.playartco.com:8081";
+
+        public static string _host { get; } = "http://file.playartco.com"; 
         
         public static string url_login = _host + "/LoginCheck.php";
         public static string url_sprite = _host + "/SelectSpriteTable.php";

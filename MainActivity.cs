@@ -124,6 +124,7 @@ namespace TabletArtco
                         {
                             
                         }
+                        mediaManager.SetPath(mBackground.remoteVideoPath, mBackground.remotePreviewImgPath);
                         break;
                     }
                 case 8:
@@ -357,7 +358,7 @@ namespace TabletArtco
                             case 0:
                                 {
                                     VariableInitDialog dialog = new VariableInitDialog(this, (name, value) => {
-                                        Project.variableMap[name] = value;
+                                        Variable.variableMap[name] = value;
                                         mVariableAdapter.NotifyDataSetChanged();
                                     });
                                     dialog.Show();
@@ -389,15 +390,15 @@ namespace TabletArtco
             ViewUtil.SetViewHeight(mainView, (int)height);
             ViewUtil.SetViewHeight(centerView, (int)(481 / 549.0 * height));
 
-            int[] btsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
+            int[] sbtsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
             int itemW = (int)(42 / 549.0 * height);
             // home、play、stop、full button
-            for (int i = 0; i < btsResIds.Length; i++)
+            for (int i = 0; i < sbtsResIds.Length; i++)
             {
-                ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
-                ViewUtil.SetViewSize(imgBt, itemW, itemW);
-                imgBt.Tag = i;
-                imgBt.Click += (t, e) =>
+                ImageView imgBt1 = FindViewById<ImageView>(sbtsResIds[i]);
+                ViewUtil.SetViewSize(imgBt1, itemW, itemW);
+                imgBt1.Tag = i;
+                imgBt1.Click += (t, e) =>
                 {
                     int tag = (int)((ImageView)t).Tag;
                     new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
@@ -409,7 +410,40 @@ namespace TabletArtco
                                 {
                                     return;
                                 }
+
                                 // home button click
+                                MessageBoxDialog dialog = new MessageBoxDialog(this, "真的吗?", () => {
+                                    // initialize ActivatedSprite
+                                    Project.mSprites.RemoveRange(0, Project.mSprites.Count);
+                                    mSpriteIndex = -1;
+                                    mSpriteAdapter.NotifyDataSetChanged();
+                                    AddSpriteView();
+                                    UpdateBlockView();
+                                    // initialize LeftButtons
+                                    ImageView imgBt;
+
+                                    int[] btsResIds = {
+                                        Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4
+                                    };
+                                    imgBt = FindViewById<ImageView>(btsResIds[0]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_coding1_Deactivation);
+                                    imgBt = FindViewById<ImageView>(btsResIds[1]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_coding2_activation);
+                                    imgBt = FindViewById<ImageView>(btsResIds[2]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_control_Deactivation);
+                                    imgBt = FindViewById<ImageView>(btsResIds[3]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_effect_Deactivation);
+                                    
+                                    ChangeLeftList(1);
+
+                                    // initialize Background
+                                    mediaManager.ClickHomeButton();
+
+                                    // initialize Variavles
+                                    Variable.ClearVariable();
+                                    mVariableAdapter.NotifyDataSetChanged();
+                                });
+                                dialog.Show();
                                 break;
                             }
                         case 1:
@@ -483,19 +517,19 @@ namespace TabletArtco
             //varible listView
             ListView listView = FindViewById<ListView>(Resource.Id.variableListView);
             mVariableAdapter = new VariableAdapter(this);
-            mVariableAdapter.variableMap = Project.variableMap;
+            mVariableAdapter.variableMap = Variable.variableMap;
             mVariableAdapter.mAction += (position, type) =>
             {
                 if (type == 1) 
                 {
-                    List<string> keys = Project.variableMap.Keys.ToList();
-                    Project.variableMap.Remove(keys[position]);
+                    List<string> keys = Variable.variableMap.Keys.ToList();
+                    Variable.RemoveVariable(keys[position]);
                     mVariableAdapter.NotifyDataSetChanged();
                 }
                 else
                 {
                     VariableInitDialog dialog = new VariableInitDialog(this, (name, value) => {
-                        Project.variableMap[name] = value;
+                        Variable.variableMap[name] = value;
                     });
                     dialog.Show();
                 }
@@ -719,7 +753,7 @@ namespace TabletArtco
                                     case 0:
                                         {
                                             List<string> varlist = new List<string>();
-                                            foreach (string name in Project.variableMap.Keys)
+                                            foreach (string name in Variable.variableMap.Keys)
                                             {
                                                 varlist.Add(name);
                                             }
@@ -742,13 +776,13 @@ namespace TabletArtco
                                     case 2:
                                         {
                                             // change variable dialog, example set variable value or increase variable value
-                                            if (Project.variableMap.Count<=0)
+                                            if (Variable.variableMap.Count<=0)
                                             {
                                                 ToastUtil.ShowToast(this, "你还没有添加变量");
                                                 return;
                                             }
                                             List<string> varlist = new List<string>();
-                                            foreach (string name in Project.variableMap.Keys)
+                                            foreach (string name in Variable.variableMap.Keys)
                                             {
                                                 varlist.Add(name);
                                             }
@@ -775,9 +809,8 @@ namespace TabletArtco
                                         }
                                     
                                     case 5:
-                                    case 6:
                                         {
-                                            // select collision image and select click image dialog
+                                            // select collision image dialog
                                             if (clickType == 4 && Project.mSprites.Count == 1)
                                             {
                                                 ToastUtil.ShowToast(this, "至少选择两个精灵才会有碰撞");
@@ -800,7 +833,7 @@ namespace TabletArtco
                                                 idlist.RemoveRange(mSpriteIndex, 1);
                                             }
 
-                                            ImageSelectDialog dialog = new ImageSelectDialog(this, clickType>4, (selectIndex) => {
+                                            ImageSelectDialog dialog = new ImageSelectDialog(this, clickType > 4, (selectIndex) => {
                                                 block.text = titlelist[selectIndex];
                                                 block.activateSpriteId = idlist[selectIndex];
                                                 UpdateBlockView();
@@ -810,7 +843,7 @@ namespace TabletArtco
                                             dialog.Show();
                                             break;
                                         }
-                                    case 7: {
+                                    case 6: {
                                             // input speck text dialog
                                             SpeakDialog dialog = new SpeakDialog(this, (text) => {
                                                 block.text = text;
@@ -819,8 +852,8 @@ namespace TabletArtco
                                             dialog.Show();
                                             break;
                                         }
-                                    case 8:
-                                    case 9: {
+                                    case 7:
+                                    case 8: {
                                             int tag = (int)view.Tag;
                                             tag = tag - tag / 10000 * 10000;
                                             // click activate block to select background
@@ -877,7 +910,14 @@ namespace TabletArtco
                 return false;
             }
             dragView = v;
-            v.StartDrag(null, builder, null, (int)DragFlags.Opaque);
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+            {
+                v.StartDragAndDrop(null, builder, null, (int)DragFlags.Opaque);
+            }
+            else
+            {
+                v.StartDrag(null, builder, null, (int)DragFlags.Opaque);
+            }
             v.Visibility = ViewStates.Invisible;
             return true;
         }

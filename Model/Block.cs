@@ -5,8 +5,8 @@ namespace TabletArtco
     class Block
     {
         public static int[] blockTab0ResIds = {
-            Resource.Drawable.Eventblock_Start, Resource.Drawable.Eventblock_RecvSignal,
-            Resource.Drawable.Eventblock_Touch, Resource.Drawable.Eventblock_ClickSprite
+            Resource.Drawable.Eventblock_Start, Resource.Drawable.Eventblock_RecvSignal, Resource.Drawable.Eventblock_InputKey,
+            Resource.Drawable.Eventblock_Touch, Resource.Drawable.Eventblock_ClickSprite, Resource.Drawable.Eventblock_Clone
         };
 
         public static int[] blockTab1ResIds = {
@@ -35,8 +35,10 @@ namespace TabletArtco
             Resource.Drawable.Contblock_LoopN, Resource.Drawable.Contblock_loop, Resource.Drawable.Contblock_Flag,
             Resource.Drawable.Contblock_FlipX, Resource.Drawable.Contblock_FlipY, Resource.Drawable.Contblock_NextSprite,
             Resource.Drawable.Contblock_Show, Resource.Drawable.Contblock_Hide, Resource.Drawable.Contblock_Sound,
-            Resource.Drawable.Contblock_AdditionBackground, Resource.Drawable.Contblock_SendSignal,
-            Resource.Drawable.Contblock_Speak, Resource.Drawable.Contblock_ChangeVal, Resource.Drawable.Contblock_SetVal
+            Resource.Drawable.Contblock_Speak, Resource.Drawable.Contblock_SpeakStop, Resource.Drawable.Contblock_AdditionBackground,
+            Resource.Drawable.Contblock_SendSignal, Resource.Drawable.Contblock_SendSigWait, Resource.Drawable.Contblock_XY,
+            Resource.Drawable.Contblock_ChangeVal, Resource.Drawable.Contblock_SetVal, Resource.Drawable.Contblock_Stop,
+            Resource.Drawable.Contblock_Clone
         };
         public static int[] blockTab4ResIds = {
             Resource.Drawable.Edublock_Down, Resource.Drawable.Edublock_Jump, Resource.Drawable.Edublock_Up,
@@ -44,7 +46,8 @@ namespace TabletArtco
         };
 
         public static string[] blockTab0ResIdStrs = {
-            "ControlStart", "ControlRecvSig", "ControlTouch", "ControlClickSprite"
+            "ControlStart", "ControlRecvSig", "EventblockInputKey", 
+            "ControlTouch", "ControlClickSprite", "EventblockClone"
         };
         
         public static string[] blockTab1ResIdStrs = {
@@ -73,8 +76,10 @@ namespace TabletArtco
             "ControlLoopN", "ControlLoop", "ControlFlag",
             "ControlFlipX", "ControlFlipY", "ControlNextSprite",
             "ControlShow", "ControlHide", "ControlSound",
-            "ControlAdditionBackground", "ControlSendSignal", "ControlSpeak",
-            "ControlChangeVal", "ControlSetVal"
+            "ControlSpeak", "ControlSpeakStop", "ControlAdditionBackground",
+            "ControlSendSignal", "ControlSendSignalWait", "ControlXY",
+            "ControlChangeVal", "ControlSetVal", "ControlStop",
+            "ControlClone"
         };
         public static string[] blockTab4ResIdStrs = {
             "GameDown", "GameJump", "GameUp",
@@ -116,17 +121,17 @@ namespace TabletArtco
                     return list;
                 }
             }
-            List<string> threeList = new List<string> { "ControlTouch", "ControlClickSprite"};
+            List<string> threeList = new List<string> { "ControlTouch"};
             if (threeList.Contains(block.name))
             {
                 if (!string.IsNullOrEmpty(block.text))
                 {
                     List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
                     Dictionary<string, string> dic = new Dictionary<string, string>();
-                    dic.Add("x", 9 / 70.0 + "");
-                    dic.Add("y", 28 / 70.0 + "");
-                    dic.Add("w", 53 / 70.0 + "");
-                    dic.Add("h", 16 / 70.0 + "");
+                    dic.Add("x", 12 / 99.0 + "");
+                    dic.Add("y", 53 / 99.0 + "");
+                    dic.Add("w", 75 / 99.0 + "");
+                    dic.Add("h", 20 / 99.0 + "");
                     dic.Add("text", block.text);
                     list.Add(dic);
                     return list;
@@ -167,7 +172,6 @@ namespace TabletArtco
                 new List<string>{ "ControlRecvSig"},
                 new List<string>{ "ControlSendSignal"},
                 new List<string>{ "ControlTouch"},
-                new List<string>{ "ControlClickSprite"},
                 new List<string>{ "ControlSpeak" },
                 new List<string>{ "ControlSound" },
                 new List<string>{ "ControlAdditionBackground" },
@@ -201,6 +205,9 @@ namespace TabletArtco
         public string varName { get; set; }
         public string varValue { get; set; }
         public string activateSpriteId { get; set; }
+
+        public bool signalOn { get; set; } = false;
+        public int signalCount { get; set; } = 0;
 
         public static Block Copy(Block block) {
             Block b = new Block();
