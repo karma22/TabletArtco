@@ -21,6 +21,7 @@ namespace TabletArtco
         public static string url_sound = _host + "/SelectSoundTable.php";
         
         public static string imgPath = _host + "/artco/";
+        public static string ftpURL = "ftp://www.playartco.com/artco/";
 
         public static bool CheckLogin(string id, string passwd)
         {
@@ -51,6 +52,24 @@ namespace TabletArtco
             if (Sprite._sprites.Count == 0)
             {
                 Sprite._sprites.Add(new List<Sprite>());
+            }
+
+            // user Sprite (category = 0)
+            string[] fileNames = FTPManager2.ftpManager.GetFtpFolderItems(ftpURL + "sprites/" + GlideUtil.username + "/");
+            using (WebClient client = GetWebClient())
+            {
+                for (int i = 0; i < fileNames.Length; i++)
+                {
+                    string name = fileNames[i].Substring(0, fileNames[i].Length - 4);
+                    string remotePath = imgPath + "sprites/" + GlideUtil.username + "/" + fileNames[i];
+                    Sprite sprite = new Sprite()
+                    {
+                        name = name,
+                        category = 0,
+                        remotePath = remotePath,
+                    };
+                    Sprite._sprites[0].Add(sprite);
+                }
             }
 
             //I will add a security check function

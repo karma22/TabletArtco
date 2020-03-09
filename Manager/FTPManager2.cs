@@ -60,6 +60,26 @@ namespace TabletArtco
             }
         }
 
+        public string[] GetFtpFolderItems(string ftpURL)
+        {
+            try
+            {
+                FtpWebRequest request = GetFtpRequest(ftpURL);
+                request.Method = WebRequestMethods.Ftp.ListDirectory;
+
+                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+
+                Stream responseStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(responseStream);
+
+                return reader.ReadToEnd().Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
         private FtpWebRequest GetFtpRequest(string path)
         {
             FtpWebRequest request = (FtpWebRequest)WebRequest.Create(path);
