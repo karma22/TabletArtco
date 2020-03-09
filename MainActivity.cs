@@ -29,6 +29,7 @@ namespace TabletArtco
         private int mLongPressSpriteIndex = -1;
         private bool isPlay;
         private MediaManager mediaManager;
+        //private MediaManager2 mediaManager;
         private bool activateBlockScale = false;
         private View dragView;
 
@@ -546,6 +547,7 @@ namespace TabletArtco
             SurfaceView surfaceView = FindViewById<SurfaceView>(Resource.Id.surfaceView);
             ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
             mediaManager = new MediaManager(surfaceView, imgIv, this);
+            //mediaManager = new MediaManager2(surfaceView, imgIv, this);
 
             //varible listView
             ListView listView = FindViewById<ListView>(Resource.Id.variableListView);

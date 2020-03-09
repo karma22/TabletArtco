@@ -118,7 +118,6 @@ namespace TabletArtco
             mItemH = (int)(mItemW * 170.0 / 250);
 
             GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
-            gridView.SetColumnWidth(200);
             gridView.SetNumColumns(columnCount);
             gridView.SetVerticalSpacing(spacing);
             gridView.SetHorizontalSpacing(spacing);            
