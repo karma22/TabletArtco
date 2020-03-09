@@ -36,6 +36,13 @@ namespace TabletArtco
             mSprites.Add(activatedSprite);
         }
 
+        public static void ClearCollision(string collisionid) {
+            for (int i = 0; i < mSprites.Count; i++)
+            {
+                mSprites[i].RemoveCollision(collisionid);
+            }
+        }
+
         // Copy Blocks
         public static void CopyBlocks(List<List<Block>> list) {
             blocksList.RemoveRange(0, blocksList.Count);

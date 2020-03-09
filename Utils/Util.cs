@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.App;
 using Android.Graphics;
+using Java.Lang;
 
 namespace TabletArtco
 {
@@ -156,6 +157,30 @@ namespace TabletArtco
         }
     }
 
+    public class RectUtil {
+
+        public static bool intersect(Rect r1,  Rect r2)
+        {
+            int Left    = Math.Max(r1.Left, r2.Left);
+            int Top     = Math.Max(r1.Top, r2.Top);
+            int Right   = Math.Min(r1.Right, r2.Right);
+            int Bottom  = Math.Min(r1.Bottom, r2.Bottom);
+
+            LogUtil.CustomLog("r1:" +r1);
+            LogUtil.CustomLog("r2:" + r2);
+
+            LogUtil.CustomLog("Left:" + Left);
+            LogUtil.CustomLog("Top:" + Top);
+            LogUtil.CustomLog("Rigth:" + Right);
+            LogUtil.CustomLog("Bottom:" + Bottom);
+            if (Left<Right && Top<Bottom)
+            {
+                return true;
+            }
+            return false;
+        }
+
+    }
 
 
 }

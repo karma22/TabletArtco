@@ -17,13 +17,12 @@ namespace TabletArtco
         public static bool mIsFull { get; set; }
         public static bool isAnimationTag {get; set;}
 
-        public string activateSpriteId { get; set; }
+        public string activateSpriteId { get; set; } = Java.Lang.JavaSystem.CurrentTimeMillis() + "";
         public Sprite sprite { get; set; }
         public List<List<Block>> mBlocks { get; set; } = new List<List<Block>>();
         public List<Bitmap> originBitmapList { get; set; } = new List<Bitmap>();
         public Point originPoint { get; set; } = new Point(0, 0);
 
-        
         // animation arguments
         public bool isVisible { get; set; } = true;
         public Point curPoint { get; set; } = new Point(0, 0);
@@ -260,6 +259,23 @@ namespace TabletArtco
             mUpdateDelegate?.UpdateBlockViewDelegate();
         }
 
+        public void RemoveCollision(string collisionid) {
+            for (int i = 0; i < mBlocks.Count; i++)
+            {
+                List<Block> list = mBlocks[i];
+                for (int j = 0; j < 1; j++)
+                {
+                    Block block = list[j];
+                    if (block.name.Equals("ControlTouch") && block.activateSpriteId != null && block.activateSpriteId.Equals(collisionid))
+                    {
+                        block.text = "";
+                        block.activateSpriteId = null;
+                        mUpdateDelegate?.UpdateBlockViewDelegate();
+                    }
+                }
+            }
+        }
+
         // receive click signal
         public void ReceiveClickSignal()
         {
@@ -288,6 +304,21 @@ namespace TabletArtco
                     if (block.name.Equals("ControlRecvSig") && block.text != null && block.text.Equals(signal))
                     {
                         block.signalCount++;
+                    }
+                }
+            }
+        }
+
+        public void ReceiveCollisionSignal(string signal) {
+            for (int i = 0; i < mBlocks.Count; i++)
+            {
+                List<Block> list = mBlocks[i];
+                for (int j = 0; j < 1; j++)
+                {
+                    Block block = list[j];
+                    if (block.name.Equals("ControlTouch") && block.activateSpriteId != null && block.activateSpriteId.Equals(signal))
+                    {
+                        block.collionSignal = true;
                     }
                 }
             }
@@ -438,6 +469,7 @@ namespace TabletArtco
                         if (list.Count>0 && isEvent(list[0].name))
                         {
                             idx = 0;
+                            list[0].collionSignal = false;
                         } 
                         continue;
                     }

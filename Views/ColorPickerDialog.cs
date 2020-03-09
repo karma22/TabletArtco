@@ -11,8 +11,8 @@ using Android.Widget;
 /**
 * 取色器对话框
 *
-* @author Relish Wang
-* @since 2017/08/02
+* @author wangjinping
+* @since 2020/03/05
 */
 namespace TabletArtco
 {

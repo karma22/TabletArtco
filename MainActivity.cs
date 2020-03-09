@@ -364,7 +364,7 @@ namespace TabletArtco
                     {
                         return;
                     }
-                    if (spritesList[mSpriteIndex].mBlocks.Count==0 && tag != 0)
+                    if (spritesList[mSpriteIndex].mBlocks.Count==0 && tabIndex != 0)
                     {
                         Block b = new Block();
                         b.resourceId = Block.blockTab0ResIds[0];
@@ -727,6 +727,7 @@ namespace TabletArtco
                 imgIv.Visibility = activatedSprite.isVisible ? ViewStates.Visible : ViewStates.Invisible;
                 containerView.UpdateViewLayout(imgIv, layoutParams);
             }
+            JudgeCollision();
         }
 
         // update bottom block views
@@ -870,7 +871,7 @@ namespace TabletArtco
                                     case 5:
                                         {
                                             // select collision image dialog
-                                            if (clickType == 4 && Project.mSprites.Count == 1)
+                                            if (Project.mSprites.Count == 1)
                                             {
                                                 ToastUtil.ShowToast(this, "至少选择两个精灵才会有碰撞");
                                                 return;
@@ -880,18 +881,15 @@ namespace TabletArtco
                                             List<string> idlist = new List<string>();
                                             for (int q = 0; q < Project.mSprites.Count; q++)
                                             {
-                                                ActivatedSprite sprite = Project.mSprites[q];
-                                                titlelist.Add(sprite.sprite.name);
-                                                imglist.Add(sprite.sprite.remotePath);
-                                                idlist.Add(sprite.activateSpriteId);
+                                                if (q!=mSpriteIndex)
+                                                {
+                                                    ActivatedSprite sprite = Project.mSprites[q];
+                                                    titlelist.Add(sprite.sprite.name);
+                                                    imglist.Add(sprite.sprite.remotePath);
+                                                    idlist.Add(sprite.activateSpriteId);
+                                                }
                                             }
-                                            if (clickType == 4)
-                                            {
-                                                titlelist.RemoveRange(mSpriteIndex, 1);
-                                                imglist.RemoveRange(mSpriteIndex, 1);
-                                                idlist.RemoveRange(mSpriteIndex, 1);
-                                            }
-
+                                         
                                             ImageSelectDialog dialog = new ImageSelectDialog(this, clickType > 4, (selectIndex) => {
                                                 block.text = titlelist[selectIndex];
                                                 block.activateSpriteId = idlist[selectIndex];
@@ -936,6 +934,39 @@ namespace TabletArtco
             }
         }
 
+        // check Collision
+        public void JudgeCollision() {
+            if (!isPlay || imgList.Count<=1)
+            {
+                return;
+            }
+            new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+            {
+                for (int i = 0; i < imgList.Count; i++)
+                {
+                    DragImgView firstIv = imgList[i];
+                    for (int j = i + 1; j < imgList.Count; j++)
+                    {
+                        DragImgView twoIv = imgList[j];
+                        FrameLayout.LayoutParams p1 = (FrameLayout.LayoutParams)firstIv.LayoutParameters;
+                        FrameLayout.LayoutParams p2 = (FrameLayout.LayoutParams)twoIv.LayoutParameters;
+                        Rect r1 = new Rect(p1.LeftMargin, p1.TopMargin, p1.LeftMargin + firstIv.Width, p1.TopMargin + firstIv.Height);
+                        Rect r2 = new Rect(p2.LeftMargin, p2.TopMargin, p2.LeftMargin + twoIv.Width, p2.TopMargin + twoIv.Height);
+                        if (RectUtil.intersect(r1, r2))
+                        {
+                            if (i < Project.mSprites.Count && j < Project.mSprites.Count)
+                            {
+                                // send collision signal
+                                ActivatedSprite activatedSprite1 = Project.mSprites[i];
+                                ActivatedSprite activatedSprite2 = Project.mSprites[j];
+                                activatedSprite1.ReceiveCollisionSignal(activatedSprite2.activateSpriteId);
+                                activatedSprite2.ReceiveCollisionSignal(activatedSprite1.activateSpriteId);
+                            }
+                        }
+                    }
+                }
+            })).Start();
+        }
 
         public void startAnimation() {
             
@@ -1149,6 +1180,7 @@ namespace TabletArtco
                 }
                 new SoundPlayer(this).PlayLocal(SoundPlayer.all_clear);
                 int position = (int) ((FrameLayout)t).Tag;
+                ActivatedSprite sprite = Project.mSprites[position];
                 Project.mSprites.RemoveAt(position);
                 if (Project.mSprites.Count <= 0)
                 {
@@ -1164,6 +1196,7 @@ namespace TabletArtco
                     AddSpriteView();
                     UpdateBlockView();
                 }
+                Project.ClearCollision(sprite.activateSpriteId);
             };
             return convertView;
         }

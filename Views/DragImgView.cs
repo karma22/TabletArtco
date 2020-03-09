@@ -10,7 +10,6 @@ using Android.Provider;
 
 namespace TabletArtco
 {
-  
     public class DragImgView: ImageView
     {
         private int nap = 200;
