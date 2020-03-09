@@ -10,6 +10,7 @@ using Com.Bumptech.Glide;
 using Java.Lang;
 using Android.Graphics;
 using System.Linq;
+using System.IO;
 
 namespace TabletArtco
 {
@@ -28,6 +29,7 @@ namespace TabletArtco
         private int mLongPressSpriteIndex = -1;
         private bool isPlay;
         private MediaManager mediaManager;
+        //private MediaManager2 mediaManager;
         private bool activateBlockScale = false;
         private View dragView;
 
@@ -142,11 +144,53 @@ namespace TabletArtco
 
                         break;
                     }
+                case 11:
+                    {
+                        byte[] bitmapData;
+
+                        var image = (Bitmap)data.Extras.Get("data");
+                        //Bitmap bm = Bitmap.CreateScaledBitmap(image, (int)(image.Width * 0.06), (int)(image.Height * 0.06), true);
+
+                        var stream = new MemoryStream();
+                        image.Compress(Bitmap.CompressFormat.Png, 0, stream);
+                        bitmapData = stream.ToArray();
+
+                        InputFileNameDlg(new MemoryStream(bitmapData));
+                        break;
+                    }
                 default:
                     break;
             }
         }
 
+
+        public void InputFileNameDlg(Stream stream)
+        {
+            EditText editText = new EditText(this);
+
+            Android.App.AlertDialog.Builder builder = new Android.App.AlertDialog.Builder(this);
+            builder.SetTitle("Artco");
+            builder.SetMessage("请输入图片名称.");
+            builder.SetView(editText);
+            builder.SetPositiveButton("OK", (sender, args) =>
+            {
+                string fileName = editText.Text + ".png";
+                if (FTPManager2.ftpManager.UploadResource(stream, fileName))
+                {
+                    Toast.MakeText(Application, "Upload Succeeded", ToastLength.Short).Show();
+                }
+                else
+                {
+                    Toast.MakeText(Application, "Upload Failed", ToastLength.Short).Show();
+                }
+            });
+            builder.SetNegativeButton("Cancel", (sender, args) =>
+            {
+
+            });
+
+            builder.Show();
+        }
 
         public void LoadResources()
         {
@@ -213,6 +257,13 @@ namespace TabletArtco
                                 // Sound select activity
                                 Intent intent = new Intent(this, typeof(SoundActivity));
                                 StartActivityForResult(intent, 3, null);
+                                break;
+                            }
+                        case 8:
+                            {
+                                
+                                Intent intent = new Intent(Android.Provider.MediaStore.ActionImageCapture);
+                                StartActivityForResult(intent, 11, null);
                                 break;
                             }
                         default:
@@ -513,6 +564,7 @@ namespace TabletArtco
             SurfaceView surfaceView = FindViewById<SurfaceView>(Resource.Id.surfaceView);
             ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
             mediaManager = new MediaManager(surfaceView, imgIv, this);
+            //mediaManager = new MediaManager2(surfaceView, imgIv, this);
 
             //varible listView
             ListView listView = FindViewById<ListView>(Resource.Id.variableListView);
@@ -646,6 +698,13 @@ namespace TabletArtco
                         bundle.PutInt("position", tag-100);
                         intent.PutExtra("bundle", bundle);
                         StartActivityForResult(intent, 10, null);
+                    }
+                    else
+                    {
+                        if (tag-100<Project.mSprites.Count)
+                        {
+                            Project.mSprites[tag - 100].ReceiveClickSignal();
+                        }
                     }
                 };
             }
@@ -799,7 +858,7 @@ namespace TabletArtco
                                     case 3:
                                     case 4:
                                         {
-
+                                            // signal
                                             SignalDialog dialog = new SignalDialog(this, (text) => {
                                                 block.text = text;
                                                 UpdateBlockView();
@@ -892,6 +951,12 @@ namespace TabletArtco
         public void UpdateView() {
             RunOnUiThread(() => {
                 UpdateMainView();
+            });
+        }
+
+        public void UpdateBlockViewDelegate() {
+            RunOnUiThread(() => {
+                UpdateBlockView();
             });
         }
 

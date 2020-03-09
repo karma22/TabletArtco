@@ -86,7 +86,6 @@ namespace TabletArtco
             "GameLeft", "GameLoopN", "GameRight"
         };
 
-
         public static List<Dictionary<string, string>> TextViewLocations(Block block) {
             List<string> oneList = new List<string> { "MoveLUpN", "MoveUpN", "MoveRUpN", "MoveLeftN", "MoveRightN", "MoveLDownN", "MoveDownN", "MoveRDownN",
             "ActionRRotateN", "ActionLRotateN", "ControlTimeN", "ControlLoopN"};
@@ -163,7 +162,6 @@ namespace TabletArtco
             return null;
         }
 
-
         public static int GetClickType(Block block) {
             List<List<string>> list = new List<List<string>> {
                 new List<string>{ "MoveLUpN", "MoveUpN", "MoveRUpN", "MoveLeftN", "MoveRightN", "MoveLDownN", "MoveDownN", "MoveRDownN", "ActionRRotateN", "ActionLRotateN", "ControlTimeN", "ControlLoopN"},
@@ -206,8 +204,9 @@ namespace TabletArtco
         public string varValue { get; set; }
         public string activateSpriteId { get; set; }
 
-        public bool signalOn { get; set; } = false;
+        public bool collionSignal { get; set; } = false;
         public int signalCount { get; set; } = 0;
+        public int clickSignalCount { get; set; } = 0;
 
         public static Block Copy(Block block) {
             Block b = new Block();

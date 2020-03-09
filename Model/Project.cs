@@ -7,6 +7,7 @@ namespace TabletArtco
     public interface UpdateDelegate
     {
         void UpdateView();
+        void UpdateBlockViewDelegate();
     }
 
     class Project
@@ -71,6 +72,7 @@ namespace TabletArtco
         // Run Sprite Animation
         public static void RunSprite()
         {
+            Variable.InitCurVariable();
             Android.Util.Log.Info("RunCode", "-----------------------");
             for (int i = 0; i < Project.mSprites.Count; i++)
             {
@@ -119,12 +121,22 @@ namespace TabletArtco
         public static void RemoveVariable(string name)
         {
             variableMap.Remove(name);
+            for (int i = 0; i < Project.mSprites.Count; i++)
+            {
+                ActivatedSprite activatedSprite = Project.mSprites[i];
+                activatedSprite.RemoveVariable(name);
+            }
         }
 
         // clear all variable
         public static void ClearVariable()
         {
             variableMap.Clear();
+            for (int i = 0; i < Project.mSprites.Count; i++)
+            {
+                ActivatedSprite activatedSprite = Project.mSprites[i];
+                activatedSprite.RemoveVariable();
+            }
         }
 
         // init current variable
@@ -133,7 +145,7 @@ namespace TabletArtco
             curVariableMap.Clear();
             foreach (string name in variableMap.Keys)
             {
-                curVariableMap.Add(name, curVariableMap[name]);
+                curVariableMap.Add(name, variableMap[name]);
             }
         }
     }

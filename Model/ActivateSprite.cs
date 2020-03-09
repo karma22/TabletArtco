@@ -233,8 +233,64 @@ namespace TabletArtco
             
         }
 
-        public void ReceiveSignal(string signal) {
+        //when delete variable to update view
+        public void RemoveVariable(string name = null) {
+            for (int i = 0; i < mBlocks.Count; i++)
+            {
+                List<Block> list = mBlocks[i];
+                for (int j = 0; j < list.Count; j++)
+                {
+                    Block block = list[j];
+                    if (block.varName != null)
+                    {
+                        if (name != null && name.Equals(block.varName))
+                        {
+                            block.text = null;
+                            block.varName = null;
+                            block.varValue = null;
+                        }
+                        else {
+                            block.text = null;
+                            block.varName = null;
+                            block.varValue = null;
+                        }
+                    }
+                }
+            }
+            mUpdateDelegate?.UpdateBlockViewDelegate();
+        }
 
+        // receive click signal
+        public void ReceiveClickSignal()
+        {
+            for (int i = 0; i < mBlocks.Count; i++)
+            {
+                List<Block> list = mBlocks[i];
+                for (int j = 0; j < 1; j++)
+                {
+                    Block block = list[j];
+                    if (block.name.Equals("ControlClickSprite"))
+                    {
+                        block.clickSignalCount++;
+                    }
+                }
+            }
+        }
+
+        // receive signal
+        public void ReceiveSignal(string signal) {
+            for (int i = 0; i < mBlocks.Count; i++)
+            {
+                List<Block> list = mBlocks[i];
+                for (int j = 0; j < 1; j++)
+                {
+                    Block block = list[j];
+                    if (block.name.Equals("ControlRecvSig") && block.text != null && block.text.Equals(signal))
+                    {
+                        block.signalCount++;
+                    }
+                }
+            }
         }
 
         public int GetBlockCount() {
@@ -355,7 +411,8 @@ namespace TabletArtco
                 {
                     Block block = list[j];
                     block.signalCount = 0;
-                    block.signalOn = false;
+                    block.collionSignal = false;
+                    block.clickSignalCount = 0;
                 }
             }
             LogUtil.CustomLog("Reset");
@@ -387,7 +444,7 @@ namespace TabletArtco
                     Block block = list[idx];
                     string blockName = list[idx].name;
 
-                    if (isEvent(blockName))
+                    if (blockName.Equals("ControlRecvSig"))
                     {
                         if (block.signalCount == 0)
                         {
@@ -397,6 +454,30 @@ namespace TabletArtco
                         else
                         {
                             block.signalCount--;
+                        }
+                    }
+                    else if (blockName.Equals("ControlTouch"))
+                    {
+                        if (!block.collionSignal)
+                        {
+                            Thread.Sleep(10);
+                            continue;
+                        }
+                        else
+                        {
+                            block.collionSignal = false;
+                        }
+                    }
+                    else if (blockName.Equals("ControlClickSprite"))
+                    {
+                        if (block.clickSignalCount == 0)
+                        {
+                            Thread.Sleep(10);
+                            continue;
+                        }
+                        else
+                        {
+                            block.clickSignalCount--;
                         }
                     }
                     else if (blockName.Equals("ControlLoop"))
@@ -429,26 +510,26 @@ namespace TabletArtco
                     {
                         loopStartIdx = idx;
                     }
-                    else if (blockName.Equals("MoveRDownN")) MoveVariable(MoveArrow.RightDown, block.text);
-                    else if (blockName.Equals("MoveRUpN")) MoveVariable(MoveArrow.RightUp, block.text);
-                    else if (blockName.Equals("MoveLDownN")) MoveVariable(MoveArrow.LeftDown, block.text);
-                    else if (blockName.Equals("MoveLUpN")) MoveVariable(MoveArrow.LeftUp, block.text);
+                    else if (blockName.Equals("MoveRDownN")) MoveVariable(MoveArrow.RightDown, block);
+                    else if (blockName.Equals("MoveRUpN")) MoveVariable(MoveArrow.RightUp, block);
+                    else if (blockName.Equals("MoveLDownN")) MoveVariable(MoveArrow.LeftDown, block);
+                    else if (blockName.Equals("MoveLUpN")) MoveVariable(MoveArrow.LeftUp, block);
                     else if (blockName.Equals("MoveRight1")) MoveConstant(MoveArrow.Right, 1, true);
                     else if (blockName.Equals("MoveRight5")) MoveConstant(MoveArrow.Right, 5, true);
                     else if (blockName.Equals("MoveRight10")) MoveConstant(MoveArrow.Right, 10, true);
-                    else if (blockName.Equals("MoveRightN")) MoveVariable(MoveArrow.Right, block.text);
+                    else if (blockName.Equals("MoveRightN")) MoveVariable(MoveArrow.Right, block);
                     else if (blockName.Equals("MoveDown1")) MoveConstant(MoveArrow.Down, 1, true);
                     else if (blockName.Equals("MoveDown5")) MoveConstant(MoveArrow.Down, 5, true);
                     else if (blockName.Equals("MoveDown10")) MoveConstant(MoveArrow.Down, 10, true);
-                    else if (blockName.Equals("MoveDownN")) MoveVariable(MoveArrow.Down, block.text);
+                    else if (blockName.Equals("MoveDownN")) MoveVariable(MoveArrow.Down, block);
                     else if (blockName.Equals("MoveLeft1")) MoveConstant(MoveArrow.Left, 1, true);
                     else if (blockName.Equals("MoveLeft5")) MoveConstant(MoveArrow.Left, 5, true);
                     else if (blockName.Equals("MoveLeft10")) MoveConstant(MoveArrow.Left, 10, true);
-                    else if (blockName.Equals("MoveLeftN")) MoveVariable(MoveArrow.Left, block.text);
+                    else if (blockName.Equals("MoveLeftN")) MoveVariable(MoveArrow.Left, block);
                     else if (blockName.Equals("MoveUp1")) MoveConstant(MoveArrow.Up, 1, true);
                     else if (blockName.Equals("MoveUp5")) MoveConstant(MoveArrow.Up, 5, true);
                     else if (blockName.Equals("MoveUp10")) MoveConstant(MoveArrow.Up, 10, true);
-                    else if (blockName.Equals("MoveUpN")) MoveVariable(MoveArrow.Up, block.text);
+                    else if (blockName.Equals("MoveUpN")) MoveVariable(MoveArrow.Up, block);
                     else if (blockName.Equals("ActionRRotate")) RotateLoop(90, true, false);
                     else if (blockName.Equals("ActionLRotate")) RotateLoop(90, false, false);
                     else if (blockName.Equals("ActionBounce")) ActionBounce();
@@ -461,8 +542,8 @@ namespace TabletArtco
                     else if (blockName.Equals("ActionFast")) ActionFast();
                     else if (blockName.Equals("ActionSlow")) ActionSlow();
                     else if (blockName.Equals("ActionRotateLoop")) RotateLoop(10, true, true);
-                    else if (blockName.Equals("ActionRRotateN")) RotateArrowValue(true, block.text);
-                    else if (blockName.Equals("ActionLRotateN")) RotateArrowValue(false, block.text);
+                    else if (blockName.Equals("ActionRRotateN")) RotateArrowValue(true, block);
+                    else if (blockName.Equals("ActionLRotateN")) RotateArrowValue(false, block);
                     else if (blockName.Equals("ActionFlash")) ShowHideLoop();
                     else if (blockName.Equals("ActionRLJump")) RightLeftJumpLoop();
                     else if (blockName.Equals("ActionAnimate")) AnimateSpritesLoop();
@@ -474,9 +555,30 @@ namespace TabletArtco
                     else if (blockName.Equals("ControlPrevSprite")) SetPrevBit();
                     else if (blockName.Equals("ControlTime1")) Thread.Sleep((int)(1 * 100.0f));
                     else if (blockName.Equals("ControlTime2")) Thread.Sleep((int)(5 * 100.0f));
-                    else if (blockName.Equals("ControlTimeN")) SleepVariable(block.text);
+                    else if (blockName.Equals("ControlTimeN")) SleepVariable(block);
                     else if (blockName.Equals("ControlSpeak")) ControlSpeak(block.text);
                     else if (blockName.Equals("ControlSound")) SoundPlayer(block.varValue);
+                    else if (blockName.Equals("ControlChangeVal"))
+                    {
+                        if (block.varName != null && Variable.curVariableMap.ContainsKey(block.varName))
+                        {
+                            Variable.curVariableMap[block.varName] = int.Parse(Variable.curVariableMap[block.name]) + int.Parse(block.varValue) + "";
+                        }
+                    }
+                    else if (blockName.Equals("ControlSetVal"))
+                    {
+                        if (block.varName != null && Variable.curVariableMap.ContainsKey(block.varName))
+                        {
+                            Variable.curVariableMap[block.varName] = int.Parse(block.varValue) + "";
+                        }
+                    }
+                    else if (blockName.Equals("ControlSendSignal"))
+                    {
+                        if (block.text != null)
+                        {
+                            Signal.SendSignal(block.text);
+                        }
+                    }
 
                     //else if (blockName.Equals("GameRight")) TurnAndMoveForward(5);
                     //else if (blockName.Equals("GameDown")) TurnAndMoveForward(6);
@@ -493,7 +595,6 @@ namespace TabletArtco
                 idx++;
             }
         }
-
 
         private bool isEvent(string name) {
             for (int i = 1; i < Block.blockTab0ResIdStrs.Length; i++)
@@ -560,14 +661,29 @@ namespace TabletArtco
             }
         }
 
-        public void MoveVariable(MoveArrow arrow, string valueString)
+        public void MoveVariable(MoveArrow arrow, Block block)
         {
-            if (!System.Int32.TryParse(valueString, out int value))
+            if (block.varName != null)
             {
-                return;
+                if (Variable.curVariableMap.ContainsKey(block.varName))
+                {
+                    if (!System.Int32.TryParse(Variable.curVariableMap[block.varName], out int value))
+                    {
+                        return;
+                    }
+                    curMoveArrow = arrow;
+                    MoveSprite(value * 10, 1, curMoveArrow);
+                }
             }
-            curMoveArrow = arrow;
-            MoveSprite(value * 10, 1, curMoveArrow);
+            else
+            {
+                if (!System.Int32.TryParse(block.text, out int value))
+                {
+                    return;
+                }
+                curMoveArrow = arrow;
+                MoveSprite(value * 10, 1, curMoveArrow);
+            }
         }
 
         /*
@@ -924,13 +1040,27 @@ namespace TabletArtco
         }
 
         // 按用户输入旋转
-        public void RotateArrowValue(bool cw, string valueString)
+        public void RotateArrowValue(bool cw, Block block)
         {
-            if (!float.TryParse(valueString, out float n))
+            if (block.varName != null)
             {
-                return;
+                if (Variable.curVariableMap.ContainsKey(block.varName))
+                {
+                    if (!float.TryParse(Variable.curVariableMap[block.varName], out float n))
+                    {
+                        return;
+                    }
+                    RotateLoop(n, cw, false);
+                }
             }
-            RotateLoop(n, cw, false);
+            else
+            {
+                if (!float.TryParse(block.text, out float n))
+                {
+                    return;
+                }
+                RotateLoop(n, cw, false);
+            }
         }
 
         // Wave 波浪移动
@@ -1286,14 +1416,30 @@ namespace TabletArtco
         }
 
         // set wait time
-        public static void SleepVariable(string valueString)
+        public static void SleepVariable(Block block)
         {
-            if (!float.TryParse(valueString, out float value))
+
+            if (block.varName != null)
             {
-                return;
+                if (Variable.curVariableMap.ContainsKey(block.varName))
+                {
+                    if (!float.TryParse(Variable.curVariableMap[block.varName], out float value))
+                    {
+                        return;
+                    }
+                    int wait = (int)(value * 100.0f);
+                    Java.Lang.Thread.Sleep(wait);
+                }
             }
-            int wait = (int)(value * 100.0f);
-            Java.Lang.Thread.Sleep(wait);
+            else
+            {
+                if (!float.TryParse(block.text, out float value))
+                {
+                    return;
+                }
+                int wait = (int)(value * 100.0f);
+                Java.Lang.Thread.Sleep(wait);
+            }
         }
 
         //Flip X 
