@@ -20,8 +20,6 @@ namespace TabletArtco
     {
         private static string Tag = "MainActivity";
         private List<ActivatedSprite> spritesList = Project.mSprites;
-        //private List<Block> blocksList = new List<Block>();
-        private Background mBackground = null;
         private List<DragImgView> imgList = new List<DragImgView>();
         private List<SpeakView> speakViewList = new List<SpeakView>();
         private SpriteAdapter mSpriteAdapter;
@@ -30,7 +28,6 @@ namespace TabletArtco
         private int mLongPressSpriteIndex = -1;
         private bool isPlay;
         private MediaManager mediaManager;
-        //private MediaManager2 mediaManager;
         private bool activateBlockScale = false;
         private View dragView;
 
@@ -41,7 +38,6 @@ namespace TabletArtco
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             SetContentView(Resource.Layout.activity_main);
-            //IWindowManager mWindowManager = (IWindowManager)this.GetSystemService(Context.WindowService);
             LoadResources();
             InitView();
         }
@@ -109,8 +105,8 @@ namespace TabletArtco
                         {
                             return;
                         }
-                        mBackground = background;
-                        mediaManager.SetPath(mBackground.remoteVideoPath, mBackground.remotePreviewImgPath);
+                        Project.currentBack = background;
+                        mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                         break;
                     }
                 // select background callback
@@ -122,14 +118,17 @@ namespace TabletArtco
                         {
                             return;
                         }
-                        mBackground = background;
-                        if (mBackground.isPng)
-                        {
-                            
-                        }
-                        mediaManager.SetPath(mBackground.remoteVideoPath, mBackground.remotePreviewImgPath);
+                        Project.currentBack = background;
+                        mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                         break;
                     }
+                // block select sound 
+                case 7:
+                    {
+                        UpdateBlockView();
+                        break;
+                    }
+                // block select background
                 case 8:
                     {
                         UpdateBlockView();
@@ -508,11 +507,7 @@ namespace TabletArtco
                                 }
                                 isPlay = true;
                                 Project.RunSprite();
-
-                                //CrossMediaManager.Current.Play("https://672-3.vod.tv.itc.cn/sohu/v1/TmwGoKIsWBeHgB67yEW4gmdbW6c48KPLghAXeBvFhJXUyYbSoO27fSx.mp4?k=FtJelY&p=j9lvzSw3qm1UqpxUoLPUqSXiqpxmqpsdhRYRzSPWXZxIWhoGgY220Go70ScAZMx4gf&r=TUldziJCtpCmhWB3tSCGhWlvsmCUqmPWtWaizY&q=OpCBhW7IRYodRDvswmfCyY2sWhyHfhyt5G64fJXsWYeS0F2OfGWsWYdsZYoURDvsfp", MediaFileType.Video);
                                 mediaManager.Play();
-                                //VideoView videoView2 = FindViewById<VideoView>(Resource.Id.video_view);
-                                //videoView2.Start();
                                 break;
                             }
                         case 2:
@@ -525,10 +520,12 @@ namespace TabletArtco
                                 }
                                 isPlay = false;
                                 Project.StopSprite();
+                                if (Project.currentBack != null)
+                                {
+                                    mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                                }
                                 mediaManager.Stop();
                                 SoundPlayer.StopAll();
-                                //VideoView videoView1 = FindViewById<VideoView>(Resource.Id.video_view);
-                                //videoView1.StopPlayback();
                                 break;
                             }
                         case 3:
@@ -811,139 +808,139 @@ namespace TabletArtco
                             }
                         }
                         int clickType = Block.GetClickType(block);
-                        if (clickType != -1)
+                        // activateblock click event
+                        view.Click += (t, e) =>
                         {
-                            // activateblock click event
-                            view.Click += (t, e) =>
+                            if (isPlay)
                             {
-                                if (isPlay)
-                                {
-                                    return;
-                                }
-                                if (clickType == 3 || clickType == 5 || clickType == 6 || clickType == 10)
-                                {
-                                    activatedSprite.curRow = block.row;
-                                    UpdateBlockView();
-                                }
-                                switch (clickType) {
-                                    case 0:
+                                return;
+                            }
+                            activatedSprite.curRow = block.row;
+                            UpdateBlockView();
+                                
+                            switch (clickType) {
+                                // input the value or select variable value
+                                case 0:
+                                    {
+                                        List<string> varlist = new List<string>();
+                                        foreach (string name in Variable.variableMap.Keys)
                                         {
-                                            List<string> varlist = new List<string>();
-                                            foreach (string name in Variable.variableMap.Keys)
-                                            {
-                                                varlist.Add(name);
-                                            }
-                                            VariableSelectDialog dialog = new VariableSelectDialog(this, (selectIndex, text)=> {
-                                                if (selectIndex != -1)
-                                                {
-                                                    block.varName = varlist[selectIndex];
-                                                }
-                                                else
-                                                {
-                                                    block.text = text;
-                                                }
-                                                UpdateBlockView();
-                                            });
-                                            dialog.mList = varlist;
-                                            dialog.Show();
-                                            break;
+                                            varlist.Add(name);
                                         }
-                                    case 1:
-                                    case 2:
-                                        {
-                                            // change variable dialog, example set variable value or increase variable value
-                                            if (Variable.variableMap.Count<=0)
-                                            {
-                                                ToastUtil.ShowToast(this, "你还没有添加变量");
-                                                return;
-                                            }
-                                            List<string> varlist = new List<string>();
-                                            foreach (string name in Variable.variableMap.Keys)
-                                            {
-                                                varlist.Add(name);
-                                            }
-                                            VariableChangeDialog dialog = new VariableChangeDialog(this, clickType>1, (selectIndex, value) =>
+                                        VariableSelectDialog dialog = new VariableSelectDialog(this, (selectIndex, text)=> {
+                                            if (selectIndex != -1)
                                             {
                                                 block.varName = varlist[selectIndex];
-                                                block.varValue = value;
-                                                UpdateBlockView();
-                                            });
-                                            dialog.mList = varlist;
-                                            dialog.Show();
-                                            break;
-                                        }
-                                    case 3:
-                                    case 4:
-                                        {
-                                            // signal
-                                            SignalDialog dialog = new SignalDialog(this, (text) => {
-                                                block.text = text;
-                                                UpdateBlockView();
-                                            });
-                                            dialog.Show();
-                                            break;
-                                        }
-                                    
-                                    case 5:
-                                        {
-                                            // select collision image dialog
-                                            if (Project.mSprites.Count == 1)
-                                            {
-                                                ToastUtil.ShowToast(this, "至少选择两个精灵才会有碰撞");
-                                                return;
                                             }
-                                            List<string> titlelist = new List<string>();
-                                            List<string> imglist = new List<string>();
-                                            List<string> idlist = new List<string>();
-                                            for (int q = 0; q < Project.mSprites.Count; q++)
+                                            else
                                             {
-                                                if (q!=mSpriteIndex)
-                                                {
-                                                    ActivatedSprite sprite = Project.mSprites[q];
-                                                    titlelist.Add(sprite.sprite.name);
-                                                    imglist.Add(sprite.sprite.remotePath);
-                                                    idlist.Add(sprite.activateSpriteId);
-                                                }
-                                            }
-                                         
-                                            ImageSelectDialog dialog = new ImageSelectDialog(this, clickType > 4, (selectIndex) => {
-                                                block.text = titlelist[selectIndex];
-                                                block.activateSpriteId = idlist[selectIndex];
-                                                UpdateBlockView();
-                                            });
-                                            dialog.mList = titlelist;
-                                            dialog.mImgList = imglist;
-                                            dialog.Show();
-                                            break;
-                                        }
-                                    case 6: {
-                                            // input speck text dialog
-                                            SpeakDialog dialog = new SpeakDialog(this, (text) => {
                                                 block.text = text;
-                                                UpdateBlockView();
-                                            });
-                                            dialog.Show();
-                                            break;
-                                        }
-                                    case 7:
-                                    case 8: {
-                                            int tag = (int)view.Tag;
-                                            tag = tag - tag / 10000 * 10000;
-                                            // click activate block to select background
-                                            Intent intent = new Intent(this, clickType == 8 ? typeof(SoundActivity) : typeof(BackgroundActivity));
-                                            Bundle bundle = new Bundle();
-                                            bundle.PutInt("index", mSpriteIndex);
-                                            bundle.PutInt("row", block.row);
-                                            bundle.PutInt("column", tag);
-                                            intent.PutExtra("bundle", bundle);
-                                            StartActivityForResult(intent, clickType, null);
-                                            break;
-                                        }
-                                    default:
+                                            }
+                                            UpdateBlockView();
+                                        });
+                                        dialog.mList = varlist;
+                                        dialog.Show();
                                         break;
-                                }
-                            };
-                        }
+                                    }
+                                // set variable value
+                                case 1:
+                                // increase variable value
+                                case 2:
+                                    {
+                                        // change variable dialog, example set variable value or increase variable value
+                                        if (Variable.variableMap.Count<=0)
+                                        {
+                                            ToastUtil.ShowToast(this, "你还没有添加变量");
+                                            return;
+                                        }
+                                        List<string> varlist = new List<string>();
+                                        foreach (string name in Variable.variableMap.Keys)
+                                        {
+                                            varlist.Add(name);
+                                        }
+                                        VariableChangeDialog dialog = new VariableChangeDialog(this, clickType>1, (selectIndex, value) =>
+                                        {
+                                            block.varName = varlist[selectIndex];
+                                            block.varValue = value;
+                                            UpdateBlockView();
+                                        });
+                                        dialog.mList = varlist;
+                                        dialog.Show();
+                                        break;
+                                    }
+                                // receive signal dialog
+                                case 3:
+                                // send signal dialog
+                                case 4:
+                                    {
+                                        SignalDialog dialog = new SignalDialog(this, (text) => {
+                                            block.text = text;
+                                            UpdateBlockView();
+                                        });
+                                        dialog.Show();
+                                        break;
+                                    }
+                                // select collision image dialog
+                                case 5:
+                                    {
+                                        if (Project.mSprites.Count == 1)
+                                        {
+                                            ToastUtil.ShowToast(this, "至少选择两个精灵才会有碰撞");
+                                            return;
+                                        }
+                                        List<string> titlelist = new List<string>();
+                                        List<string> imglist = new List<string>();
+                                        List<string> idlist = new List<string>();
+                                        for (int q = 0; q < Project.mSprites.Count; q++)
+                                        {
+                                            if (q!=mSpriteIndex)
+                                            {
+                                                ActivatedSprite sprite = Project.mSprites[q];
+                                                titlelist.Add(sprite.sprite.name);
+                                                imglist.Add(sprite.sprite.remotePath);
+                                                idlist.Add(sprite.activateSpriteId);
+                                            }
+                                        }
+                                        ImageSelectDialog dialog = new ImageSelectDialog(this, clickType > 4, (selectIndex) => {
+                                            block.text = titlelist[selectIndex];
+                                            block.activateSpriteId = idlist[selectIndex];
+                                            UpdateBlockView();
+                                        });
+                                        dialog.mList = titlelist;
+                                        dialog.mImgList = imglist;
+                                        dialog.Show();
+                                        break;
+                                    }
+                                // input speck text dialog
+                                case 6: {
+                                        SpeakDialog dialog = new SpeakDialog(this, (text) => {
+                                            block.text = text;
+                                            UpdateBlockView();
+                                        });
+                                        dialog.Show();
+                                        break;
+                                    }
+                                // select sound 
+                                case 7:
+                                // select background
+                                case 8: {
+                                        int tag = (int)view.Tag;
+                                        tag = tag - tag / 10000 * 10000;
+                                        // click activate block to select background
+                                        Intent intent = new Intent(this, clickType == 7 ? typeof(SoundActivity) : typeof(BackgroundActivity));
+                                        Bundle bundle = new Bundle();
+                                        bundle.PutInt("index", mSpriteIndex);
+                                        bundle.PutInt("row", block.row);
+                                        bundle.PutInt("column", tag);
+                                        intent.PutExtra("bundle", bundle);
+                                        StartActivityForResult(intent, clickType, null);
+                                        break;
+                                    }
+                                default:
+                                    break;
+                            }
+                        };
+                        
                     }
                     originY += itemW + margin;
                 }

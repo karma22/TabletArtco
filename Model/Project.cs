@@ -12,8 +12,10 @@ namespace TabletArtco
 
     class Project
     {
-        // all backgrounds list
-        public static List<Background> backgroundsList { get; set; } = new List<Background>();
+        // first background
+        public static Background currentBack { get; set; } = null;
+        // change backgrounds
+        public static Dictionary<int, Background> backgroundsList { get; set; } = new Dictionary<int, Background>();
         // all sprites list
         public static List<ActivatedSprite> mSprites { get; set; } = new List<ActivatedSprite>();
         // Copy blocks list

@@ -612,14 +612,17 @@ namespace TabletArtco
                             Signal.SendSignal(block.text);
                         }
                     }
+                    else if (blockName.Equals("ControlAdditionBackground"))
+                    {
 
+                    }
                     //else if (blockName.Equals("GameRight")) TurnAndMoveForward(5);
                     //else if (blockName.Equals("GameDown")) TurnAndMoveForward(6);
                     //else if (blockName.Equals("GameLeft")) TurnAndMoveForward(7);
                     //else if (blockName.Equals("GameUp")) TurnAndMoveForward(8);
                     //else if (blockName.Equals("GameJump")) ArrowJump();
 
-                    Java.Lang.Thread.Sleep(10);
+                        Java.Lang.Thread.Sleep(10);
                 }
                 catch (Java.Lang.Exception e)
                 {
