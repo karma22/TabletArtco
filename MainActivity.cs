@@ -23,6 +23,7 @@ namespace TabletArtco
         //private List<Block> blocksList = new List<Block>();
         private Background mBackground = null;
         private List<DragImgView> imgList = new List<DragImgView>();
+        private List<SpeakView> speakViewList = new List<SpeakView>();
         private SpriteAdapter mSpriteAdapter;
         private VariableAdapter mVariableAdapter;
         private int mSpriteIndex = -1;
@@ -670,6 +671,7 @@ namespace TabletArtco
             FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
             containerView.RemoveAllViews();
             imgList.RemoveRange(0, imgList.Count);
+            speakViewList.RemoveRange(0, speakViewList.Count);
             for (int i = 0; i < spritesList.Count; i++)
             {
                 ActivatedSprite activatedSprite = spritesList[i];
@@ -707,6 +709,10 @@ namespace TabletArtco
                         }
                     }
                 };
+                SpeakView speakView = new SpeakView(this);
+                FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WrapContent, FrameLayout.LayoutParams.WrapContent);                
+                containerView.AddView(speakView, p);
+                speakViewList.Add(speakView);
             }
         }
 
@@ -726,6 +732,16 @@ namespace TabletArtco
                 imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 imgIv.Visibility = activatedSprite.isVisible ? ViewStates.Visible : ViewStates.Invisible;
                 containerView.UpdateViewLayout(imgIv, layoutParams);
+
+                SpeakView speakView = speakViewList[i];
+                speakView.SetSpeakText(activatedSprite.speakText);
+                if (speakView.Visibility == ViewStates.Visible)
+                {
+                    FrameLayout.LayoutParams p = (FrameLayout.LayoutParams)speakView.LayoutParameters;
+                    p.LeftMargin = activatedSprite.curPoint.X;
+                    p.TopMargin = activatedSprite.curPoint.Y - 100;
+                    containerView.UpdateViewLayout(speakView, p);
+                }
             }
             JudgeCollision();
         }
@@ -966,14 +982,6 @@ namespace TabletArtco
                     }
                 }
             })).Start();
-        }
-
-        public void startAnimation() {
-            
-        }
-
-        public void stopAnimation() {
-            
         }
 
         /*

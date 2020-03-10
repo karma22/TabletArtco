@@ -7,16 +7,18 @@ using Android.Util;
 using Android.Views;
 using Android.Views.Animations;
 using Android.Provider;
+using Android.Graphics;
 
 namespace TabletArtco
 {
     public class DragImgView: ImageView
     {
+        private Context mCxt;
         private int nap = 200;
         private long currentTime;
         private float rawX;
         private float rawY;
-
+        
         public Action<DragImgView> ClickAction { get; set; }
         public Action<DragImgView, float, float> MoveAction { get; set; }
 
@@ -37,8 +39,8 @@ namespace TabletArtco
 
         private void Initialize(Context cxt) {
             
-        }
-
+        }  
+    
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
         {
             int expandSpec = MeasureSpec.MakeMeasureSpec(int.MaxValue >> 2, MeasureSpecMode.AtMost);
@@ -79,7 +81,39 @@ namespace TabletArtco
             }
             return true;
         }
+    }
 
-       
+    class SpeakView : TextView {
+
+        public SpeakView(Context context) : base(context)
+        {
+            Initialize(context);
+        }
+
+        public SpeakView(Context context, IAttributeSet attrs) : base(context, attrs)
+        {
+            Initialize(context);
+        }
+
+        public SpeakView(Context context, IAttributeSet attrs, int defStyle) : base(context, attrs, defStyle)
+        {
+            Initialize(context);
+        }
+
+        private void Initialize(Context cxt)
+        {
+            SetSpeakText(null);
+        }
+
+        public void SetSpeakText(string text) {
+            Text = text;
+            Visibility = text != null && text.Length > 0 ? ViewStates.Visible : ViewStates.Invisible;
+        }
+
+        protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+        {
+            int expandSpec = MeasureSpec.MakeMeasureSpec(int.MaxValue >> 2, MeasureSpecMode.AtMost);
+            base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
     }
 }

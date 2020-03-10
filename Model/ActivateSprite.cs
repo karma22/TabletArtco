@@ -589,6 +589,7 @@ namespace TabletArtco
                     else if (blockName.Equals("ControlTime2")) Thread.Sleep((int)(5 * 100.0f));
                     else if (blockName.Equals("ControlTimeN")) SleepVariable(block);
                     else if (blockName.Equals("ControlSpeak")) ControlSpeak(block.text);
+                    else if (blockName.Equals("ControlSpeakStop")) ControlSpeak(null);
                     else if (blockName.Equals("ControlSound")) SoundPlayer(block.varValue);
                     else if (blockName.Equals("ControlChangeVal"))
                     {
@@ -1548,9 +1549,9 @@ namespace TabletArtco
             speakText = text;
             InvalidateStage();
             Thread.Sleep(2000);
-            speakText = null;
-            InvalidateStage();
-            Thread.Sleep(500);
+            //speakText = null;
+            //InvalidateStage();
+            //Thread.Sleep(500);
         }
 
         public void SoundPlayer(string text)
