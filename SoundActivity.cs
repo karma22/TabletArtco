@@ -17,6 +17,7 @@ namespace TabletArtco
         private int mIndex = 0;
 
         private Block block;
+        private Intent mIntent;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -32,8 +33,8 @@ namespace TabletArtco
 
         private void InitData()
         {
-            Intent intent = this.Intent;
-            Bundle bundle = intent.GetBundleExtra("bundle");
+            mIntent = this.Intent;
+            Bundle bundle = mIntent.GetBundleExtra("bundle");
             if (bundle != null)
             {
                 int index = bundle.GetInt("index");
@@ -150,16 +151,27 @@ namespace TabletArtco
         {
             View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sound, parent, false);
             ViewUtil.SetViewSize(convertView, mItemW, mItemH);
+            
             ViewHolder holder = new ViewHolder();
             holder.playIv = convertView.FindViewById<ImageView>(Resource.Id.iv_play);
             holder.nameTv = convertView.FindViewById<TextView>(Resource.Id.tv_name);
+            holder.soundPlay = convertView.FindViewById<FrameLayout>(Resource.Id.play_sound);
+            ViewUtil.SetViewSize(holder.soundPlay, (int)(mItemW/4), (int)(mItemH/4));
+
             convertView.Tag = holder;
+
             convertView.Click += (t, e) =>
             {
                 ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
-                int position = (int)viewHolder.nameTv.Tag;
-                ClickItem(position);
+                int position = (int)viewHolder.soundPlay.Tag;
+                ClickItem(position, false);
             };
+            holder.soundPlay.Click += (t, e) =>
+            {
+                int position = (int)((View)t).Tag;
+                ClickItem(position, true);
+            };
+
             return convertView;
         }
 
@@ -174,10 +186,11 @@ namespace TabletArtco
             Sound sound = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             viewHolder.nameTv.Text = sound.name;
-            viewHolder.nameTv.Tag = position;
+
+            viewHolder.soundPlay.Tag = position;
         }
 
-        public void ClickItem(int position)
+        public void ClickItem(int position, bool isSoundPlay)
         {
             List<List<Sound>> sounds = Sound._sounds;
             if (mIndex >= sounds.Count)
@@ -196,8 +209,17 @@ namespace TabletArtco
                 block.varName = sound.localPath;
                 block.varValue = sound.localPath;
             }
-            SetResult(Result.Ok, intent);
-            Finish();
+
+            Bundle bundle = mIntent.GetBundleExtra("bundle");
+            if (bundle == null || isSoundPlay)
+            {
+                new SoundPlayer(this).Play(sound.localPath);
+            }
+            else
+            {
+                SetResult(Result.Ok, intent);
+                Finish();
+            }
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
@@ -205,6 +227,7 @@ namespace TabletArtco
         {
             public ImageView playIv;
             public TextView nameTv;
+            public FrameLayout soundPlay;
         }
     }
 }

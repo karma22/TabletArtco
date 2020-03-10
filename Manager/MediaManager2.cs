@@ -56,7 +56,7 @@ namespace TabletArtco
             preImgIv.Visibility = ViewStates.Gone;
 
             _capture?.Dispose();
-            //_capture = new VideoCapture;
+            _capture = new VideoCapture();
 
             _backgroundRunThread = new Thread(BackgroundRunThread);
             _backgroundRunThread.IsBackground = true;

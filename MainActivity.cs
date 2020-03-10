@@ -130,6 +130,7 @@ namespace TabletArtco
                         mediaManager.SetPath(mBackground.remoteVideoPath, mBackground.remotePreviewImgPath);
                         break;
                     }
+                // select ControlSound block, ControlAdditionBackground block callback
                 case 8:
                     {
                         UpdateBlockView();
@@ -140,11 +141,13 @@ namespace TabletArtco
                         UpdateBlockView();
                         break;
                     }
+                // EditActivity callback
                 case 10:
                     {
 
                         break;
                     }
+                // camera callback
                 case 11:
                     {
                         byte[] bitmapData;
@@ -930,13 +933,13 @@ namespace TabletArtco
                                             int tag = (int)view.Tag;
                                             tag = tag - tag / 10000 * 10000;
                                             // click activate block to select background
-                                            Intent intent = new Intent(this, clickType == 8 ? typeof(SoundActivity) : typeof(BackgroundActivity));
+                                            Intent intent = new Intent(this, clickType == 8 ? typeof(BackgroundActivity) : typeof(SoundActivity));
                                             Bundle bundle = new Bundle();
                                             bundle.PutInt("index", mSpriteIndex);
                                             bundle.PutInt("row", block.row);
                                             bundle.PutInt("column", tag);
                                             intent.PutExtra("bundle", bundle);
-                                            StartActivityForResult(intent, clickType, null);
+                                            StartActivityForResult(intent, 8, null);
                                             break;
                                         }
                                     default:
