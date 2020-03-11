@@ -6978,19 +6978,22 @@ namespace TabletArtco
 			public const int video_surface_container = 2131296754;
 			
 			// aapt resource value: 0x7F0901F3
-			public const int view_offset_helper = 2131296755;
+			public const int video_view = 2131296755;
 			
 			// aapt resource value: 0x7F0901F4
-			public const int visible = 2131296756;
+			public const int view_offset_helper = 2131296756;
 			
 			// aapt resource value: 0x7F0901F5
-			public const int withText = 2131296757;
+			public const int visible = 2131296757;
 			
 			// aapt resource value: 0x7F0901F6
-			public const int wrap_content = 2131296758;
+			public const int withText = 2131296758;
 			
 			// aapt resource value: 0x7F0901F7
-			public const int zoom = 2131296759;
+			public const int wrap_content = 2131296759;
+			
+			// aapt resource value: 0x7F0901F8
+			public const int zoom = 2131296760;
 			
 			static Id()
 			{

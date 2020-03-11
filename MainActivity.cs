@@ -27,7 +27,8 @@ namespace TabletArtco
         private int mSpriteIndex = -1;
         private int mLongPressSpriteIndex = -1;
         private bool isPlay;
-        private MediaManager mediaManager;
+        //private MediaManager mediaManager;
+        private VideoPlayer videoPlayer;
         private bool activateBlockScale = false;
         private View dragView;
 
@@ -53,7 +54,8 @@ namespace TabletArtco
         protected override void OnPause()
         {
             base.OnPause();
-            mediaManager.Stop();
+            videoPlayer.Stop();
+            //mediaManager.Stop();
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
@@ -106,7 +108,9 @@ namespace TabletArtco
                             return;
                         }
                         Project.currentBack = background;
-                        mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+
+                        //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                        videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                         break;
                     }
                 // select background callback
@@ -119,7 +123,8 @@ namespace TabletArtco
                             return;
                         }
                         Project.currentBack = background;
-                        mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                        //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                        videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);                        
                         break;
                     }
                 // block select sound 
@@ -488,7 +493,8 @@ namespace TabletArtco
                                     ChangeLeftList(1);
 
                                     // initialize Background
-                                    mediaManager.ClickHomeButton();
+                                    //mediaManager.ClickHomeButton();
+                                    videoPlayer.ClickHomeBt();
 
                                     // initialize Variavles
                                     Variable.ClearVariable();
@@ -507,7 +513,8 @@ namespace TabletArtco
                                 }
                                 isPlay = true;
                                 Project.RunSprite();
-                                mediaManager.Play();
+                                //mediaManager.Play();
+                                videoPlayer.Play();
                                 break;
                             }
                         case 2:
@@ -522,9 +529,9 @@ namespace TabletArtco
                                 Project.StopSprite();
                                 if (Project.currentBack != null)
                                 {
-                                    mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                                    videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                                 }
-                                mediaManager.Stop();
+                                videoPlayer.Stop();
                                 SoundPlayer.StopAll();
                                 break;
                             }
@@ -558,10 +565,15 @@ namespace TabletArtco
             };
 
             // video surfaceview
-            //VideoView videoView = FindViewById<VideoView>(Resource.Id.video_view);
-            SurfaceView surfaceView = FindViewById<SurfaceView>(Resource.Id.surfaceView);
+            VideoView videoView = FindViewById<VideoView>(Resource.Id.video_view);
+            //videoView.SetBackgroundColor(Color.Red);
+            //ViewUtil.SetViewSize(videoView, (int)width-paddingL-paddingL, (int)(481 / 549.0 * height));
+            //SurfaceView surfaceView = FindViewById<SurfaceView>(Resource.Id.surfaceView);
             ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
-            mediaManager = new MediaManager(surfaceView, imgIv, this);
+            //mediaManager = new MediaManager(surfaceView, imgIv, this);
+
+            videoPlayer = new VideoPlayer(videoView, imgIv, this);
+            
             //mediaManager = new MediaManager2(surfaceView, imgIv, this);
 
             //varible listView
@@ -993,6 +1005,16 @@ namespace TabletArtco
         public void UpdateBlockViewDelegate() {
             RunOnUiThread(() => {
                 UpdateBlockView();
+            });
+        }
+
+        public void UpdateBackground(int backgroundId) { 
+            RunOnUiThread(() => {
+                Background background = Project.backgroundsList[backgroundId];
+                if (background != null)
+                {
+                    videoPlayer.SetPath(background.remoteVideoPath, background.remotePreviewImgPath, background.remoteSoundPath);
+                }
             });
         }
 

@@ -203,7 +203,7 @@ namespace TabletArtco
         public string varName { get; set; }
         public string varValue { get; set; }
         public string activateSpriteId { get; set; }
-        public int backgroudId { get; set; }
+        public int backgroudId { get; set; } = -1;
 
         public bool collionSignal { get; set; } = false;
         public int signalCount { get; set; } = 0;

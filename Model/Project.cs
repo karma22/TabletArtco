@@ -8,6 +8,7 @@ namespace TabletArtco
     {
         void UpdateView();
         void UpdateBlockViewDelegate();
+        void UpdateBackground(int backgroundId);
     }
 
     class Project

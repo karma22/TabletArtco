@@ -255,6 +255,7 @@
     <Compile Include="Views\ConfirmDialog.cs" />
     <Compile Include="Manager\SoundPlayer.cs" />
     <Compile Include="FullScreenActivity.cs" />
+    <Compile Include="Manager\VideoPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

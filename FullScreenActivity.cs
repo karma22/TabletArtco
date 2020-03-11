@@ -189,5 +189,10 @@ namespace TabletArtco
         {
             
         }
+
+        public void UpdateBackground(int backgroundId)
+        {
+            
+        }
     }
 }
