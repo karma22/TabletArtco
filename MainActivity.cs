@@ -46,9 +46,21 @@ namespace TabletArtco
         protected override void OnResume()
         {
             base.OnResume();
+            Project.ChangeMode(false);
             UpdateMainView();
             AddSpriteView();
             mSpriteAdapter.NotifyDataSetChanged();
+
+            ActivatedSprite.mUpdateDelegate = this;
+            ActivatedSprite.SoundAction = (sound) =>
+            {
+                RunOnUiThread(() => {
+                    if (isPlay)
+                    {
+                        new SoundPlayer(this).Play(sound);
+                    }
+                });
+            };
         }
 
         protected override void OnPause()
@@ -266,7 +278,6 @@ namespace TabletArtco
                             }
                         case 8:
                             {
-                                
                                 Intent intent = new Intent(Android.Provider.MediaStore.ActionImageCapture);
                                 StartActivityForResult(intent, 11, null);
                                 break;
@@ -542,7 +553,8 @@ namespace TabletArtco
                                     return;
                                 }
                                 //full button click
-
+                                Intent intent = new Intent(this, typeof(FullScreenActivity));
+                                StartActivity(intent);
                                 break;
                             }
                         default:
@@ -552,17 +564,8 @@ namespace TabletArtco
             }
 
             ActivatedSprite.notFullSize = new Android.Util.Size((int)width-paddingL*2, (int)(481 / 549.0 * height));
-            ActivatedSprite.fullSize = new Android.Util.Size(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this));
-            ActivatedSprite.mUpdateDelegate = this;
-            ActivatedSprite.SoundAction = (sound) =>
-            {
-                RunOnUiThread(() => {
-                    if (isPlay)
-                    {
-                        new SoundPlayer(this).Play(sound);
-                    }
-                });
-            };
+            ActivatedSprite.fullSize = new Android.Util.Size(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this)-ScreenUtil.dip2px(this, 30));
+          
 
             // video surfaceview
             VideoView videoView = FindViewById<VideoView>(Resource.Id.video_view);

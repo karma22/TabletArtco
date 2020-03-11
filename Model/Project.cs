@@ -24,11 +24,12 @@ namespace TabletArtco
         // sprite animation thread
         public static List<Java.Lang.Thread> codeThreadList { get; set; } = new List<Java.Lang.Thread>();
 
-        public static void SpriteSizeChange(bool isFool)
+        public static void ChangeMode(bool isFull)
         {
+            ActivatedSprite.mIsFull = isFull;
             for (int i = 0; i < mSprites.Count; i++)
             {
-                //mSprites[i].setFullMode(isFool);
+                mSprites[i].ChangeMode();
             }
         }
 

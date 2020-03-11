@@ -21,8 +21,9 @@ namespace TabletArtco
         private List<DragImgView> imgList = new List<DragImgView>();
         private List<SpeakView> speakViewList = new List<SpeakView>();
         private bool isPlay;
-        private MediaManager mediaManager;
-        
+        //private MediaManager mediaManager;
+        private VideoPlayer videoPlayer;
+
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -37,13 +38,23 @@ namespace TabletArtco
         protected override void OnResume()
         {
             base.OnResume();
+            ActivatedSprite.mUpdateDelegate = this;
+            ActivatedSprite.SoundAction = (sound) =>
+            {
+                RunOnUiThread(() => {
+                    if (isPlay)
+                    {
+                        new SoundPlayer(this).Play(sound);
+                    }
+                });
+            };
             AddSpriteView();   
         }
 
         protected override void OnPause()
         {
             base.OnPause();
-            mediaManager.Stop();
+            //mediaManager.Stop();
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
@@ -55,13 +66,55 @@ namespace TabletArtco
         // init view
         public void InitView()
         {
+            Project.ChangeMode(true);
+            VideoView videoView = FindViewById<VideoView>(Resource.Id.videoview);
+            ImageView imgIv = FindViewById<ImageView>(Resource.Id.preImg);
+            videoPlayer = new VideoPlayer(videoView, imgIv, this);
+            if (Project.currentBack != null)
+            {
+                videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+            }
+            FindViewById<ImageView>(Resource.Id.playBt).Click += (t, e) => {
+                Android.Util.Log.Info(Tag, "Click play animation start");
+                if (isPlay)
+                {
+                    return;
+                }
+                isPlay = true;
+                Project.RunSprite();
+                //mediaManager.Play();
+                videoPlayer.Play();
+            };
 
+            FindViewById<ImageView>(Resource.Id.stopBt).Click += (t, e) => {
+                Android.Util.Log.Info(Tag, "Click play animation stop");
+                if (!isPlay)
+                {
+                    return;
+                }
+                isPlay = false;
+                Project.StopSprite();
+                if (Project.currentBack != null)
+                {
+                    videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                }
+                videoPlayer.Stop();
+                SoundPlayer.StopAll();
+            };
+
+            FindViewById<ImageView>(Resource.Id.closeBt).Click += (t, e) => {
+                FindViewById<ImageView>(Resource.Id.stopBt).PerformClick();
+                Finish();
+            };
+
+
+            AddSpriteView();
         }
 
         // main screen add animate sprite view
         public void AddSpriteView()
         {
-            FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
+            FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.FullContainerView);
             containerView.RemoveAllViews();
             imgList.RemoveRange(0, imgList.Count);
             speakViewList.RemoveRange(0, speakViewList.Count);
@@ -112,7 +165,7 @@ namespace TabletArtco
         // update main screen animate sprite imageview location and visibility
         public void UpdateMainView()
         {
-            FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
+            FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.FullContainerView);
             for (int i = 0; i < imgList.Count; i++)
             {
                 ActivatedSprite activatedSprite = Project.mSprites[i];
@@ -187,12 +240,18 @@ namespace TabletArtco
 
         public void UpdateBlockViewDelegate()
         {
-            
+            // do nothing
         }
 
         public void UpdateBackground(int backgroundId)
         {
-            
+            RunOnUiThread(() => {
+                Background background = Project.backgroundsList[backgroundId];
+                if (background != null)
+                {
+                    videoPlayer.SetPath(background.remoteVideoPath, background.remotePreviewImgPath, background.remoteSoundPath);
+                }
+            });
         }
     }
 }
