@@ -276,6 +276,33 @@ namespace TabletArtco
                                 StartActivityForResult(intent, 3, null);
                                 break;
                             }
+                        case 4:
+                            {
+                                // save project
+                                
+                                break;
+                            }
+                        case 5:
+                            {
+                                // to project activity
+                                Intent intent = new Intent(this, typeof(ProjectActivity));
+                                StartActivityForResult(intent, 5, null);
+                                break;
+                            }
+                        case 6:
+                            {
+                                // to aboutus activity
+                                Intent intent = new Intent(this, typeof(AboutUsActivity));
+                                StartActivity(intent);
+                                break;
+                            }
+                        case 7:
+                            {
+                                // to setting activity
+                                Intent intent = new Intent(this, typeof(SettingActivity));
+                                StartActivity(intent);
+                                break;
+                            }
                         case 8:
                             {
                                 Intent intent = new Intent(Android.Provider.MediaStore.ActionImageCapture);

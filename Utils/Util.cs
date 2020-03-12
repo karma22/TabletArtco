@@ -3,6 +3,7 @@ using Android.Content;
 using Android.App;
 using Android.Graphics;
 using Java.Lang;
+using Android.Content.PM;
 
 namespace TabletArtco
 {
@@ -178,6 +179,27 @@ namespace TabletArtco
                 return true;
             }
             return false;
+        }
+
+    }
+
+    public class VersionUtil
+    {
+         
+        public static string GetAppVersionName(Context context)
+        {
+            string versionName = null;
+            try
+            {
+                PackageManager pm = context.PackageManager;
+                PackageInfo pi = pm.GetPackageInfo(context.PackageName, 0);
+                versionName = pi.VersionName;
+            }
+            catch (Exception e)
+            {
+                
+            }
+            return versionName;
         }
 
     }
