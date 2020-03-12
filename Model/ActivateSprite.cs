@@ -229,7 +229,18 @@ namespace TabletArtco
 
         public void ChangeMode()
         {
-            
+            if (mIsFull)
+            {
+                float scaleX = fullSize.Width * 1.0f / notFullSize.Width;
+                float scaleY = fullSize.Height * 1.0f / notFullSize.Height;
+                curPoint.X = (int) (originPoint.X * scaleX);
+                curPoint.Y = (int) (originPoint.Y * scaleY);
+            }
+            else
+            {
+                curPoint.X = originPoint.X;
+                curPoint.Y = originPoint.Y;
+            }
         }
 
         //when delete variable to update view
@@ -427,8 +438,7 @@ namespace TabletArtco
             curSize = new Size(curbitmapList[0].Width, curbitmapList[0].Height);
             isVisible = true;
             speakText = null;
-            curPoint.X = originPoint.X;
-            curPoint.Y = originPoint.Y;
+            ChangeMode();
             curIndex = 0;
             if (mUpdateDelegate != null)
             {
@@ -612,14 +622,20 @@ namespace TabletArtco
                             Signal.SendSignal(block.text);
                         }
                     }
-
+                    else if (blockName.Equals("ControlAdditionBackground"))
+                    {
+                        if (block.backgroudId != -1)
+                        {
+                            mUpdateDelegate?.UpdateBackground(block.backgroudId);
+                        }
+                    }
                     //else if (blockName.Equals("GameRight")) TurnAndMoveForward(5);
                     //else if (blockName.Equals("GameDown")) TurnAndMoveForward(6);
                     //else if (blockName.Equals("GameLeft")) TurnAndMoveForward(7);
                     //else if (blockName.Equals("GameUp")) TurnAndMoveForward(8);
                     //else if (blockName.Equals("GameJump")) ArrowJump();
 
-                    Java.Lang.Thread.Sleep(10);
+                        Java.Lang.Thread.Sleep(10);
                 }
                 catch (Java.Lang.Exception e)
                 {

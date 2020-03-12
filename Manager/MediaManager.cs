@@ -6,23 +6,21 @@ using Android.Widget;
 using Android.Views;
 using Android.Graphics;
 using Com.Bumptech.Glide;
-  
+using Android.Views.Animations;
+
 namespace TabletArtco
 {
-    public class MediaManager : Java.Lang.Object, ISurfaceHolderCallback, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnErrorListener, MediaPlayer.IOnInfoListener, MediaPlayer.IOnSeekCompleteListener
+    public class MediaManager : Java.Lang.Object, ISurfaceHolderCallback, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnErrorListener, MediaPlayer.IOnInfoListener, MediaPlayer.IOnSeekCompleteListener, Animation.IAnimationListener
     {
         private SurfaceView mSurfaceView;
         private ImageView preImgIv;
         private MediaPlayer mediaPlayer;
         private Context mContext;
-        private string mPath = null;//"http://103.120.226.173/artco/backgrounds/3%20Playgrounds.mp4"; //http://username:password@host:8080/directory/file?query#ref:
+        private string mPath = null;
         private bool isOnPrepared = false;
         private bool isPlay = false;
         private bool isDefault = true;
-        private String remotePreviewImgPath = null;
-        private ISurfaceHolder mSurfaceHolder;
        
-
         public MediaManager(SurfaceView surfaceView, ImageView imgIv, Context cxt)
         {
             mSurfaceView = surfaceView;
@@ -33,7 +31,7 @@ namespace TabletArtco
 
         private void InitPlayer()
         {
-            mSurfaceView.SetZOrderOnTop(false);
+            //mSurfaceView.SetZOrderOnTop(false);
             mSurfaceView.Holder.AddCallback(this);
             mediaPlayer = new MediaPlayer();
             mediaPlayer.SetOnCompletionListener(this);
@@ -45,7 +43,7 @@ namespace TabletArtco
             Play();
         }
 
-        public void SetPath(string path, string img)
+        public void SetPath(string path, string img, string soundPath)
         {
             if (isDefault)
             {
@@ -53,11 +51,12 @@ namespace TabletArtco
                 isPlay = false;
             }
             LogUtil.CustomLog("path:" + path + ", prepath:" + img);
-            //string start = "http://www.playartco.com:8081/artco/backgrounds/";
-            //mPath = start + Android.Net.Uri.Encode(path.Substring(start.Length));
-            preImgIv.Visibility = ViewStates.Gone;
+            AlphaAnimation(1, 0, 100);
+            if (img != null && img.Length>0)
+            {
+                Glide.With(mContext).Load(GlideUtil.GetGlideUrl(img)).Into(preImgIv);
+            }
             mPath = path;
-            remotePreviewImgPath = img;
             if (mediaPlayer != null)
             {
                 try
@@ -76,11 +75,7 @@ namespace TabletArtco
                         mediaPlayer.SetDisplay(mSurfaceView.Holder);
                         mediaPlayer.PrepareAsync();
                     }
-                    //if (img != null)
-                    //{
-                    //    Glide.With(mContext).Load(GlideUtil.GetGlideUrl(remotePreviewImgPath)).Into(preImgIv);
-                    //}
-                    //preImgIv.Visibility = ViewStates.Visible;
+                    
                     isOnPrepared = false;
                     if (isPlay)
                     {
@@ -94,6 +89,7 @@ namespace TabletArtco
             }
         }
 
+        // play media
         public void Play()
         {
             if (mediaPlayer != null && !mediaPlayer.IsPlaying && isOnPrepared && (isDefault || mPath != null))
@@ -108,6 +104,7 @@ namespace TabletArtco
             }
         }
 
+        // Stop media
         public void Stop()
         {
             isPlay = false;
@@ -117,17 +114,26 @@ namespace TabletArtco
             }
         }
 
+        public void AlphaAnimation(float fromAlpha, float toAlpha, int duration) {
+            preImgIv.Visibility = fromAlpha > 0 ? ViewStates.Gone : ViewStates.Visible;
+            //Animation animation = new AlphaAnimation(fromAlpha, toAlpha);
+            //animation.Duration = duration;
+            //animation.SetAnimationListener(this);
+            //preImgIv.Animation = animation;
+        }
+
         public void ClickHomeButton()
         {
+            AlphaAnimation(0, 1, 100);
             preImgIv.Visibility = ViewStates.Visible;
             mPath = null;
         }
 
         void ISurfaceHolderCallback.SurfaceCreated(ISurfaceHolder holder)
         {
-            mSurfaceHolder = holder;
             LogUtil.CustomLog("SurfaceCreated");
-            //preImgIv.Visibility = ViewStates.Visible;
+            preImgIv.Visibility = ViewStates.Visible;
+            AlphaAnimation(0, 1, 100);
             if (mediaPlayer!= null)
             {
                 mediaPlayer.SetDisplay(holder);
@@ -155,7 +161,8 @@ namespace TabletArtco
         void MediaPlayer.IOnPreparedListener.OnPrepared(MediaPlayer mp)
         {
             LogUtil.CustomLog("OnPrepared", "OnPrepared");
-            //preImgIv.Visibility = ViewStates.Visible;
+            preImgIv.Visibility = ViewStates.Visible;
+            AlphaAnimation(0, 1, 100);
             mp.SetOnInfoListener(this);
             isOnPrepared = true;
 
@@ -176,7 +183,7 @@ namespace TabletArtco
         {
             LogUtil.CustomLog("MediaPlayer.OnInfo", "" + what);
             if (what == MediaInfo.VideoRenderingStart) {
-                preImgIv.Visibility = ViewStates.Gone;
+                AlphaAnimation(1, 0, 100);
             }
             return true;
         }
@@ -207,7 +214,24 @@ namespace TabletArtco
         public void OnSeekComplete(MediaPlayer mp)
         {
             LogUtil.CustomLog("MediaPlayer.OnSeekComplete", "OnSeekComplete");
-            preImgIv.Visibility = ViewStates.Gone;
+            AlphaAnimation(1, 0, 100);
+        }
+
+
+
+        void Animation.IAnimationListener.OnAnimationEnd(Animation animation)
+        {
+            preImgIv.Visibility = preImgIv.Alpha == 0 ? ViewStates.Invisible : ViewStates.Visible;
+        }
+
+        void Animation.IAnimationListener.OnAnimationRepeat(Animation animation)
+        {
+
+        }
+
+        void Animation.IAnimationListener.OnAnimationStart(Animation animation)
+        {
+
         }
     }
 }

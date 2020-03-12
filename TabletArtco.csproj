@@ -263,6 +263,12 @@
     <Compile Include="Views\ColorPickerView.cs" />
     <Compile Include="Views\ConfirmDialog.cs" />
     <Compile Include="Manager\SoundPlayer.cs" />
+    <Compile Include="FullScreenActivity.cs" />
+    <Compile Include="Manager\VideoPlayer.cs" />
+    <Compile Include="AboutUsActivity.cs" />
+    <Compile Include="SettingActivity.cs" />
+    <Compile Include="ProjectActivity.cs" />
+    <Compile Include="FeedbackActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -1884,6 +1890,34 @@
       </SubType>
       <Generator>
       </Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\activity_full.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\activity_aboutus.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\activity_setting.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\ic_launcher.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\arrow.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\activity_feedback.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\xml_feedback_input_bg.xml">
+      <SubType></SubType>
+      <Generator></Generator>
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>

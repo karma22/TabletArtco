@@ -8,12 +8,15 @@ namespace TabletArtco
     {
         void UpdateView();
         void UpdateBlockViewDelegate();
+        void UpdateBackground(int backgroundId);
     }
 
     class Project
     {
-        // all backgrounds list
-        public static List<Background> backgroundsList { get; set; } = new List<Background>();
+        // first background
+        public static Background currentBack { get; set; } = null;
+        // change backgrounds
+        public static Dictionary<int, Background> backgroundsList { get; set; } = new Dictionary<int, Background>();
         // all sprites list
         public static List<ActivatedSprite> mSprites { get; set; } = new List<ActivatedSprite>();
         // Copy blocks list
@@ -21,11 +24,12 @@ namespace TabletArtco
         // sprite animation thread
         public static List<Java.Lang.Thread> codeThreadList { get; set; } = new List<Java.Lang.Thread>();
 
-        public static void SpriteSizeChange(bool isFool)
+        public static void ChangeMode(bool isFull)
         {
+            ActivatedSprite.mIsFull = isFull;
             for (int i = 0; i < mSprites.Count; i++)
             {
-                //mSprites[i].setFullMode(isFool);
+                mSprites[i].ChangeMode();
             }
         }
 
