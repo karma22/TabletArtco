@@ -6,14 +6,15 @@ using Android.Widget;
 using Android.Views;
 using Android.Graphics;
 using Com.Bumptech.Glide;
-using Org.Opencv.Videoio;
 using System.Threading;
 using System.Diagnostics;
-using Org.Opencv.Core;
+//using OpenCV.VideoIO;
+//using OpenCV.Android;
+//using OpenCV.Core;
 
 namespace TabletArtco
 {
-    public class MediaManager2 : Java.Lang.Object, ISurfaceHolderCallback
+    public class MediaManager2 : Java.Lang.Object, ISurfaceHolderCallback //, ILoaderCallbackInterface
     {
         private SurfaceView mSurfaceView;
         private ImageView preImgIv;
@@ -22,14 +23,24 @@ namespace TabletArtco
         private bool isPlay = false;
         private ISurfaceHolder mSurfaceHolder;
 
-        public static VideoCapture _capture;
+        //public static VideoCapture _capture;
         public static Thread _backgroundRunThread;
         public static object _lockObject = new object();
 
+        private bool isLoard = false;
 
 
         public MediaManager2(SurfaceView surfaceView, ImageView imgIv, Context cxt)
         {
+            //if (!OpenCVLoader.InitDebug())
+            //{
+            //    OpenCVLoader.InitAsync(OpenCVLoader.OpencvVersion300, mContext, this);
+            //}
+            //else
+            //{
+            //    OnManagerConnected(LoaderCallbackInterface.Success);
+            //}
+
             mSurfaceView = surfaceView;
             preImgIv = imgIv;
             mContext = cxt;
@@ -55,8 +66,19 @@ namespace TabletArtco
             isPlay = true;
             preImgIv.Visibility = ViewStates.Gone;
 
-            _capture?.Dispose();
-            _capture = new VideoCapture();
+            //_capture?.Dispose();
+            //_capture = new VideoCapture();
+            //if(isLoard)
+            //{
+            //    _capture = new VideoCapture("http://file.playartco.com/artco/backgrounds/(1)%20Gangnam.jpg");
+
+
+            //    Android.Net.Uri url = Android.Net.Uri.Parse("android.resource://" + mContext.PackageName + "/raw/" + Resource.Raw.default_video2);
+            //    _capture = new VideoCapture("android.resource//com.companyname.tabletartco/raw/2131623940");
+            //}
+
+            //if (!_capture.IsOpened)
+            //    return;
 
             _backgroundRunThread = new Thread(BackgroundRunThread);
             _backgroundRunThread.IsBackground = true;
@@ -73,60 +95,46 @@ namespace TabletArtco
 
         public void BackgroundRunThread()
         {
-            //int fps = (int)_capture.;
+            Canvas canvas = null;
+
+            //Bitmap bitmap = BitmapFactory.DecodeResource(mContext.Resources, Resource.Drawable.Actblock_Flash);
+            //canvas.DrawBitmap(bitmap, 0, 0, null);
+            //mSurfaceHolder.UnlockCanvasAndPost(canvas);
+
+            //int fps = (int)_capture.Fps;
             //int expectedProcessTimePerFrame = 1000 / fps;
             //Stopwatch st = new Stopwatch();
             //st.Start();
 
-            Canvas canvas = null;
+            while (true)
+            {
+                lock (_lockObject)
+                {
+                    if (!isPlay)
+                        break;
+                }
 
-            canvas = mSurfaceHolder.LockCanvas();
+                //long started = st.ElapsedMilliseconds;
+                //using (Mat image = new Mat())
+                //{
+                //    _capture.Read(image);
+                //    if (image.Empty())
+                //    {
+                //        break;
+                //    }
+                //    Bitmap bitmap = Bitmap.CreateBitmap(image.Width(), image.Height(), Bitmap.Config.Argb8888);
+                //    Utils.MatToBitmap(image, bitmap);
 
-            Bitmap bitmap = BitmapFactory.DecodeResource(mContext.Resources, Resource.Drawable.Actblock_Flash);
-            canvas.DrawBitmap(bitmap, 0, 0, null);
-            mSurfaceHolder.UnlockCanvasAndPost(canvas);
+                //    canvas = mSurfaceHolder.LockCanvas();
+                //    canvas.DrawBitmap(bitmap, 0, 0, null);
+                //    mSurfaceHolder.UnlockCanvasAndPost(canvas);
 
+                //}
 
-            //while (true)
-            //{
-            //    lock (_lockObject)
-            //    {
-            //        if (!isPlay)
-            //            break;
-            //    }
-
-            //    long started = st.ElapsedMilliseconds;
-            //    using (Mat image = new Mat())
-            //    {
-            //        _capture.Read(image);
-            //        if (image.Empty())
-            //        {
-            //            break;
-            //        }
-            //        image.ConvertTo
-            //        //MainForm._safeDrawBackground(image.ToBitmap());
-
-
-            //        canvas = mSurfaceHolder.LockCanvas();
-            //        try
-            //        {
-            //            synchronized(mSurfaceHolder) {
-            //                canvas.DrawBitmap(image, 0, 0, null);
-            //            }
-            //        }
-            //        finally
-            //        {
-            //            if (canvas == null)
-            //                return;
-            //            mSurfaceHolder.unlockCanvasAndPost(canvas);
-            //        }
-
-            //    }
-
-            //    int elapsed = (int)(st.ElapsedMilliseconds - started);
-            //    int delay = expectedProcessTimePerFrame - elapsed;
-            //    Thread.Sleep((delay > 0) ? delay : 30);
-            //}
+                //int elapsed = (int)(st.ElapsedMilliseconds - started);
+                //int delay = expectedProcessTimePerFrame - elapsed;
+                Thread.Sleep(30);
+            }
 
             //Release();
             ////MainForm._backThreadStopComplete?.Invoke();
@@ -134,7 +142,7 @@ namespace TabletArtco
 
         public void Release()
         {
-            _capture.Dispose();
+            //_capture.Dispose();
         }
 
         public void ClickHomeButton()
@@ -159,5 +167,20 @@ namespace TabletArtco
             LogUtil.CustomLog("SurfaceDestroyed", "SurfaceDestroyed");
         }
 
+        //public void OnManagerConnected(int p0)
+        //{
+        //    switch (p0)
+        //    {
+        //        case LoaderCallbackInterface.Success:
+        //            isLoard = true;
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
+
+        //public void OnPackageInstall(int p0, IInstallCallbackInterface p1)
+        //{
+        //}
     }
 }

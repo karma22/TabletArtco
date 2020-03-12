@@ -190,35 +190,37 @@ namespace TabletArtco
             viewHolder.soundPlay.Tag = position;
         }
 
-        public void ClickItem(int position, bool isSoundPlay)
+        public void ClickItem(int position, bool playSound)
         {
             List<List<Sound>> sounds = Sound._sounds;
             if (mIndex >= sounds.Count)
             {
                 return;
             }
+
             List<Sound> list = sounds[mIndex];
             Sound sound = list[position];
             Intent intent = new Intent();
-            //Bundle bundle = new Bundle();
-            //bundle.PutString("model", background.ToString());
-            //intent.PutExtra("bundle", bundle);
+            
             if (block != null)
             {
                 block.text = sound.name;
                 block.varName = sound.localPath;
                 block.varValue = sound.localPath;
             }
-
-            Bundle bundle = mIntent.GetBundleExtra("bundle");
-            if (bundle == null || isSoundPlay)
+            
+            if (playSound)
             {
                 new SoundPlayer(this).Play(sound.localPath);
             }
             else
             {
-                SetResult(Result.Ok, intent);
-                Finish();
+                Bundle bundle = mIntent.GetBundleExtra("bundle");
+                if (bundle != null)
+                {
+                    SetResult(Result.Ok, intent);
+                    Finish();
+                }
             }
         }
 
