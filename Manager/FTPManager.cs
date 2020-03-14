@@ -1,55 +1,92 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 
 namespace TabletArtco
 {
-    static class FTPManager
+    class FTPManager
     {
-        public static string _ftpID { get; } = "sangsang";
-        public static string _ftpPWD { get; } = "sangsang";
+        public static FTPManager ftpManager { get; set; }
 
-        /*
-         * You can use it in the following way.
-         * for(int category=0; category<Sprite._sprites.Count; category++)
-         * {
-         *      for(int idx=0; idx<Sprite._sprites[category].Count; idx++)
-         *      {
-         *          Stream stream = FTPManager.GetStreamFromFTP(Sprite._sprites[category][idx].remotePath);
-         *      }
-         * }         
-         */
-         
-        // http://ip/rootdirectory/filename.png
-        public static Stream GetStreamFromFTP(string path)
+        static FTPManager()
         {
-            
-            FtpWebRequest request = GetFtpRequest(path);
-            request.Method = WebRequestMethods.Ftp.DownloadFile;
-            //try
-            //{
-            //    FtpWebResponse res = (FtpWebResponse)request.GetResponse();
-            //    Android.Util.Log.Info("GetStreamFromFTP", res.StatusCode + "");
-            //    if (res.StatusCode == FtpStatusCode.CommandOK)
-            //    {
-            //        Android.Util.Log.Info("GetStreamFromFTP", path);
-            //        return res.GetResponseStream();
-            //    }
-            //    return null;
-            //}
-            //catch (System.Exception ex)
-            //{
-            //    Android.Util.Log.Info("GetStreamFromFTP error", ex.Message + "");
-            //    return null;
-            //}
-            FtpWebResponse res = (FtpWebResponse)request.GetResponse();
-            return res.GetResponseStream();
-
+            //ftpManager = new FTPManager("103.120.226.173", "sangsang", "sangsang", "artco");
+            ftpManager = new FTPManager("112.219.93.149", "sangsang", "sangsang", "artco");
         }
 
-        private static FtpWebRequest GetFtpRequest(string path)
+        private readonly string id;
+        private readonly string passwd;
+        private readonly string host;
+        private readonly string root;
+
+        public FTPManager(string host, string id, string passwd, string root)
+        {
+            this.host = host;
+            this.id = id;
+            this.passwd = passwd;
+            this.root = root;
+        }
+
+        public bool UploadResource(Stream fileStream, string fileName)
+        {
+            try
+            {
+                string userName = GlideUtil.username;
+                string path = "ftp://" + host + "/" + root + "/sprites/" + userName + "/" + fileName;
+
+                FtpWebRequest request = GetFtpRequest(path);
+                request.Method = WebRequestMethods.Ftp.UploadFile;
+
+                int length = 4096;
+                byte[] buffer = new byte[length];
+
+                using (var uploadStream = request.GetRequestStream())
+                {
+                    int bytesRead = fileStream.Read(buffer, 0, length);
+
+                    while (bytesRead != 0)
+                    {
+                        uploadStream.Write(buffer, 0, bytesRead);
+                        bytesRead = fileStream.Read(buffer, 0, length);
+                    }
+                }
+
+                request.Abort();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public string[] GetFtpFolderItems()
+        {
+            string userName = GlideUtil.username;
+            string ftpURL = "ftp://" + host + "/" + root + "/sprites/" + userName + "/";
+            try
+            {
+                FtpWebRequest request = GetFtpRequest(ftpURL);
+                request.Method = WebRequestMethods.Ftp.ListDirectory;
+
+                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+
+                Stream responseStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(responseStream);
+
+                return reader.ReadToEnd().Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private FtpWebRequest GetFtpRequest(string path)
         {
             FtpWebRequest request = (FtpWebRequest)WebRequest.Create(path);
-            request.Credentials = new NetworkCredential(_ftpID, _ftpPWD);
+            request.Credentials = new NetworkCredential(id, passwd);
             return request;
         }
     }

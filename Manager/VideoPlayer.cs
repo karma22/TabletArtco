@@ -82,13 +82,14 @@ namespace TabletArtco
                     Glide.With(mCxt).Load(GlideUtil.GetGlideUrl(path)).Apply(new Com.Bumptech.Glide.Request.RequestOptions().Placeholder(Resource.Drawable.home_bg)).Into(mPreImgIv);
                 }
             }
-            
+
             mPath = path;
             if (path != null)
             {
                 mVideoView.SetVideoPath(mPath);
             }
             mVideoView.SetVideoPath(mPath);
+
             if (isPlay)
             {
                 new Thread(new Runnable(() =>

@@ -14,8 +14,9 @@ namespace TabletArtco
         //public static string _ip { get; } = "http://103.120.226.173:8081";
         //public static string _host { get; } = "http://www.playartco.com:8081";
 
-        public static string _host { get; } = "http://file.playartco.com"; 
-        
+        //public static string _host { get; } = "http://file.playartco.com";
+        public static string _host { get; } = "http://112.219.93.149";
+
         public static string url_login = _host + "/LoginCheck.php";
         public static string url_sprite = _host + "/SelectSpriteTable.php";
         public static string url_background = _host + "/SelectBackgroundTable.php";
@@ -23,7 +24,6 @@ namespace TabletArtco
         public static string url_sound = _host + "/SelectSoundTable.php";
         
         public static string imgPath = _host + "/artco/";
-        public static string ftpURL = "ftp://www.playartco.com/artco/";
 
         public static bool CheckLogin(string id, string passwd)
         {
@@ -57,7 +57,7 @@ namespace TabletArtco
             }
 
             // user Sprite (category = 0)
-            string[] fileNames = FTPManager2.ftpManager.GetFtpFolderItems(ftpURL + "sprites/" + GlideUtil.username + "/");
+            string[] fileNames = FTPManager.ftpManager.GetFtpFolderItems();
             using (WebClient client = GetWebClient())
             {
                 for (int i = 0; i < fileNames.Length; i++)
@@ -120,27 +120,25 @@ namespace TabletArtco
                 byte[] bytes = client.DownloadData(url_background);
                 result = Encoding.UTF8.GetString(bytes);
             }
-
-            const int rowCnt = 9;
+            
+            const int rowCnt = 7;
             string[] datas = result.Split('\n');
             for (int i = 0; i <= datas.Length - rowCnt; i += rowCnt)
             {
                 // This is korean name
                 // string name1 = datas[i];
+                
                 Background background = new Background()
                 {
                     name = datas[i + 1],
                     idx = int.Parse(datas[i + 2]),
                     category = int.Parse(datas[i + 3]),
                     mode = int.Parse(datas[i + 4]),
-                    remoteVideoPath = imgPath + datas[i + 5] + ".mp4",
+                    remoteVideoPath = imgPath + System.Uri.EscapeUriString(datas[i + 5]) + ".mp4",
                     remotePreviewImgPath = imgPath + datas[i + 5] + ".jpg",
-                    isPng = datas[i + 6].Equals("1") ? true : false,
-                    level = int.Parse(datas[i + 7]),
-                    remoteSoundPath = imgPath + datas[i + 8],
+                    level = int.Parse(datas[i + 6]),
                 };
 
-                background.remoteSoundPath = (datas[i + 8] != string.Empty) ? imgPath + datas[i + 8] : null;
                 while (background.category >= Background._backgrounds.Count)
                 {
                     Background._backgrounds.Add(new List<Background>());

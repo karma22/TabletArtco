@@ -122,7 +122,7 @@ namespace TabletArtco
                         Project.currentBack = background;
 
                         //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
-                        videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                        videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
                         break;
                     }
                 // select background callback
@@ -136,7 +136,7 @@ namespace TabletArtco
                         }
                         Project.currentBack = background;
                         //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
-                        videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);                        
+                        videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
                         break;
                     }
                 // block select sound 
@@ -194,7 +194,7 @@ namespace TabletArtco
             builder.SetPositiveButton("OK", (sender, args) =>
             {
                 string fileName = editText.Text + ".png";
-                if (FTPManager2.ftpManager.UploadResource(stream, fileName))
+                if (FTPManager.ftpManager.UploadResource(stream, fileName))
                 {
                     Toast.MakeText(Application, "Upload Succeeded", ToastLength.Short).Show();
                 }
@@ -281,7 +281,7 @@ namespace TabletArtco
                         case 4:
                             {
                                 // save project
-                                
+
                                 break;
                             }
                         case 5:
@@ -569,7 +569,7 @@ namespace TabletArtco
                                 Project.StopSprite();
                                 if (Project.currentBack != null)
                                 {
-                                    videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                                    //videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
                                 }
                                 videoPlayer.Stop();
                                 SoundPlayer.StopAll();
@@ -1047,7 +1047,7 @@ namespace TabletArtco
                 Background background = Project.backgroundsList[backgroundId];
                 if (background != null)
                 {
-                    videoPlayer.SetPath(background.remoteVideoPath, background.remotePreviewImgPath, background.remoteSoundPath);
+                    videoPlayer.SetPath(background.remoteVideoPath, background.remotePreviewImgPath, null);
                 }
             });
         }

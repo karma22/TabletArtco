@@ -72,7 +72,7 @@ namespace TabletArtco
             videoPlayer = new VideoPlayer(videoView, imgIv, this);
             if (Project.currentBack != null)
             {
-                videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
             }
             FindViewById<ImageView>(Resource.Id.playBt).Click += (t, e) => {
                 Android.Util.Log.Info(Tag, "Click play animation start");
@@ -96,7 +96,7 @@ namespace TabletArtco
                 Project.StopSprite();
                 if (Project.currentBack != null)
                 {
-                    videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                    videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
                 }
                 videoPlayer.Stop();
                 SoundPlayer.StopAll();
@@ -249,7 +249,7 @@ namespace TabletArtco
                 Background background = Project.backgroundsList[backgroundId];
                 if (background != null)
                 {
-                    videoPlayer.SetPath(background.remoteVideoPath, background.remotePreviewImgPath, background.remoteSoundPath);
+                    videoPlayer.SetPath(background.remoteVideoPath, background.remotePreviewImgPath, null);
                 }
             });
         }
