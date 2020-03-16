@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System.IO;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -16,6 +16,9 @@ namespace TabletArtco
         private int mItemH;
         private int mIndex;
 
+        private List<string[]> filePathList = new List<string[]>();
+        private List<string[]> fileNameList = new List<string[]>();
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -29,6 +32,33 @@ namespace TabletArtco
 
         private void InitView()
         {
+            string[] path = new string[]
+            {
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/project",
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/object"
+            };
+
+            for(int i= 0; i < path.Length; i++)
+            {
+                if (Directory.Exists(path[i]))
+                {
+                    string[] pathList = Directory.GetFiles(path[i]);
+                    filePathList.Add(pathList);
+
+                    string[] nameList = new string[pathList.Length];
+                    for (int j = 0; j < nameList.Length; j++)
+                    {
+                        nameList[j] = Path.GetFileNameWithoutExtension(pathList[j]);
+                    }
+                    fileNameList.Add(nameList);
+                }
+                else
+                {
+                    filePathList.Add(new string[0]);
+                    fileNameList.Add(new string[0]);
+                }
+            }
+
             int width = ScreenUtil.ScreenWidth(this);
             int height = ScreenUtil.ScreenHeight(this);
             int margin = (int)(20 / 1280.0 * width);
@@ -44,8 +74,7 @@ namespace TabletArtco
             scrollView.SetPadding(margin, 0, margin, 0);
             LinearLayout topView = FindViewById<LinearLayout>(Resource.Id.grid_top_view);
             int[] resIds = {
-                Resource.Drawable.search_bg, Resource.Drawable.ebs_codingpractice_tab, Resource.Drawable.ebs_codingapplied1_tab,
-                Resource.Drawable.ebs_codingapplied2_tab, Resource.Drawable.ebs_movementblockpractice_tab, Resource.Drawable.ebs_controlblockpractice_tab
+                Resource.Drawable.search_bg, Resource.Drawable.ebs_codingpractice_tab, Resource.Drawable.ebs_codingapplied1_tab
             };
             int editTvH = (int)(30 / 60.0 * topH);
             int editTvW = (int)(166 / 35.0 * editTvH);
@@ -90,7 +119,7 @@ namespace TabletArtco
 
             int columnCount = 4;
             mItemW = (int)((w - (columnCount + 1) * spacing * 1.0) / columnCount);
-            mItemH = (int)(mItemW * 170.0 / 250);
+            mItemH = mItemW;
 
             GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
             gridView.SetNumColumns(columnCount);
@@ -109,12 +138,7 @@ namespace TabletArtco
         // Delegate interface
         public int GetItemsCount(Java.Lang.Object adapter)
         {
-            List<List<Background>> backgrounds = Background._backgrounds;
-            if (mIndex < backgrounds.Count)
-            {
-                return backgrounds[mIndex].Count;
-            }
-            return 0;
+            return fileNameList[mIndex].Length;
         }
 
         public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
@@ -137,36 +161,19 @@ namespace TabletArtco
 
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
-            List<List<Background>> backgrounds = Background._backgrounds;
-            if (mIndex >= backgrounds.Count)
-            {
-                return;
-            }
-            List<Background> list = backgrounds[mIndex];
-            Background background = list[position];
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-            Android.Util.Log.Info("background", background.remotePreviewImgPath + "");
-            Glide.With(this).Load(GlideUtil.GetGlideUrl(background.remotePreviewImgPath)).Into(viewHolder.imgIv);
-            viewHolder.txtTv.Text = background.name;
+            if(mIndex==0)
+                viewHolder.imgIv.SetImageResource(Resource.Drawable.PO_ProjectBack);
+            else
+                viewHolder.imgIv.SetImageResource(Resource.Drawable.PO_SpriteBack);
+            viewHolder.txtTv.Text = fileNameList[mIndex][position];
             viewHolder.txtTv.Tag = position;
         }
 
         public void ClickItem(int position)
         {
-            List<List<Background>> backgrounds = Background._backgrounds;
-            if (mIndex >= backgrounds.Count)
-            {
-                return;
-            }
-            List<Background> list = backgrounds[mIndex];
-            Background background = list[position];
-            Intent intent = new Intent();
-            Bundle bundle = new Bundle();
-            bundle.PutString("model", background.ToString());
-            intent.PutExtra("bundle", bundle);
-            SetResult(Result.Ok, intent);
+            new ArtcoObject().LoadObject(filePathList[mIndex][position]);
             Finish();
-
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存

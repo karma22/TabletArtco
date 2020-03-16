@@ -1,6 +1,8 @@
 ﻿using System;
 using Android.Content;
+using Android.Graphics;
 using Android.Media;
+using Android.OS;
 using Android.Runtime;
 using Android.Views.Animations;
 using Android.Widget;
@@ -11,7 +13,6 @@ namespace TabletArtco
 {
     public class VideoPlayer : Java.Lang.Object, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnErrorListener, MediaPlayer.IOnInfoListener, MediaPlayer.IOnSeekCompleteListener, Animation.IAnimationListener
     {
-
         private VideoView mVideoView;
         private ImageView mPreImgIv;
         private Context mCxt;
@@ -28,7 +29,7 @@ namespace TabletArtco
             init();
         }
 
-        public void init() {
+        private void init() {
             mVideoView.SetOnCompletionListener(this);
             mVideoView.SetOnPreparedListener(this);
             mVideoView.SetOnInfoListener(this);
@@ -41,6 +42,30 @@ namespace TabletArtco
             mVideoView.SetVideoURI(url);
             mVideoView.Start();
             HidePreImg();
+        }
+
+        class SetPreImageView : AsyncTask
+        {
+            private string path;
+            private ImageView preImg;
+
+            public SetPreImageView(string path, ImageView preImg)
+            {
+                this.path = path;
+                this.preImg = preImg;
+            }
+            protected override Java.Lang.Object DoInBackground(params Java.Lang.Object[] @params)
+            {
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                retriever.SetDataSource(path, new System.Collections.Generic.Dictionary<string, string>());
+                Bitmap bitmap = retriever.GetFrameAtTime(0);
+                return bitmap;
+            }
+
+            protected override void OnPostExecute(Java.Lang.Object result)
+            {
+                preImg.SetImageBitmap((Bitmap)result);
+            }
         }
 
         private void HidePreImg()
@@ -62,15 +87,21 @@ namespace TabletArtco
             })).Start();
         }
 
+        public void PreImageViewVisible()
+        {
+            mPreImgIv.ClearAnimation();
+            mPreImgIv.Alpha = 1;
+            mPreImgIv.Visibility = Android.Views.ViewStates.Visible;
+        }
+
         public void SetPath(string path, string img, string sound)
         {
             mVideoView.Pause();
             StopSound();
             mVideoView.StopPlayback();
-            
+
             mSound = sound;
             if (isPlay && mPath != null)
-
             {
                 mPreImgIv.Visibility = Android.Views.ViewStates.Visible;
                 if (path != null)
@@ -90,6 +121,8 @@ namespace TabletArtco
             }
             mVideoView.SetVideoPath(mPath);
 
+            new SetPreImageView(mPath, mPreImgIv).Execute();
+
             if (isPlay)
             {
                 new Thread(new Runnable(() =>
@@ -101,9 +134,7 @@ namespace TabletArtco
         }
 
         public void ClickHomeBt() {
-            mPreImgIv.ClearAnimation();
-            mPreImgIv.Alpha = 1;
-            mPreImgIv.Visibility = Android.Views.ViewStates.Visible;
+            mPreImgIv.SetImageResource(Resource.Drawable.home_bg);
             if (mVideoView.IsPlaying)
             {
                 mVideoView.Pause();
@@ -115,9 +146,7 @@ namespace TabletArtco
         {
             isPlay = true;
             PlaySound();
-            mPreImgIv.ClearAnimation();
-            mPreImgIv.Alpha = 1;
-            mPreImgIv.Visibility = Android.Views.ViewStates.Visible;
+            
             if (mPath == null)
             {
                 return;

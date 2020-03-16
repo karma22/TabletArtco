@@ -61,6 +61,8 @@ namespace TabletArtco
                     }
                 });
             };
+
+            videoPlayer?.PreImageViewVisible();
         }
 
         protected override void OnPause()
@@ -288,7 +290,7 @@ namespace TabletArtco
                             {
                                 // to project activity
                                 Intent intent = new Intent(this, typeof(ProjectActivity));
-                                StartActivityForResult(intent, 5, null);
+                                StartActivity(intent);
                                 break;
                             }
                         case 6:
@@ -1332,6 +1334,11 @@ namespace TabletArtco
                     }
                 case 1:
                     {
+                        SpeakDialog dialog = new SpeakDialog(this, (text) =>
+                        {
+                            new ArtcoObject().SaveObject(spritesList[mLongPressSpriteIndex], text);
+                        });
+                        dialog.Show();
                         break;
                     }
                 case 2:

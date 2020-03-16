@@ -241,6 +241,7 @@
     <Compile Include="Adapters\GridAdapter.cs" />
     <Compile Include="Adapters\Delegate.cs" />
     <Compile Include="Adapters\DataSource.cs" />
+    <Compile Include="Utils\ArtcoObject.cs" />
     <Compile Include="Views\DragGridView.cs" />
     <Compile Include="Utils\Util.cs" />
     <Compile Include="Utils\GlideUtil.cs" />
@@ -1981,6 +1982,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\background_activity_grid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\PO_SpriteBack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\PO_ProjectBack.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
