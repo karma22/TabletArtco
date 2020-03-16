@@ -172,7 +172,13 @@ namespace TabletArtco
 
         public void ClickItem(int position)
         {
-            new ArtcoObject().LoadObject(filePathList[mIndex][position]);
+            bool result = new ArtcoObject(this).LoadObject(filePathList[mIndex][position]);
+            Intent intent = new Intent();
+            if (result)
+                SetResult(Result.Ok, intent);
+            else
+                SetResult(Result.Canceled);
+
             Finish();
         }
 

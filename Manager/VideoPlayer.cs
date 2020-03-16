@@ -134,6 +134,7 @@ namespace TabletArtco
         }
 
         public void ClickHomeBt() {
+            PreImageViewVisible();
             mPreImgIv.SetImageResource(Resource.Drawable.home_bg);
             if (mVideoView.IsPlaying)
             {

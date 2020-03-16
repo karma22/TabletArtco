@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Android.Content;
 using Android.Graphics;
 using Java.Lang;
 
@@ -15,6 +16,13 @@ namespace TabletArtco
         public int x { get; set; }
         public int y { get; set; }
 
+        private Context context;
+
+        public ArtcoObject(Context context)
+        {
+            this.context = context;
+        }
+
         public bool SaveObject(ActivatedSprite sprite, string name)
         {
             //string externalDir = Android.OS.Environment.ExternalStorageDirectory.Path; //"/storage/emulated/0"
@@ -26,13 +34,13 @@ namespace TabletArtco
                 Directory.CreateDirectory(dirPath);
             }
 
-            if (File.Exists(filePath))
-            {
-                //using MsgBoxForm msgBox = new MsgBoxForm("该文件已存在, 是否覆盖?", true);
-                //msgBox.ShowDialog();
-                //if (msgBox.DialogResult == System.Windows.Forms.DialogResult.No)
-                //    return false;
-            }
+            //if (File.Exists(filePath))
+            //{
+            //    MessageBoxDialog dialog = new MessageBoxDialog(context, "该文件已存在, 是否覆盖?", () => {
+
+            //    });
+            //    dialog.Show();
+            //}
 
             string header = sprite.sprite.name + "\n";
             header += sprite.curPoint.X.ToString() + ":" + sprite.curPoint.Y.ToString() + "\n";
@@ -85,10 +93,9 @@ namespace TabletArtco
 
             try
             {
-                using (StreamWriter wr = new StreamWriter(filePath))
+                using (StreamWriter wr = new StreamWriter(filePath, false))
                 {
-                    wr.Write(header);
-                    wr.Write(headerSize.ToString() + "\n");
+                    wr.Write(header + headerSize.ToString() + "\n");
                 }
 
                 for (int i = 0; i < spriteImgCnt; i++)
@@ -107,97 +114,101 @@ namespace TabletArtco
 
         public bool LoadObject(string path)
         {
-            //try
-            //{
-            //    using StreamReader rdr = new StreamReader(path);
+            try
+            {
+                using StreamReader rdr = new StreamReader(path);
 
-            //    string name = rdr.ReadLine();
-            //    string[] splits = rdr.ReadLine().Split(':');
-            //    int x = int.Parse(splits[0]);
-            //    int y = int.Parse(splits[1]);
+                string name = rdr.ReadLine();
+                string[] splits = rdr.ReadLine().Split(':');
+                int x = int.Parse(splits[0]);
+                int y = int.Parse(splits[1]);
 
-            //    List<Block> codes = new List<Block>();
-            //    List<string> values = new List<string>();
+                List<Block> codes = new List<Block>();
+                List<string> values = new List<string>();
 
-            //    int codeCnt = int.Parse(rdr.ReadLine());
-            //    for (int i = 0; i < codeCnt; i++)
-            //    {
-            //        string codeName = rdr.ReadLine();
-            //        var split = codeName.Split(':');
+                int codeCnt = int.Parse(rdr.ReadLine());
+                for (int i = 0; i < codeCnt; i++)
+                {
+                    string codeName = rdr.ReadLine();
+                    var split = codeName.Split(':');
 
-            //        Block code;
-            //        if (split.Length > 1)
-            //        {
-            //            code = new Block(Block.GetBlockByName(split[0]));
-            //            string value = split[1];
-            //            for (int j = 2; j < split.Length; j++)
-            //                value += ":" + split[j];
+                    Block code = Block.GetBlockByName(split[0]);
+                    if (split.Length > 1)
+                    {
+                        //code = new Block(Block.GetBlockByName(split[0]));
+                        //string value = split[1];
+                        //for (int j = 2; j < split.Length; j++)
+                        //    value += ":" + split[j];
 
-            //            values.Add(value);
-            //        }
-            //        else
-            //        {
-            //            code = new Block(Block.GetBlockByName(split[0]));
-            //            values.Add(null);
-            //        }
+                        //values.Add(value);
+                    }
+                    else
+                    {
+                        //code = new Block(Block.GetBlockByName(split[0]));
+                        //values.Add(null);
+                    }
 
-            //        codes.Add(code);
-            //    }
+                    codes.Add(code);
+                }
 
-            //    int spriteCnt = int.Parse(rdr.ReadLine());
-            //    List<int> spriteSizes = new List<int>();
-            //    for (int i = 0; i < spriteCnt; i++)
-            //    {
-            //        spriteSizes.Add(int.Parse(rdr.ReadLine()));
-            //    }
+                int spriteCnt = int.Parse(rdr.ReadLine());
+                List<int> spriteSizes = new List<int>();
+                for (int i = 0; i < spriteCnt; i++)
+                {
+                    spriteSizes.Add(int.Parse(rdr.ReadLine()));
+                }
 
-            //    string header = rdr.ReadLine();
-            //    int headerLength = header.Length + 1;
-            //    int startPoint = int.Parse(header) + headerLength;
+                string header = rdr.ReadLine();
+                int headerLength = header.Length + 1;
+                int startPoint = int.Parse(header) + headerLength;
 
-            //    List<Bitmap> bmpList = new List<Bitmap>();
-            //    for (int i = 0; i < spriteCnt; i++)
-            //    {
-            //        using FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read);
-            //        file.Seek(startPoint, SeekOrigin.Begin);
-            //        byte[] bytes = new byte[spriteSizes[i]];
-            //        int readSize = file.Read(bytes, 0, spriteSizes[i]);
-            //        bmpList.Add(BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length));
-            //        startPoint += readSize;
-            //    }
+                List<Bitmap> bmpList = new List<Bitmap>();
+                for (int i = 0; i < spriteCnt; i++)
+                {
+                    using FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    file.Seek(startPoint, SeekOrigin.Begin);
+                    byte[] bytes = new byte[spriteSizes[i]];
+                    int readSize = file.Read(bytes, 0, spriteSizes[i]);
+                    bmpList.Add(BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length));
+                    startPoint += readSize;
+                }
 
-            //    Sprite sprite = new Sprite(name, null, false, null);
-            //    sprite.SetSaveBitmapList(bmpList);
+                Sprite sprite = new Sprite();
+                sprite.name = name;
+                sprite.bitmap = bmpList[0];
+                Project.AddSprite(sprite);
+                int lastSprite = Project.mSprites.Count - 1;
+                //Project.mSprites[lastSprite].originBitmapList = bmpList;
+                //Project.mSprites[lastSprite].curbitmapList = bmpList;
+                Project.mSprites[lastSprite].originPoint.X = x;
+                Project.mSprites[lastSprite].originPoint.Y = y;
+                Project.mSprites[lastSprite].curPoint.X = x;
+                Project.mSprites[lastSprite].curPoint.Y = y;
 
-            //    MainForm._selectSpriteHandler?.Invoke(sprite);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    Project.mSprites[lastSprite].AddBlock(codes[i]);
+                    //if (values[i] != null)
+                    //{
+                    //    string[] value = values[i].Split(':');
+                    //    if (value.Length > 1)
+                    //    {
+                    //        for (int j = 0; j < codes[i].blockView.controls.Count; j++)
+                    //            codes[i].blockView.controls[j].Text = value[j];
 
-            //    ActivatedSprite._activatedSprites[ActivatedSprite._curSpriteNum].cx = x;
-            //    ActivatedSprite._activatedSprites[ActivatedSprite._curSpriteNum].cy = y;
-
-            //    for (int i = 0; i < codes.Count; i++)
-            //    {
-            //        ActivatedSprite._activatedSprites[ActivatedSprite._curSpriteNum].spriteEditor.AddCode(codes[i]);
-            //        if (values[i] != null)
-            //        {
-            //            string[] value = values[i].Split(':');
-            //            if (value.Length > 1)
-            //            {
-            //                for (int j = 0; j < codes[i].blockView.controls.Count; j++)
-            //                    codes[i].blockView.controls[j].Text = value[j];
-
-            //                UserVariableManager.AddVariable(value[0], double.Parse(value[1]));
-            //            }
-            //            else
-            //            {
-            //                codes[i].blockView.controls[0].Text = value[0];
-            //            }
-            //        }
-            //    }
-            //}
-            //catch (Exception)
-            //{
-            //    return false;
-            //}
+                    //        UserVariableManager.AddVariable(value[0], double.Parse(value[1]));
+                    //    }
+                    //    else
+                    //    {
+                    //        codes[i].blockView.controls[0].Text = value[0];
+                    //    }
+                    //}
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
 
             return true;
         }

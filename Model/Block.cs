@@ -186,6 +186,47 @@ namespace TabletArtco
             return -1;
         }
 
+        public static Block GetBlockByName(string name)
+        {
+            Block block = new Block();
+
+            List<string[]> nameList = new List<string[]>
+            {
+                Block.blockTab0ResIdStrs,
+                Block.blockTab1ResIdStrs,
+                Block.blockTab2ResIdStrs,
+                Block.blockTab3ResIdStrs
+            };
+
+            List<int[]> resIdList = new List<int[]>
+            {
+                Block.blockTab0ResIds,
+                Block.blockTab1ResIds,
+                Block.blockTab2ResIds,
+                Block.blockTab3ResIds
+            };
+
+            int index = -1;
+            for (int i = 0; i < nameList.Count; i++)
+            {
+                index = System.Array.IndexOf(nameList[i], name);
+                if (index >= 0)
+                {
+                    block.tabIndex = i;
+                    block.index = index;
+                    block.resourceId = resIdList[i][index];
+                    break;
+                }
+            }
+
+            if (index < 0)
+                return null;
+
+            block.name = name;
+            
+            return block;
+        }
+
         public static List<List<Block>> blocks { get; set; } = new List<List<Block>>();
 
         public int category { get; set; }

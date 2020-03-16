@@ -141,6 +141,18 @@ namespace TabletArtco
                         videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
                         break;
                     }
+                // load sprite or project
+                case 5:
+                    {
+                        if(resultCode == Result.Ok)
+                        {
+                            mSpriteIndex = spritesList.Count - 1;
+                            mSpriteAdapter.NotifyDataSetChanged();
+                            UpdateBlockView();
+                            AddSpriteView();
+                        }
+                        break;
+                    }
                 // block select sound 
                 case 7:
                     {
@@ -290,7 +302,7 @@ namespace TabletArtco
                             {
                                 // to project activity
                                 Intent intent = new Intent(this, typeof(ProjectActivity));
-                                StartActivity(intent);
+                                StartActivityForResult(intent, 5, null);
                                 break;
                             }
                         case 6:
@@ -483,10 +495,10 @@ namespace TabletArtco
             double width = ScreenUtil.ScreenWidth(this) * 890 / 1280.0;
             double height = ScreenUtil.ScreenHeight(this) * 545 / 800.0;
             int paddingL = (int)(18 / 913.0 * width);
-            int paddingT = (int)(19 / 549.0 * height);
+            int paddingT = (int)(20 / 549.0 * height);
             mainView.SetPadding(paddingL, paddingT, paddingL, 0);
             ViewUtil.SetViewHeight(mainView, (int)height);
-            ViewUtil.SetViewHeight(centerView, (int)(481 / 549.0 * height));
+            ViewUtil.SetViewHeight(centerView, (int)(482 / 549.0 * height));
 
             int[] sbtsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
             int itemW = (int)(42 / 549.0 * height);
@@ -1336,7 +1348,7 @@ namespace TabletArtco
                     {
                         SpeakDialog dialog = new SpeakDialog(this, (text) =>
                         {
-                            new ArtcoObject().SaveObject(spritesList[mLongPressSpriteIndex], text);
+                            new ArtcoObject(this).SaveObject(spritesList[mLongPressSpriteIndex], text);
                         });
                         dialog.Show();
                         break;

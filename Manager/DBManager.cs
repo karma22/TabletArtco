@@ -29,8 +29,6 @@ namespace TabletArtco
         {
             string result;
 
-            string url = _host + "/LoginCheck.php"; 
-            
             using (WebClient client = GetWebClient())
             {
                 NameValueCollection postData = new NameValueCollection(){
@@ -54,6 +52,10 @@ namespace TabletArtco
             if (Sprite._sprites.Count == 0)
             {
                 Sprite._sprites.Add(new List<Sprite>());
+            }
+            else
+            {
+                return;
             }
 
             // user Sprite (category = 0)
@@ -112,6 +114,10 @@ namespace TabletArtco
             {
                 Background._backgrounds.Add(new List<Background>());
             }
+            else
+            {
+                return;
+            }
 
             //I will add a security check function
             string result;
@@ -147,8 +153,12 @@ namespace TabletArtco
                 Background._backgrounds[background.category].Add(background);
             }
         }
+
         public static void LoadBlocks()
         {
+            if (Block.blocks.Count > 0)
+                return;
+
             string result;
             using (WebClient client = GetWebClient())
             {
@@ -179,6 +189,9 @@ namespace TabletArtco
 
         public static void LoadSounds()
         {
+            if (Sound._sounds.Count > 0)
+                return;
+
             string result;
             using (WebClient client = GetWebClient())
             {
