@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -64,21 +64,21 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/Button_choice_projectsave"
+                android:src="@drawable/button_choice_bgsound"
                 />
             <ImageView
                 android:id="@+id/bt_choice6"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/Button_choice_projectcalling"
+                android:src="@drawable/Button_choice_projectsave"
                 />
             <ImageView
                 android:id="@+id/bt_choice7"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/Button_choice_update"
+                android:src="@drawable/Button_choice_projectcalling"
                 />
             <ImageView
                 android:id="@+id/bt_choice8"
@@ -86,6 +86,13 @@
                 android:layout_height="40dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/Button_choice_setting"
+                />
+            <ImageView
+                android:id="@+id/bt_choice9"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/button_choice_about"
                 />
         </LinearLayout>
             
@@ -97,7 +104,7 @@
             android:paddingBottom="8px"
             android:gravity="center_horizontal">
             <ImageView
-                android:id="@+id/bt_choice9"
+                android:id="@+id/bt_choice10"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:scaleType="fitXY"
@@ -128,25 +135,31 @@
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/Button_coding1_activation"/>
+                    android:src="@drawable/button_event_activation"/>
                 <ImageView
                     android:id="@+id/bt_left_select2"
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/Button_coding2_deactivation"/>
+                    android:src="@drawable/Button_coding1_deactivation"/>
                 <ImageView
                     android:id="@+id/bt_left_select3"
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/Button_control_deactivation"/>
+                    android:src="@drawable/Button_coding2_deactivation"/>
                 <ImageView
                     android:id="@+id/bt_left_select4"
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/Button_effect_deactivation"/>
+                    android:src="@drawable/Button_control_deactivation"/>
+                <ImageView
+                    android:id="@+id/bt_left_select5"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/button_ai_deactivation"/>
             </LinearLayout>
             <ScrollView
                 android:id="@+id/left_blocks_view_wrapper"

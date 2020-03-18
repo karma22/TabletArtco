@@ -36,7 +36,7 @@
             android:id="@+id/deleteIv"
             android:layout_width="12dp"
             android:layout_height="12dp"
-            android:background="#f00"
+            android:background="@drawable/ic_mtrl_chip_close_circle"
             android:layout_gravity="center"
             android:layout_marginLeft="2dp"/>
     </FrameLayout>

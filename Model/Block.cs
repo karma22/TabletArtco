@@ -24,11 +24,11 @@ namespace TabletArtco
             Resource.Drawable.Moveblock_LUpN, Resource.Drawable.Moveblock_UpN, Resource.Drawable.Moveblock_RUpN,
             Resource.Drawable.Moveblock_LeftN, Resource.Drawable.Moveblock_Empty, Resource.Drawable.Moveblock_RightN,
             Resource.Drawable.Moveblock_LDownN, Resource.Drawable.Moveblock_DownN, Resource.Drawable.Moveblock_RDownN,
-            Resource.Drawable.Actblock_Slow, Resource.Drawable.Actblock_Fast, Resource.Drawable.Actblock_Flash,
-            Resource.Drawable.Actblock_RRotateN, Resource.Drawable.Actblock_LRotateN, Resource.Drawable.Actblock_RotateLoop,
-            Resource.Drawable.Actblock_Wave, Resource.Drawable.Actblock_TWave, Resource.Drawable.Actblock_RandomMove,
-            Resource.Drawable.Actblock_Zigzag, Resource.Drawable.Actblock_TZigzag, Resource.Drawable.Actblock_Bounce,
-            Resource.Drawable.Actblock_Jump, Resource.Drawable.Actblock_RLJump, Resource.Drawable.Actblock_Animate
+            Resource.Drawable.Actblock_SlowN, Resource.Drawable.Actblock_FastN, Resource.Drawable.Actblock_FlashN,
+            Resource.Drawable.Actblock_RRotateN, Resource.Drawable.Actblock_LRotateN, Resource.Drawable.Actblock_RotateLoopN,
+            Resource.Drawable.Actblock_WaveN, Resource.Drawable.Actblock_TWaveN, Resource.Drawable.Actblock_RandomMove,
+            Resource.Drawable.Actblock_ZigzagN, Resource.Drawable.Actblock_TZigzagN, Resource.Drawable.Actblock_Bounce,
+            Resource.Drawable.Actblock_JumpN, Resource.Drawable.Actblock_RLJumpN, Resource.Drawable.Actblock_AnimateN
         };
         public static int[] blockTab3ResIds = {
             Resource.Drawable.Contblock_Time1, Resource.Drawable.Contblock_Time2, Resource.Drawable.Contblock_TimeN,
@@ -41,6 +41,9 @@ namespace TabletArtco
             Resource.Drawable.Contblock_Clone
         };
         public static int[] blockTab4ResIds = {
+            
+        };
+        public static int[] blockTab5ResIds = {
             Resource.Drawable.Edublock_Down, Resource.Drawable.Edublock_Jump, Resource.Drawable.Edublock_Up,
             Resource.Drawable.Edublock_Left, Resource.Drawable.Edublock_LoopN, Resource.Drawable.Edublock_Right
         };
@@ -65,11 +68,11 @@ namespace TabletArtco
             "MoveLUpN", "MoveUpN", "MoveRUpN",
             "MoveLeftN", "MoveEmpty", "MoveRightN",
             "MoveLDownN", "MoveDownN", "MoveRDownN",
-            "ActionSlow", "ActionFast", "ActionFlash",
-            "ActionRRotateN", "ActionLRotateN", "ActionRotateLoop",
-            "ActionWave", "ActionTWave", "ActionRandomMove",
-            "ActionZigzag", "ActionTZigzag", "ActionBounce",
-            "ActionJump", "ActionRLJump", "ActionAnimate"
+            "ActionSlowN", "ActionFastN", "ActionFlashN",
+            "ActionRRotateN", "ActionLRotateN", "ActionRotateLoopN",
+            "ActionWaveN", "ActionTWaveN", "ActionRandomMove",
+            "ActionZigzagN", "ActionTZigzagN", "ActionBounce",
+            "ActionJumpN", "ActionRLJumpN", "ActionAnimateN"
         };
         public static string[] blockTab3ResIdStrs = {
             "ControlTime1", "ControlTime2", "ControlTimeN",
@@ -82,6 +85,9 @@ namespace TabletArtco
             "ControlClone"
         };
         public static string[] blockTab4ResIdStrs = {
+            
+        };
+        public static string[] blockTab5ResIdStrs = {
             "GameDown", "GameJump", "GameUp",
             "GameLeft", "GameLoopN", "GameRight"
         };

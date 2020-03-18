@@ -112,7 +112,7 @@ namespace TabletArtco
                         })).Start();
                         break;
                     }
-                // select background callback
+                // select education callback
                 case 1:
                     {
                         Bundle bundle = data.GetBundleExtra("bundle");
@@ -142,7 +142,7 @@ namespace TabletArtco
                         break;
                     }
                 // load sprite or project
-                case 5:
+                case 6:
                     {
                         if(resultCode == Result.Ok)
                         {
@@ -246,7 +246,7 @@ namespace TabletArtco
         {
             int[] btsResIds = {
                 Resource.Id.bt_choice1, Resource.Id.bt_choice2, Resource.Id.bt_choice3, Resource.Id.bt_choice4, Resource.Id.bt_choice5,
-                Resource.Id.bt_choice6, Resource.Id.bt_choice7, Resource.Id.bt_choice8, Resource.Id.bt_choice9
+                Resource.Id.bt_choice6, Resource.Id.bt_choice7, Resource.Id.bt_choice8, Resource.Id.bt_choice9, Resource.Id.bt_choice10
             };
             int height = (int)((ScreenUtil.ScreenHeight(this) - ScreenUtil.StatusBarHeight(this)) * 80 / 800.0 - 18);
             for (int i = 0; i < btsResIds.Length; i++)
@@ -294,22 +294,21 @@ namespace TabletArtco
                             }
                         case 4:
                             {
-                                // save project
-
+                                // BGsound select activity
+                                
                                 break;
                             }
                         case 5:
                             {
-                                // to project activity
-                                Intent intent = new Intent(this, typeof(ProjectActivity));
-                                StartActivityForResult(intent, 5, null);
+                                // save project
+
                                 break;
                             }
                         case 6:
                             {
-                                // to aboutus activity
-                                Intent intent = new Intent(this, typeof(AboutUsActivity));
-                                StartActivity(intent);
+                                // to project activity
+                                Intent intent = new Intent(this, typeof(ProjectActivity));
+                                StartActivityForResult(intent, 6, null);
                                 break;
                             }
                         case 7:
@@ -320,6 +319,13 @@ namespace TabletArtco
                                 break;
                             }
                         case 8:
+                            {
+                                // to aboutus activity
+                                Intent intent = new Intent(this, typeof(AboutUsActivity));
+                                StartActivity(intent);
+                                break;
+                            }
+                        case 9:
                             {
                                 Intent intent = new Intent(Android.Provider.MediaStore.ActionImageCapture);
                                 StartActivityForResult(intent, 11, null);
@@ -337,13 +343,13 @@ namespace TabletArtco
         public void InitLeftButtonEvent()
         {
             int[] btsResIds = {
-                Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4
+                Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4, Resource.Id.bt_left_select5
             };
-            int itemW = (int)((ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2)) / 4);
+            //int itemW = (int)((ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2)) / 4);
             for (int i = 0; i < btsResIds.Length; i++)
             {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
-                ViewUtil.SetViewSize(imgBt, itemW, (int)(itemW * 45.0 / 55));
+                //ViewUtil.SetViewSize(imgBt, itemW, (int)(itemW * 45.0 / 55));
                 imgBt.Click += (t, e) =>
                 {
                     new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
@@ -352,18 +358,20 @@ namespace TabletArtco
                         return;
                     }
                     int[] normalImgResId = {
+                        Resource.Drawable.Button_event_Deactivation,
                         Resource.Drawable.Button_coding1_Deactivation,
                         Resource.Drawable.Button_coding2_Deactivation,
                         Resource.Drawable.Button_control_Deactivation,
-                        Resource.Drawable.Button_effect_Deactivation,
+                        Resource.Drawable.Button_AI_Deactivation,
                     };
                     int[] selectImgResId = {
+                        Resource.Drawable.Button_event_activation,
                         Resource.Drawable.Button_coding1_activation,
                         Resource.Drawable.Button_coding2_activation,
                         Resource.Drawable.Button_control_activation,
-                        Resource.Drawable.Button_effect_activation,
+                        Resource.Drawable.Button_AI_activation,
                     };
-                    for (int j = 0; j < 4; j++)
+                    for (int j = 0; j < 5; j++)
                     {
                         ImageView tempBt = FindViewById<ImageView>(btsResIds[j]);
                         if (tempBt == t)
@@ -387,9 +395,9 @@ namespace TabletArtco
         {
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.left_blocks_view);
             blockView.RemoveAllViews();
-            
-            int[] resIds = index == 0 ? Block.blockTab0ResIds : index == 1 ? Block.blockTab1ResIds : index == 2 ? Block.blockTab2ResIds : Block.blockTab3ResIds;
-            string[] resIdStrs = index == 0 ? Block.blockTab0ResIdStrs : index == 1 ? Block.blockTab1ResIdStrs : index == 2 ? Block.blockTab2ResIdStrs : Block.blockTab3ResIdStrs;
+
+            int[] resIds = index == 0 ? Block.blockTab0ResIds : index == 1 ? Block.blockTab1ResIds : index == 2 ? Block.blockTab2ResIds : index == 3 ? Block.blockTab3ResIds : Block.blockTab4ResIds;
+            string[] resIdStrs = index == 0 ? Block.blockTab0ResIdStrs : index == 1 ? Block.blockTab1ResIdStrs : index == 2 ? Block.blockTab2ResIdStrs : index == 3 ? Block.blockTab3ResIdStrs : Block.blockTab4ResIdStrs;
             int margin = 12;
             int padding = 4;
             double rowWidth = ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2);
@@ -458,7 +466,10 @@ namespace TabletArtco
                     ImageView imgIv = new ImageView(this);
                     imgIv.LayoutParameters = param;
                     imgIv.Tag = i;
-                    imgIv.SetBackgroundColor(Color.Red);
+                    if (i==0)
+                        imgIv.SetBackgroundResource(Resource.Drawable.CreateVarBtn);
+                    else
+                        imgIv.SetBackgroundResource(Resource.Drawable.HideVarListBtn);
                     blockView.AddView(imgIv, param);
                     imgIv.Click += (t, e) =>
                     {
@@ -477,7 +488,16 @@ namespace TabletArtco
                             case 1:
                                 {
                                     ListView listView = FindViewById<ListView>(Resource.Id.variableListView);
-                                    listView.Visibility = listView.Visibility == ViewStates.Visible ? ViewStates.Invisible : ViewStates.Visible;
+                                    if(listView.Visibility == ViewStates.Visible)
+                                    {
+                                        listView.Visibility = ViewStates.Invisible;
+                                        imgIv.SetBackgroundResource(Resource.Drawable.ShowVarListBtn);
+                                    }
+                                    else
+                                    {
+                                        listView.Visibility = ViewStates.Visible;
+                                        imgIv.SetBackgroundResource(Resource.Drawable.HideVarListBtn);
+                                    }
                                     break;
                                 }
                             default: break;
@@ -533,17 +553,20 @@ namespace TabletArtco
                                     ImageView imgBt;
 
                                     int[] btsResIds = {
-                                        Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4
+                                        Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4, Resource.Id.bt_left_select5
                                     };
                                     imgBt = FindViewById<ImageView>(btsResIds[0]);
-                                    imgBt.SetImageResource(Resource.Drawable.Button_coding1_Deactivation);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_event_Deactivation);
                                     imgBt = FindViewById<ImageView>(btsResIds[1]);
-                                    imgBt.SetImageResource(Resource.Drawable.Button_coding2_activation);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_coding1_activation);
                                     imgBt = FindViewById<ImageView>(btsResIds[2]);
-                                    imgBt.SetImageResource(Resource.Drawable.Button_control_Deactivation);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_coding2_Deactivation);
                                     imgBt = FindViewById<ImageView>(btsResIds[3]);
-                                    imgBt.SetImageResource(Resource.Drawable.Button_effect_Deactivation);
-                                    
+                                    imgBt.SetImageResource(Resource.Drawable.Button_control_Deactivation);
+                                    imgBt = FindViewById<ImageView>(btsResIds[4]);
+                                    imgBt.SetImageResource(Resource.Drawable.Button_AI_Deactivation);
+
+
                                     ChangeLeftList(1);
 
                                     // initialize Background
