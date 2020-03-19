@@ -47,7 +47,7 @@ namespace TabletArtco
             scrollView.SetPadding(margin, 0, margin, 0);
             LinearLayout topView = FindViewById<LinearLayout>(Resource.Id.grid_top_view);
             int[] resIds = {
-                Resource.Drawable.search_bg, Resource.Drawable.ps_user_tab, Resource.Drawable.ps_momochung_tab,
+                Resource.Drawable.search_bg, Resource.Drawable.User_tab, Resource.Drawable.momochung_tab,
                 Resource.Drawable.ps_sea_tab, Resource.Drawable.ps_animal_tab, Resource.Drawable.ps_plants_tab,
                 Resource.Drawable.ps_insect_tab, Resource.Drawable.ps_character_tab, Resource.Drawable.ps_food_tab,
                 Resource.Drawable.ps_traffic_tab, Resource.Drawable.ps_object_tab, Resource.Drawable.ps_etc_tab

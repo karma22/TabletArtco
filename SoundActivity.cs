@@ -74,7 +74,7 @@ namespace TabletArtco
             int[] resIds = {
                 Resource.Drawable.search_bg, Resource.Drawable.ss_animal_tab, Resource.Drawable.ss_nature_tab,
                 Resource.Drawable.ss_life_tab, Resource.Drawable.ss_music_tab, Resource.Drawable.ss_etc_tab,
-                Resource.Drawable.ss_momochung_tab, Resource.Drawable.ss_User_tab, Resource.Drawable.storage_recorder_button
+                Resource.Drawable.User_tab, Resource.Drawable.storage_recorder_button
             };
             int editTvH = (int)(30 / 60.0 * topH);
             int editTvW = (int)(166 / 35.0 * editTvH);
@@ -99,12 +99,25 @@ namespace TabletArtco
                     imgIv.Tag = i;
                     imgIv.SetImageResource(resIds[i]);
                     topView.AddView(imgIv);
-                    imgIv.Click += (t, e) =>
+                    if(i == resIds.Length - 1)
                     {
-                        int tag = (int)(((ImageView)t).Tag);
-                        mIndex = tag - 1;
-                        UpdateView();
-                    };
+                        imgIv.Click += (t, e) =>
+                        {
+                            new RecordDialog(this, () =>
+                            {
+
+                            }).Show();
+                        };
+                    }
+                    else
+                    {
+                        imgIv.Click += (t, e) =>
+                        {
+                            int tag = (int)(((ImageView)t).Tag);
+                            mIndex = tag - 1;
+                            UpdateView();
+                        };
+                    }
                 }
             }
 

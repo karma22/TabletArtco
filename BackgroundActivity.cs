@@ -126,7 +126,7 @@ namespace TabletArtco
             LinearLayout topView = FindViewById<LinearLayout>(Resource.Id.grid_top_view);
             int[] resIds = {
                 Resource.Drawable.search_bg, Resource.Drawable.bs_themeBackground_tab, Resource.Drawable.bs_cartoonbackground_tab,
-                Resource.Drawable.bs_reallifebackground_tab, Resource.Drawable.bs_momochungbackground_tab, Resource.Drawable.bs_userbackground_tab,
+                Resource.Drawable.bs_reallifebackground_tab, Resource.Drawable.momochung_tab, Resource.Drawable.User_tab,
                 Resource.Drawable.OpenDirectory,
             };
             int editTvH = (int)(30 / 60.0 * topH);

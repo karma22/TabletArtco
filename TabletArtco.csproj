@@ -243,6 +243,7 @@
     <Compile Include="Adapters\DataSource.cs" />
     <Compile Include="Utils\ArtcoObject.cs" />
     <Compile Include="Utils\IOUtil.cs" />
+    <Compile Include="Views\RecordDialog.cs" />
     <Compile Include="Views\DragGridView.cs" />
     <Compile Include="Utils\Util.cs" />
     <Compile Include="Utils\GlideUtil.cs" />
@@ -1298,18 +1299,6 @@
       <Generator>
       </Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\drawable\bs_userbackground_tab.png">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\drawable\bs_momochungbackground_tab.png">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
     <AndroidResource Include="Resources\drawable\bs_cartoonbackground_tab.png">
       <SubType>
       </SubType>
@@ -1353,12 +1342,6 @@
       </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\ebs_codingapplied1_tab.png">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\drawable\ps_momochung_tab.png">
       <SubType>
       </SubType>
       <Generator>
@@ -1412,12 +1395,6 @@
       <Generator>
       </Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\drawable\ps_user_tab.png">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
     <AndroidResource Include="Resources\drawable\ps_object_tab.png">
       <SubType>
       </SubType>
@@ -1430,12 +1407,6 @@
       <Generator>
       </Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\drawable\ss_momochung_tab.png">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
     <AndroidResource Include="Resources\drawable\ss_music_tab.png">
       <SubType>
       </SubType>
@@ -1443,12 +1414,6 @@
       </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\ss_etc_tab.png">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\drawable\ss_User_tab.png">
       <SubType>
       </SubType>
       <Generator>
@@ -2040,6 +2005,36 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\OpenDirectory.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\momochung_tab.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\National_studies_tab.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\User_tab.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\dialog_record.xml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\RecordingForm_stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\RecordingForm_pause.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\RecordingForm_play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\RecordingForm_recording.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\RecordingForm.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
