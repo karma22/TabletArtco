@@ -34,8 +34,8 @@ namespace TabletArtco
         {
             string[] path = new string[]
             {
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/project",
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/object"
+                UserDirectoryPath.projectPath,
+                UserDirectoryPath.objectPath
             };
 
             for(int i= 0; i < path.Length; i++)

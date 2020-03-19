@@ -25,8 +25,8 @@ namespace TabletArtco
 
         public bool SaveObject(ActivatedSprite sprite, string name)
         {
-            //string externalDir = Android.OS.Environment.ExternalStorageDirectory.Path; //"/storage/emulated/0"
-            string dirPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/object";
+            //string dirPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/object";
+            string dirPath = UserDirectoryPath.objectPath;
             string filePath = dirPath + "/" + name + ".ArtcoObject";
 
             if (!Directory.Exists(dirPath))

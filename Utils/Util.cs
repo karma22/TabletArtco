@@ -204,5 +204,14 @@ namespace TabletArtco
 
     }
 
+    public class UserDirectoryPath
+    {
+        // Android.OS.Environment.ExternalStorageDirectory.Path = "/storage/emulated/0"
+
+        public static string objectPath { get; } = Android.OS.Environment.ExternalStorageDirectory.Path + "/Artco/object";
+        public static string projectPath { get; } = Android.OS.Environment.ExternalStorageDirectory.Path + "/Artco/project";
+        public static string userBackgroundPath { get; } = Android.OS.Environment.ExternalStorageDirectory.Path + "/Artco/background";
+        public static string userSoundPath { get; } = Android.OS.Environment.ExternalStorageDirectory.Path + "/Artco/sound";
+    }
 
 }

@@ -7,6 +7,7 @@ using Android.Runtime;
 using Android.Views.Animations;
 using Android.Widget;
 using Com.Bumptech.Glide;
+using Com.Bumptech.Glide.Request;
 using Java.Lang;
 
 namespace TabletArtco
@@ -44,30 +45,6 @@ namespace TabletArtco
             HidePreImg();
         }
 
-        class SetPreImageView : AsyncTask
-        {
-            private string path;
-            private ImageView preImg;
-
-            public SetPreImageView(string path, ImageView preImg)
-            {
-                this.path = path;
-                this.preImg = preImg;
-            }
-            protected override Java.Lang.Object DoInBackground(params Java.Lang.Object[] @params)
-            {
-                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                retriever.SetDataSource(path, new System.Collections.Generic.Dictionary<string, string>());
-                Bitmap bitmap = retriever.GetFrameAtTime(0);
-                return bitmap;
-            }
-
-            protected override void OnPostExecute(Java.Lang.Object result)
-            {
-                preImg.SetImageBitmap((Bitmap)result);
-            }
-        }
-
         private void HidePreImg()
         {
             new Thread(new Runnable(() =>
@@ -101,6 +78,14 @@ namespace TabletArtco
             mVideoView.StopPlayback();
 
             mSound = sound;
+
+            RequestOptions options = new RequestOptions().Placeholder(Resource.Drawable.home_bg).Frame(0);
+            Glide.With(mCxt)
+                .AsBitmap()
+                .Load(path)
+                .Apply(options)
+                .Into(mPreImgIv);
+
             if (isPlay && mPath != null)
             {
                 mPreImgIv.Visibility = Android.Views.ViewStates.Visible;
@@ -120,8 +105,6 @@ namespace TabletArtco
                 mVideoView.SetVideoPath(mPath);
             }
             mVideoView.SetVideoPath(mPath);
-
-            new SetPreImageView(mPath, mPreImgIv).Execute();
 
             if (isPlay)
             {
@@ -153,7 +136,7 @@ namespace TabletArtco
                 return;
             }
             mVideoView.Start();
-            HidePreImg();
+            //HidePreImg();
         }
 
         // Stop media
@@ -196,6 +179,10 @@ namespace TabletArtco
 
         public void OnPrepared(MediaPlayer mp)
         {
+            if(mp != soundPlayer)
+            {
+                mp.SetVolume(0f, 0f);
+            }
             LogUtil.CustomLog("OnPrepared");
         }
 
@@ -227,6 +214,10 @@ namespace TabletArtco
         public bool OnInfo(MediaPlayer mp, [GeneratedEnum] MediaInfo what, int extra)
         {
             LogUtil.CustomLog("OnInfo");
+            if(what == MediaInfo.VideoRenderingStart)
+            {
+                mPreImgIv.Visibility = Android.Views.ViewStates.Invisible;
+            }
             return true;
         }
 

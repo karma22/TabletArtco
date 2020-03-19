@@ -242,6 +242,7 @@
     <Compile Include="Adapters\Delegate.cs" />
     <Compile Include="Adapters\DataSource.cs" />
     <Compile Include="Utils\ArtcoObject.cs" />
+    <Compile Include="Utils\IOUtil.cs" />
     <Compile Include="Views\DragGridView.cs" />
     <Compile Include="Utils\Util.cs" />
     <Compile Include="Utils\GlideUtil.cs" />
@@ -656,12 +657,6 @@
       </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Logo.png">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\drawable\Button_choice_picturecalling.png">
       <SubType>
       </SubType>
       <Generator>
@@ -2039,6 +2034,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ShowVarListBtn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\Button_choice_picturecreate.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\OpenDirectory.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

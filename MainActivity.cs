@@ -139,6 +139,7 @@ namespace TabletArtco
                         Project.currentBack = background;
                         //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                         videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+
                         break;
                     }
                 // load sprite or project
@@ -244,6 +245,8 @@ namespace TabletArtco
         //Top tool button
         public void InitTopButtonEvent()
         {
+            Android.Media.MediaRecorder recorder = new Android.Media.MediaRecorder();
+
             int[] btsResIds = {
                 Resource.Id.bt_choice1, Resource.Id.bt_choice2, Resource.Id.bt_choice3, Resource.Id.bt_choice4, Resource.Id.bt_choice5,
                 Resource.Id.bt_choice6, Resource.Id.bt_choice7, Resource.Id.bt_choice8, Resource.Id.bt_choice9, Resource.Id.bt_choice10
@@ -295,12 +298,24 @@ namespace TabletArtco
                         case 4:
                             {
                                 // BGsound select activity
-                                
+
+                                //recorder.SetAudioSource(Android.Media.AudioSource.Mic);
+                                //recorder.SetOutputFormat(Android.Media.OutputFormat.ThreeGpp);
+                                //recorder.SetAudioEncoder(Android.Media.AudioEncoder.Aac);
+                                //string externalDir = Android.OS.Environment.ExternalStorageDirectory.Path; //"/storage/emulated/0"
+                                //recorder.SetOutputFile(externalDir + "/test.3gp");
+                                //recorder.Prepare();
+                                //recorder.Start();
+
                                 break;
                             }
                         case 5:
                             {
                                 // save project
+
+                                //recorder.Stop();
+                                //recorder.Reset();   // You can reuse the object by going back to setAudioSource() step
+                                //recorder.Release(); // Now the object cannot be reused
 
                                 break;
                             }

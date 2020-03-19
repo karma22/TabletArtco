@@ -5,6 +5,10 @@ using Android.Views;
 using Android.Widget;
 using Com.Bumptech.Glide;
 using Android.Content;
+using System.IO;
+using Android.Runtime;
+using Android.Net;
+using Java.Lang;
 
 namespace TabletArtco
 {
@@ -17,6 +21,11 @@ namespace TabletArtco
         private int mIndex = 5;
 
         private Block block;
+
+        private string dirPath = UserDirectoryPath.userBackgroundPath;
+        private string[] filePath = new string[0];
+        private string[] fileName = new string[0];
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -28,7 +37,55 @@ namespace TabletArtco
             InitView();
         }
 
-        private void InitData() {
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            if (data == null)
+            {
+                return;
+            }
+
+            if(resultCode == Result.Ok)
+            {
+                if (!Directory.Exists(dirPath))
+                {
+                    Directory.CreateDirectory(dirPath);
+                }
+
+                Uri uri = data.Data;
+                string from = IOUtil.GetRealPathFromURI(this, uri);
+
+                ProgressDialog progressDialog = new ProgressDialog(this);
+                progressDialog.SetProgressStyle(ProgressDialogStyle.Spinner);
+                progressDialog.SetCancelable(false);
+                progressDialog.Show();
+
+                new Thread(new Runnable(() =>
+                {
+                    bool result = IOUtil.CopyFile(from, dirPath);
+                    if (result)
+                    {
+                        filePath = Directory.GetFiles(dirPath);
+
+                        fileName = new string[filePath.Length];
+                        for (int i = 0; i < fileName.Length; i++)
+                        {
+                            fileName[i] = Path.GetFileNameWithoutExtension(filePath[i]);
+                        }
+
+                        RunOnUiThread(()=>
+                        {
+                            progressDialog.Dismiss();
+                            UpdateView();
+                        });
+                    }
+                })).Start();
+            }
+        }
+
+
+        private void InitData()
+        {
             Intent intent = this.Intent;
             Bundle bundle = intent.GetBundleExtra("bundle");
             if (bundle != null)
@@ -49,7 +106,6 @@ namespace TabletArtco
                     }
                 }
             }
-            
         }
 
         private void InitView()
@@ -70,7 +126,8 @@ namespace TabletArtco
             LinearLayout topView = FindViewById<LinearLayout>(Resource.Id.grid_top_view);
             int[] resIds = {
                 Resource.Drawable.search_bg, Resource.Drawable.bs_themeBackground_tab, Resource.Drawable.bs_cartoonbackground_tab,
-                Resource.Drawable.bs_reallifebackground_tab, Resource.Drawable.bs_momochungbackground_tab, Resource.Drawable.bs_userbackground_tab
+                Resource.Drawable.bs_reallifebackground_tab, Resource.Drawable.bs_momochungbackground_tab, Resource.Drawable.bs_userbackground_tab,
+                Resource.Drawable.OpenDirectory,
             };
             int editTvH = (int)(30 / 60.0 * topH);
             int editTvW = (int)(166 / 35.0 * editTvH);
@@ -95,12 +152,48 @@ namespace TabletArtco
                     imgIv.LayoutParameters = lp;
                     imgIv.SetImageResource(resIds[i]);
                     topView.AddView(imgIv);
-                    imgIv.Click += (t, e) =>
+
+                    if(i == resIds.Length - 1)
                     {
-                        int tag = (int)(((ImageView)t).Tag);
-                        mIndex = tag+4;
-                        UpdateView();
-                    };
+                        imgIv.Click += (t, e) =>
+                        {
+                            Intent intent = new Intent();
+                            intent.SetAction(Intent.ActionGetContent);
+                            intent.SetType("video/*");
+                            StartActivityForResult(Intent.CreateChooser(intent, "Open"), 0);
+                        };
+                    }
+                    else if(i == resIds.Length - 2)
+                    {
+                        imgIv.Click += (t, e) =>
+                        {
+                            int tag = (int)(((ImageView)t).Tag);
+                            mIndex = tag + 4;
+
+                            if (Directory.Exists(dirPath))
+                            {
+                                filePath = Directory.GetFiles(dirPath);
+
+                                fileName = new string[filePath.Length];
+                                for (int i = 0; i < fileName.Length; i++)
+                                {
+                                    fileName[i] = Path.GetFileNameWithoutExtension(filePath[i]);
+                                }
+                            }
+
+                            UpdateView();
+                        };
+                    }
+                    else
+                    {
+                        imgIv.Click += (t, e) =>
+                        {
+                            int tag = (int)(((ImageView)t).Tag);
+                            mIndex = tag + 4;
+                            UpdateView();
+                        };
+                    }
+
                 }
             }
 
@@ -139,7 +232,10 @@ namespace TabletArtco
             {
                 return backgrounds[mIndex].Count;
             }
-            return 0;
+            else
+            {
+                return filePath.Length;
+            }
         }
 
         public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
@@ -162,28 +258,53 @@ namespace TabletArtco
 
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
-            List<List<Background>> backgrounds = Background._backgrounds;
-            if (mIndex >= backgrounds.Count)
+            if (mIndex == 9) //user background tab
             {
-                return;
+                ViewHolder viewHolder = (ViewHolder)contentView.Tag;
+                Glide.With(this).Load(filePath[position]).Into(viewHolder.imgIv);
+                viewHolder.txtTv.Text = fileName[position];
+                viewHolder.txtTv.Tag = position;
             }
-            List<Background> list = backgrounds[mIndex];
-            Background background = list[position];
-            ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-            Glide.With(this).Load(GlideUtil.GetGlideUrl(background.remotePreviewImgPath)).Into(viewHolder.imgIv);
-            viewHolder.txtTv.Text = background.name;
-            viewHolder.txtTv.Tag = position;
+            else
+            {
+                List<List<Background>> backgrounds = Background._backgrounds;
+                if (mIndex >= backgrounds.Count)
+                {
+                    return;
+                }
+                List<Background> list = backgrounds[mIndex];
+                Background background = list[position];
+                ViewHolder viewHolder = (ViewHolder)contentView.Tag;
+                Glide.With(this).Load(GlideUtil.GetGlideUrl(background.remotePreviewImgPath)).Into(viewHolder.imgIv);
+                viewHolder.txtTv.Text = background.name;
+                viewHolder.txtTv.Tag = position;
+            }
         }
 
         public void ClickItem(int position)
         {
             List<List<Background>> backgrounds = Background._backgrounds;
-            if (mIndex >= backgrounds.Count)
+            Background background = null;
+
+            if (mIndex < backgrounds.Count)
             {
-                return;
+                List<Background> list = backgrounds[mIndex];
+                background = list[position];
             }
-            List<Background> list = backgrounds[mIndex];
-            Background background = list[position];
+            else
+            {
+                background = new Background()
+                {
+                    name = fileName[position],
+                    idx = position,
+                    category = backgrounds.Count,
+                    mode = 0,
+                    remoteVideoPath = filePath[position],
+                    remotePreviewImgPath = null,
+                    level = 0,
+                };
+            }
+
             Intent intent = new Intent();
             Bundle bundle = new Bundle();
             bundle.PutString("model", background.ToString());
@@ -198,6 +319,7 @@ namespace TabletArtco
             }
             SetResult(Result.Ok, intent);
             Finish();
+
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
