@@ -9,6 +9,14 @@
         android:layout_height="320dp"
         android:layout_centerInParent="true"
         android:background="@drawable/recordingform">
+
+        <ImageView
+            android:id="@+id/record_close"
+             android:layout_width="25dp"
+             android:layout_height="25dp"
+             android:layout_alignParentRight="true"
+             android:background="@drawable/close"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -22,6 +30,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
+                android:visibility="invisible"
                 android:background="@drawable/recordingform_play"/>
 
             <ImageView
@@ -39,15 +48,17 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
                 android:background="@drawable/recordingform_stop"/>
-
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/record_close"
-             android:layout_width="25dp"
-             android:layout_height="25dp"
-             android:layout_alignParentRight="true"
-             android:background="@drawable/close"/>
+        <TextView
+            android:id="@+id/record_timer"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="150dp"
+            android:layout_marginTop="170dp"
+            android:text="00:00"
+            android:textSize="20dp"
+        />
         
     </RelativeLayout>
 </RelativeLayout>

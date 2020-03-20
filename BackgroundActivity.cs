@@ -258,20 +258,17 @@ namespace TabletArtco
 
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
-            if (mIndex == 9) //user background tab
+            List<List<Background>> backgrounds = Background._backgrounds;
+
+            if (mIndex == backgrounds.Count) //user background tab
             {
                 ViewHolder viewHolder = (ViewHolder)contentView.Tag;
                 Glide.With(this).Load(filePath[position]).Into(viewHolder.imgIv);
                 viewHolder.txtTv.Text = fileName[position];
                 viewHolder.txtTv.Tag = position;
             }
-            else
+            else if(mIndex < backgrounds.Count)
             {
-                List<List<Background>> backgrounds = Background._backgrounds;
-                if (mIndex >= backgrounds.Count)
-                {
-                    return;
-                }
                 List<Background> list = backgrounds[mIndex];
                 Background background = list[position];
                 ViewHolder viewHolder = (ViewHolder)contentView.Tag;

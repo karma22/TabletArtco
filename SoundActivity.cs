@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.IO;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -18,6 +19,10 @@ namespace TabletArtco
 
         private Block block;
         private Intent mIntent;
+
+        private string dirPath = UserDirectoryPath.userSoundPath;
+        private string[] filePath = new string[0];
+        private string[] fileName = new string[0];
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -103,10 +108,28 @@ namespace TabletArtco
                     {
                         imgIv.Click += (t, e) =>
                         {
-                            new RecordDialog(this, () =>
-                            {
+                            new RecordDialog(this, UpdateView).Show();
+                        };
+                    }
+                    else if (i == resIds.Length - 2)
+                    {
+                        imgIv.Click += (t, e) =>
+                        {
+                            int tag = (int)(((ImageView)t).Tag);
+                            mIndex = tag - 1;
 
-                            }).Show();
+                            if (Directory.Exists(dirPath))
+                            {
+                                filePath = Directory.GetFiles(dirPath);
+
+                                fileName = new string[filePath.Length];
+                                for (int i = 0; i < fileName.Length; i++)
+                                {
+                                    fileName[i] = Path.GetFileNameWithoutExtension(filePath[i]);
+                                }
+                            }
+
+                            UpdateView();
                         };
                     }
                     else
@@ -157,7 +180,10 @@ namespace TabletArtco
             {
                 return sounds[mIndex].Count;
             }
-            return 0;
+            else
+            {
+                return filePath.Length;
+            }
         }
 
         public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
@@ -191,30 +217,40 @@ namespace TabletArtco
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
             List<List<Sound>> sounds = Sound._sounds;
-            if (mIndex >= sounds.Count)
-            {
-                return;
-            }
-            List<Sound> list = sounds[mIndex];
-            Sound sound = list[position];
-            ViewHolder viewHolder = (ViewHolder)contentView.Tag;
-            viewHolder.nameTv.Text = sound.name;
 
-            viewHolder.soundPlay.Tag = position;
+            if (mIndex == sounds.Count) //user background tab
+            {
+                ViewHolder viewHolder = (ViewHolder)contentView.Tag;
+                viewHolder.nameTv.Text = fileName[position];
+                viewHolder.soundPlay.Tag = position;
+            }
+            else if (mIndex < sounds.Count)
+            {
+                List<Sound> list = sounds[mIndex];
+                Sound sound = list[position];
+                ViewHolder viewHolder = (ViewHolder)contentView.Tag;
+                viewHolder.nameTv.Text = sound.name;
+                viewHolder.soundPlay.Tag = position;
+            }
         }
 
         public void ClickItem(int position, bool playSound)
         {
             List<List<Sound>> sounds = Sound._sounds;
-            if (mIndex >= sounds.Count)
+            Sound sound = null;
+
+            if (mIndex < sounds.Count)
             {
-                return;
+                List<Sound> list = sounds[mIndex];
+                sound = list[position];
+            }
+            else
+            {
+                sound = new Sound(fileName[position], filePath[position]);
             }
 
-            List<Sound> list = sounds[mIndex];
-            Sound sound = list[position];
             Intent intent = new Intent();
-            
+
             if (block != null)
             {
                 block.text = sound.name;
