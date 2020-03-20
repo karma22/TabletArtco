@@ -36,6 +36,12 @@ namespace TabletArtco
             InitView();
         }
 
+        protected override void OnPause()
+        {
+            base.OnPause();
+            SoundPlayer.StopAll();
+        }
+
         private void InitData()
         {
             mIntent = this.Intent;

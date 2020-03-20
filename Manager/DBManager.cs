@@ -22,7 +22,8 @@ namespace TabletArtco
         public static string url_background = _host + "/SelectBackgroundTable.php";
         public static string url_block = _host + "/SelectBlockTable.php";
         public static string url_sound = _host + "/SelectSoundTable.php";
-        
+        public static string url_music = _host + "/SelectMusicTable.php";
+
         public static string imgPath = _host + "/artco/";
 
         public static bool CheckLogin(string id, string passwd)
@@ -214,6 +215,36 @@ namespace TabletArtco
                 Sound._sounds[category].Add(new Sound(name, localPath));
             }
             
+        }
+
+        public static void LoadMusic()
+        {
+            if (Music._bgms.Count > 0)
+                return;
+
+            string result;
+            using (WebClient client = GetWebClient())
+            {
+                byte[] bytes = client.DownloadData(url_music);
+                result = Encoding.UTF8.GetString(bytes);
+            }
+
+            const int rowCnt = 5;
+            string[] datas = result.Split('\n');
+            for (int i = 0; i <= datas.Length - rowCnt; i += rowCnt)
+            {
+                // This is korean name
+                // string name1 = datas[i];
+                string name = datas[i + 1];
+                int category = int.Parse(datas[i + 2]);
+                //int idx = int.Parse(datas[i + 3]);
+                string path = imgPath + System.Uri.EscapeUriString(datas[i + 4]) + ".wav";
+
+                for (; category >= Music._bgms.Count;)
+                    Music._bgms.Add(new List<Music>());
+
+                Music._bgms[category].Add(new Music(name, path));
+            }
         }
 
         public static WebClient GetWebClient()

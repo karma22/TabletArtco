@@ -93,8 +93,18 @@ namespace TabletArtco
         };
 
         public static List<Dictionary<string, string>> TextViewLocations(Block block) {
-            List<string> oneList = new List<string> { "MoveLUpN", "MoveUpN", "MoveRUpN", "MoveLeftN", "MoveRightN", "MoveLDownN", "MoveDownN", "MoveRDownN",
-            "ActionRRotateN", "ActionLRotateN", "ControlTimeN", "ControlLoopN"};
+            List<string> oneList = new List<string> 
+            {
+                "MoveLUpN", "MoveUpN", "MoveRUpN",
+                "MoveLeftN", "MoveRightN",
+                "MoveLDownN", "MoveDownN", "MoveRDownN",
+                "ActionSlowN", "ActionFastN", "ActionFlashN",
+                "ActionRRotateN", "ActionLRotateN", "ActionRotateLoopN",
+                "ActionWaveN", "ActionTWaveN",
+                "ActionZigzagN", "ActionTZigzagN",
+                "ActionJumpN", "ActionRLJumpN", "ActionAnimateN",
+                "ControlTimeN", "ControlLoopN",
+            };
             if (oneList.Contains(block.name))
             {
                 if (!string.IsNullOrEmpty(block.text) || !string.IsNullOrEmpty(block.varName))
@@ -110,7 +120,10 @@ namespace TabletArtco
                     return list;
                 }
             }
-            List<string> twoList = new List<string> { "ControlRecvSig", "ControlSound", "ControlAdditionBackground", "ControlSendSignal", "ControlSpeak" };
+            List<string> twoList = new List<string> 
+            { 
+                "ControlRecvSig", "ControlSound", "ControlAdditionBackground", "ControlSendSignal", "ControlSpeak", "ControlSendSignalWait"
+            };
             if (twoList.Contains(block.name))
             {
                 if (!string.IsNullOrEmpty(block.text))
@@ -170,11 +183,22 @@ namespace TabletArtco
 
         public static int GetClickType(Block block) {
             List<List<string>> list = new List<List<string>> {
-                new List<string>{ "MoveLUpN", "MoveUpN", "MoveRUpN", "MoveLeftN", "MoveRightN", "MoveLDownN", "MoveDownN", "MoveRDownN", "ActionRRotateN", "ActionLRotateN", "ControlTimeN", "ControlLoopN"},
+                new List<string>
+                {
+                    "MoveLUpN", "MoveUpN", "MoveRUpN",
+                    "MoveLeftN", "MoveRightN",
+                    "MoveLDownN", "MoveDownN", "MoveRDownN",
+                    "ActionSlowN", "ActionFastN", "ActionFlashN",
+                    "ActionRRotateN", "ActionLRotateN", "ActionRotateLoopN",
+                    "ActionWaveN", "ActionTWaveN",
+                    "ActionZigzagN", "ActionTZigzagN",
+                    "ActionJumpN", "ActionRLJumpN", "ActionAnimateN",
+                    "ControlTimeN", "ControlLoopN"
+                },
                 new List<string>{ "ControlChangeVal"},
                 new List<string>{ "ControlSetVal"},
                 new List<string>{ "ControlRecvSig"},
-                new List<string>{ "ControlSendSignal"},
+                new List<string>{ "ControlSendSignal", "ControlSendSignalWait"},
                 new List<string>{ "ControlTouch"},
                 new List<string>{ "ControlSpeak" },
                 new List<string>{ "ControlSound" },
@@ -198,18 +222,18 @@ namespace TabletArtco
 
             List<string[]> nameList = new List<string[]>
             {
-                Block.blockTab0ResIdStrs,
-                Block.blockTab1ResIdStrs,
-                Block.blockTab2ResIdStrs,
-                Block.blockTab3ResIdStrs
+                blockTab0ResIdStrs,
+                blockTab1ResIdStrs,
+                blockTab2ResIdStrs,
+                blockTab3ResIdStrs
             };
 
             List<int[]> resIdList = new List<int[]>
             {
-                Block.blockTab0ResIds,
-                Block.blockTab1ResIds,
-                Block.blockTab2ResIds,
-                Block.blockTab3ResIds
+                blockTab0ResIds,
+                blockTab1ResIds,
+                blockTab2ResIds,
+                blockTab3ResIds
             };
 
             int index = -1;
@@ -231,6 +255,34 @@ namespace TabletArtco
             block.name = name;
             
             return block;
+        }
+
+        public static int GetBlockTextOrVarName(Block block)
+        {
+            if (block != null)
+            {
+                if (block.varName != null)
+                {
+                    if (Variable.curVariableMap.ContainsKey(block.varName))
+                    {
+                        if (!System.Int32.TryParse(Variable.curVariableMap[block.varName], out int value))
+                        {
+                            return 0;
+                        }
+                        return value;
+                    }
+                }
+                else
+                {
+                    if (!System.Int32.TryParse(block.text, out int value))
+                    {
+                        return 0;
+                    }
+                    return value;
+                }
+            }
+
+            return 0;
         }
 
         public static List<List<Block>> blocks { get; set; } = new List<List<Block>>();

@@ -18,6 +18,7 @@ namespace TabletArtco
         public static int arrive_dest = Resource.Raw.arrive_dest;
 
         public static List<MediaPlayer> playerList = new List<MediaPlayer>();
+        public static string bgmPath = null;
         private Context mCxt;
 
         public SoundPlayer(Context context) {

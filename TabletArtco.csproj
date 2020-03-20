@@ -229,6 +229,7 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Manager\FTPManager.cs" />
     <Compile Include="Manager\MediaManager2.cs" />
+    <Compile Include="Model\Music.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LoginActivity.cs" />
@@ -236,6 +237,7 @@
     <Compile Include="Adapters\SpriteAdapter.cs" />
     <Compile Include="BackgroundActivity.cs" />
     <Compile Include="EducationActivity.cs" />
+    <Compile Include="MusicActivity.cs" />
     <Compile Include="SoundActivity.cs" />
     <Compile Include="PictureActivity.cs" />
     <Compile Include="Adapters\GridAdapter.cs" />

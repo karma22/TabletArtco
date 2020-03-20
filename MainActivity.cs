@@ -29,6 +29,7 @@ namespace TabletArtco
         private bool isPlay;
         //private MediaManager mediaManager;
         private VideoPlayer videoPlayer;
+        private SoundPlayer bgmPlayer;
         private bool activateBlockScale = false;
         private View dragView;
 
@@ -69,6 +70,7 @@ namespace TabletArtco
         {
             base.OnPause();
             videoPlayer.Stop();
+            SoundPlayer.StopAll();
             //mediaManager.Stop();
         }
 
@@ -139,6 +141,14 @@ namespace TabletArtco
                         Project.currentBack = background;
                         //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                         videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+
+                        break;
+                    }
+                // select BGM callback
+                case 4:
+                    {
+                        Bundle bundle = data.GetBundleExtra("bundle");
+                        SoundPlayer.bgmPath = bundle.GetString("model");
 
                         break;
                     }
@@ -231,6 +241,7 @@ namespace TabletArtco
             DBManager.LoadSprites();
             DBManager.LoadBackgrounds();
             DBManager.LoadSounds();
+            DBManager.LoadMusic();
         }
 
         // init view
@@ -295,8 +306,9 @@ namespace TabletArtco
                             }
                         case 4:
                             {
-                                // BGsound select activity
-
+                                // BGM select activity
+                                Intent intent = new Intent(this, typeof(MusicActivity));
+                                StartActivityForResult(intent, 4, null);
                                 break;
                             }
                         case 5:
@@ -573,6 +585,7 @@ namespace TabletArtco
                                     // initialize Background
                                     //mediaManager.ClickHomeButton();
                                     videoPlayer.ClickHomeBt();
+                                    SoundPlayer.bgmPath = null;
 
                                     // initialize Variavles
                                     Variable.ClearVariable();
@@ -593,6 +606,7 @@ namespace TabletArtco
                                 Project.RunSprite();
                                 //mediaManager.Play();
                                 videoPlayer.Play();
+                                bgmPlayer.Play(SoundPlayer.bgmPath);
                                 break;
                             }
                         case 2:
@@ -643,6 +657,8 @@ namespace TabletArtco
             //mediaManager = new MediaManager(surfaceView, imgIv, this);
 
             videoPlayer = new VideoPlayer(videoView, imgIv, this);
+            bgmPlayer = new SoundPlayer(this);
+            bgmPlayer.PlayLocal(Resource.Raw.Stage_Default);
             
             //mediaManager = new MediaManager2(surfaceView, imgIv, this);
 
@@ -661,7 +677,10 @@ namespace TabletArtco
                 else
                 {
                     VariableInitDialog dialog = new VariableInitDialog(this, (name, value) => {
-                        Variable.variableMap[name] = value;
+                        List<string> keys = Variable.variableMap.Keys.ToList();
+                        Variable.RemoveVariable(keys[position]);
+                        Variable.AddVariable(name, value);
+                        mVariableAdapter.NotifyDataSetChanged();
                     });
                     dialog.Show();
                 }
@@ -913,10 +932,12 @@ namespace TabletArtco
                                             if (selectIndex != -1)
                                             {
                                                 block.varName = varlist[selectIndex];
+                                                block.text = null;
                                             }
                                             else
                                             {
                                                 block.text = text;
+                                                block.varName = null;
                                             }
                                             UpdateBlockView();
                                         });

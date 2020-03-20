@@ -14,13 +14,15 @@ namespace TabletArtco
     {
         private AlertDialog dialog = null;
         private View contentView;
+        private Context context;
         private MediaRecorder recorder = new MediaRecorder();
         private bool isRecording = false;
-        private string filePath = null;
+        private string fileName = null;
 
         public RecordDialog(Context context, Action action)
         {
-            Initialize(context, action);
+            this.context = context;
+            Initialize(action);
         }
 
         public void Show()
@@ -33,7 +35,7 @@ namespace TabletArtco
             dialog?.Dismiss();
         }
 
-        private void Initialize(Context context, Action action)
+        private void Initialize(Action action)
         {
             contentView = LayoutInflater.From(context).Inflate(Resource.Layout.dialog_record, null, false);
             ImageView play = contentView.FindViewById<ImageView>(Resource.Id.record_btn1);
@@ -54,16 +56,22 @@ namespace TabletArtco
                     Directory.CreateDirectory(UserDirectoryPath.userSoundPath);
                 }
 
-                record.Visibility = ViewStates.Invisible;
-                play.Visibility = ViewStates.Invisible;
-                isRecording = true;
+                SpeakDialog dialog = new SpeakDialog(context, (text) => {
+                    fileName = text;
 
-                recorder.SetAudioSource(AudioSource.Mic);
-                recorder.SetOutputFormat(OutputFormat.ThreeGpp);
-                recorder.SetAudioEncoder(AudioEncoder.Aac);
-                recorder.SetOutputFile(UserDirectoryPath.userSoundPath + "/test.wav");
-                recorder.Prepare();
-                recorder.Start();
+                    record.Visibility = ViewStates.Invisible;
+                    play.Visibility = ViewStates.Invisible;
+                    isRecording = true;
+
+                    recorder.SetAudioSource(AudioSource.Mic);
+                    recorder.SetOutputFormat(OutputFormat.ThreeGpp);
+                    recorder.SetAudioEncoder(AudioEncoder.Aac);
+                    recorder.SetOutputFile(UserDirectoryPath.userSoundPath + "/" + fileName + ".wav");
+                    recorder.Prepare();
+                    recorder.Start();
+                });
+                dialog.Show();
+                
             };
 
             contentView.FindViewById<ImageView>(Resource.Id.record_btn3).Click += (t, e) =>
@@ -74,10 +82,6 @@ namespace TabletArtco
                     recorder.Reset();   // You can reuse the object by going back to setAudioSource() step
                 }
 
-                if(filePath != null)
-                {
-                    play.Visibility = ViewStates.Visible;
-                }
                 record.Visibility = ViewStates.Visible;
                 isRecording = false;
             };

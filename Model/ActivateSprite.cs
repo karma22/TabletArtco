@@ -440,6 +440,7 @@ namespace TabletArtco
             speakText = null;
             ChangeMode();
             curIndex = 0;
+            curAngle = 0;
             if (mUpdateDelegate != null)
             {
                 mUpdateDelegate.UpdateView();
@@ -467,8 +468,9 @@ namespace TabletArtco
                 return;
             }
             List<Block> list = mBlocks[index];
-            int loopCnt = 0;
-            int loopStartIdx = -1;
+            List<int> loopStartIdx = new List<int>();
+            List<int> repeat = new List<int>();
+            List<int> loopCnt = new List<int>();
             int idx = 0;
             while (isAnimationTag) {
                 try
@@ -524,33 +526,40 @@ namespace TabletArtco
                     }
                     else if (blockName.Equals("ControlLoop"))
                     {
-                        loopCnt = 0;
-                        loopStartIdx = -1;
-                        idx = -1;
+                        loopStartIdx.Add(idx);
+                        repeat.Add(-1);
+                        loopCnt.Add(0);
                     }
                     else if (blockName.Equals("ControlLoopN") || blockName.Equals("GameLoopN"))
                     {
-                        if (!System.Int32.TryParse(block.text, out int n))
-                        {
-                            n = 1;
-                        }
-                        else if (n == 0) { }
-                        else
-                        {
-                            if (++loopCnt != n)
-                            {
-                                idx = loopStartIdx;
-                            }
-                            else
-                            {
-                                loopStartIdx = idx;
-                                loopCnt = 0;
-                            }
-                        }
+                        loopStartIdx.Add(idx);
+                        repeat.Add(Block.GetBlockTextOrVarName(block));
+                        loopCnt.Add(0);
                     }
                     else if (blockName.Equals("ControlFlag"))
                     {
-                        loopStartIdx = idx;
+                        int loop = repeat.Count - 1;
+                        if(loop >= 0)
+                        {
+                            if (repeat[loop] < 0) // infinite loop
+                            {
+                                idx = loopStartIdx[loop];
+                            }
+                            else
+                            {
+                                loopCnt[loop]++;
+                                if (loopCnt[loop] < repeat[loop])
+                                {
+                                    idx = loopStartIdx[loop];
+                                }
+                                else
+                                {
+                                    loopStartIdx.RemoveAt(loop);
+                                    repeat.RemoveAt(loop);
+                                    loopCnt.RemoveAt(loop);
+                                }
+                            }
+                        }
                     }
                     else if (blockName.Equals("MoveRDownN")) MoveVariable(MoveArrow.RightDown, block);
                     else if (blockName.Equals("MoveRUpN")) MoveVariable(MoveArrow.RightUp, block);
@@ -574,29 +583,40 @@ namespace TabletArtco
                     else if (blockName.Equals("MoveUpN")) MoveVariable(MoveArrow.Up, block);
                     else if (blockName.Equals("ActionRRotate")) RotateLoop(90, true, false);
                     else if (blockName.Equals("ActionLRotate")) RotateLoop(90, false, false);
-                    else if (blockName.Equals("ActionBounce")) ActionBounce();
-                    else if (blockName.Equals("ActionWave")) ActionWave();
-                    else if (blockName.Equals("ActionTWave")) ActionTWave();
-                    else if (blockName.Equals("ActionZigzag")) ActionZigzag();
-                    else if (blockName.Equals("ActionTZigzag")) ActionTZigzag();
-                    else if (blockName.Equals("ActionJump")) JumpSprite();
-                    else if (blockName.Equals("ActionRandomMove")) RandomMove();
-                    else if (blockName.Equals("ActionFast")) ActionFast();
-                    else if (blockName.Equals("ActionSlow")) ActionSlow();
                     else if (blockName.Equals("ActionRotateLoop")) RotateLoop(10, true, true);
+                    else if (blockName.Equals("ActionBounce")) ActionBounce();
+                    else if (blockName.Equals("ActionWave")) ActionWave(null);
+                    else if (blockName.Equals("ActionWaveN")) ActionWave(block);
+                    else if (blockName.Equals("ActionTWave")) ActionTWave(null);
+                    else if (blockName.Equals("ActionTWaveN")) ActionTWave(block);
+                    else if (blockName.Equals("ActionZigzag")) ActionZigzag(null);
+                    else if (blockName.Equals("ActionZigzagN")) ActionZigzag(block);
+                    else if (blockName.Equals("ActionTZigzag")) ActionTZigzag(null);
+                    else if (blockName.Equals("ActionTZigzagN")) ActionTZigzag(block);
+                    else if (blockName.Equals("ActionJump")) JumpSprite(null);
+                    else if (blockName.Equals("ActionJumpN")) JumpSprite(block);
+                    else if (blockName.Equals("ActionRandomMove")) RandomMove();
+                    else if (blockName.Equals("ActionFast")) ActionFast(null);
+                    else if (blockName.Equals("ActionFastN")) ActionFast(block);
+                    else if (blockName.Equals("ActionSlow")) ActionSlow(null);
+                    else if (blockName.Equals("ActionSlowN")) ActionSlow(block);
                     else if (blockName.Equals("ActionRRotateN")) RotateArrowValue(true, block);
                     else if (blockName.Equals("ActionLRotateN")) RotateArrowValue(false, block);
-                    else if (blockName.Equals("ActionFlash")) ShowHideLoop();
-                    else if (blockName.Equals("ActionRLJump")) RightLeftJumpLoop();
-                    else if (blockName.Equals("ActionAnimate")) AnimateSpritesLoop();
+                    else if (blockName.Equals("ActionRotateLoopN")) RotateLoopN(10, block);
+                    else if (blockName.Equals("ActionFlash")) ShowHideLoop(null);
+                    else if (blockName.Equals("ActionFlashN")) ShowHideLoop(block);
+                    else if (blockName.Equals("ActionRLJump")) RightLeftJumpLoop(null);
+                    else if (blockName.Equals("ActionRLJumpN")) RightLeftJumpLoop(block);
+                    else if (blockName.Equals("ActionAnimate")) AnimateSpritesLoop(null);
+                    else if (blockName.Equals("ActionAnimateN")) AnimateSpritesLoop(block);
                     else if (blockName.Equals("ControlFlipX")) FlipXSprite();
                     else if (blockName.Equals("ControlFlipY")) FlipYSprite();
                     else if (blockName.Equals("ControlShow")) ShowSprite(true);
                     else if (blockName.Equals("ControlHide")) ShowSprite(false);
                     else if (blockName.Equals("ControlNextSprite")) SetNextBit();
                     else if (blockName.Equals("ControlPrevSprite")) SetPrevBit();
-                    else if (blockName.Equals("ControlTime1")) Thread.Sleep((int)(1 * 100.0f));
-                    else if (blockName.Equals("ControlTime2")) Thread.Sleep((int)(5 * 100.0f));
+                    else if (blockName.Equals("ControlTime1")) Thread.Sleep(1000);
+                    else if (blockName.Equals("ControlTime2")) Thread.Sleep(2000);
                     else if (blockName.Equals("ControlTimeN")) SleepVariable(block);
                     else if (blockName.Equals("ControlSpeak")) ControlSpeak(block.text);
                     else if (blockName.Equals("ControlSpeakStop")) ControlSpeak(null);
@@ -605,7 +625,7 @@ namespace TabletArtco
                     {
                         if (block.varName != null && Variable.curVariableMap.ContainsKey(block.varName))
                         {
-                            Variable.curVariableMap[block.varName] = int.Parse(Variable.curVariableMap[block.name]) + int.Parse(block.varValue) + "";
+                            Variable.curVariableMap[block.varName] = int.Parse(Variable.curVariableMap[block.varName]) + int.Parse(block.varValue) + "";
                         }
                     }
                     else if (blockName.Equals("ControlSetVal"))
@@ -673,24 +693,27 @@ namespace TabletArtco
          */
         private void rotateBitmap(float angle)
         {
-            Bitmap origin = originBitmapList[curIndex];
-            if (origin == null)
+            for (int i = 0; i < curbitmapList.Count; i++)
             {
-                return;
+                Bitmap origin = originBitmapList[i];
+                if (origin == null)
+                {
+                    return;
+                }
+                int width = origin.Width;
+                int height = origin.Height;
+                Matrix matrix = new Matrix();
+                matrix.SetRotate(angle);
+
+                Bitmap curBitmap = curbitmapList[i];
+                Point center = new Point(curPoint.X + curBitmap.Width / 2, curPoint.Y + curBitmap.Height / 2);
+                Bitmap newBM = Bitmap.CreateBitmap(origin, 0, 0, width, height, matrix, false);
+
+                curSize = new Size(newBM.Width, newBM.Height);
+                curPoint = new Point(center.X - newBM.Width / 2, center.Y - newBM.Height / 2);
+                curbitmapList[i] = newBM;
+                curBitmap.Recycle();
             }
-            int width = origin.Width;
-            int height = origin.Height;
-            Matrix matrix = new Matrix();
-            matrix.SetRotate(angle);
-
-            Bitmap curBitmap = curbitmapList[curIndex];
-            Point center = new Point(curPoint.X + curBitmap.Width / 2, curPoint.Y + curBitmap.Height / 2);
-            Bitmap newBM = Bitmap.CreateBitmap(origin, 0, 0, width, height, matrix, false);
-
-            curSize = new Size(newBM.Width, newBM.Height);
-            curPoint = new Point(center.X - newBM.Width / 2, center.Y - newBM.Height / 2);
-            curbitmapList[curIndex] = newBM;
-            curBitmap.Recycle();
         }
 
 
@@ -705,7 +728,6 @@ namespace TabletArtco
             MoveSprite(n * 10, 1, curMoveArrow);
             if (isDelay)
             {
-                Java.Lang.Thread.Sleep(1000);
                 Java.Lang.Thread.Sleep(1000);
             }
         }
@@ -973,7 +995,7 @@ namespace TabletArtco
             }
         }
 
-        public void ActionSlow()
+        public void ActionSlow(Block block)
         {
             LogUtil.CustomLog("SlowMove");
             bool isRight = false;
@@ -982,8 +1004,14 @@ namespace TabletArtco
                 curMoveArrow = MoveArrow.Right;
                 isRight = true;
             }
+
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int i = 0;
             while (isAnimationTag)
             {
+                if (block != null && i == repeat)
+                    break;
+
                 InvalidateStage();
                 if (isRight)
                 {
@@ -995,6 +1023,7 @@ namespace TabletArtco
                     {
                         FlipYSprite();
                         isRight = false;
+                        i++;
                     }
                 }
                 else
@@ -1007,15 +1036,15 @@ namespace TabletArtco
                     {
                         FlipYSprite();
                         isRight = true;
+                        i++;
                     }
-
                 }
                 InvalidateStage();
                 Java.Lang.Thread.Sleep(300);
             }
         }
 
-        public void ActionFast()
+        public void ActionFast(Block block)
         {
             LogUtil.CustomLog("FastMove");
             bool isRight = false;
@@ -1024,8 +1053,14 @@ namespace TabletArtco
                 curMoveArrow = MoveArrow.Right;
                 isRight = true;
             }
+
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int i = 0;
             while (isAnimationTag)
             {
+                if (block != null && i == repeat)
+                    break;
+
                 InvalidateStage();
                 if (isRight)
                 {
@@ -1037,6 +1072,7 @@ namespace TabletArtco
                     {
                         FlipYSprite();
                         isRight = false;
+                        i++;
                     }
                 }
                 else
@@ -1049,6 +1085,7 @@ namespace TabletArtco
                     {
                         FlipYSprite();
                         isRight = true;
+                        i++;
                     }
                 }
                 InvalidateStage();
@@ -1057,15 +1094,21 @@ namespace TabletArtco
         }
 
         // show hide Loop
-        public void ShowHideLoop()
+        public void ShowHideLoop(Block block)
         {
             LogUtil.CustomLog("ShowHideLoop");
             bool flag = true;
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int i = 0;
             while (isAnimationTag)
             {
+                if (block != null && i == repeat * 2)
+                    break;
+
                 ShowSprite(flag ^= true);
                 InvalidateStage();
                 Java.Lang.Thread.Sleep(1000);
+                i++;
             }
         }
 
@@ -1085,6 +1128,28 @@ namespace TabletArtco
                 Java.Lang.Thread.Sleep(250);
                 if (!isInfinite)
                     break;
+            }
+        }
+
+        public void RotateLoopN(float angle, Block block)
+        {
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int i = 0;
+
+            while (isAnimationTag)
+            {
+                if (i == repeat*(int)(360/angle))
+                    break;
+
+                curAngle += angle;
+                if (curAngle >= 360.0f)
+                {
+                    curAngle -= ((int)(curAngle / 360.0f)) * 360;
+                }
+                rotateBitmap(curAngle);
+                InvalidateStage();
+                Java.Lang.Thread.Sleep(250);
+                i++;
             }
         }
 
@@ -1113,7 +1178,7 @@ namespace TabletArtco
         }
 
         // Wave 波浪移动
-        public void ActionWave()
+        public void ActionWave(Block block)
         {
             LogUtil.CustomLog("WaveMove");
             int zero = curPoint.Y;
@@ -1123,8 +1188,14 @@ namespace TabletArtco
                 curMoveArrow = MoveArrow.Right;
                 isRight = true;
             }
+
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int iteration = 0;
             while (isAnimationTag)
             {
+                if (block != null && iteration == repeat)
+                    break;
+
                 if (isRight)
                 {
                     for (double i = 0; i <= 360; i++)
@@ -1140,6 +1211,7 @@ namespace TabletArtco
                         {
                             FlipYSprite();
                             isRight = false;
+                            iteration++;
                             break;
                         }
 
@@ -1161,6 +1233,7 @@ namespace TabletArtco
                         {
                             FlipYSprite();
                             isRight = true;
+                            iteration++;
                             break;
                         }
                         InvalidateStage();
@@ -1171,18 +1244,24 @@ namespace TabletArtco
         }
 
         // vertical wave 
-        public void ActionTWave()
+        public void ActionTWave(Block block)
         {
             LogUtil.CustomLog("WaveMoveVert");
+            int zero = curPoint.X;
             bool isDown = false;
             if (curMoveArrow != MoveArrow.Up)
             {
                 curMoveArrow = MoveArrow.Down;
                 isDown = true;
             }
-            int zero = curPoint.X;
+
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int iteration = 0;
             while (isAnimationTag)
             {
+                if (block != null && iteration == repeat)
+                    break;
+
                 if (isDown)
                 {
                     for (double i = 0; i <= 360; i++)
@@ -1197,6 +1276,7 @@ namespace TabletArtco
                         else
                         {
                             isDown = false;
+                            iteration++;
                             break;
                         }
 
@@ -1218,6 +1298,7 @@ namespace TabletArtco
                         else
                         {
                             isDown = true;
+                            iteration++;
                             break;
                         }
                         InvalidateStage();
@@ -1241,18 +1322,24 @@ namespace TabletArtco
         }
 
         //w wave 波浪运动
-        public void ActionZigzag()
+        public void ActionZigzag(Block block)
         {
             LogUtil.CustomLog("TWaveMove");
+            int zero = curPoint.Y;
             bool isRight = false;
             if (curMoveArrow != MoveArrow.Left)
             {
                 curMoveArrow = MoveArrow.Right;
                 isRight = true;
             }
-            int zero = curPoint.Y;
+
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int iteration = 0;
             while (isAnimationTag)
             {
+                if (block != null && iteration == repeat)
+                    break;
+
                 if (isRight)
                 {
                     for (double i = 0; i <= 360; i++)
@@ -1268,6 +1355,7 @@ namespace TabletArtco
                         {
                             FlipYSprite();
                             isRight = false;
+                            iteration++;
                             break;
                         }
 
@@ -1290,6 +1378,7 @@ namespace TabletArtco
                         {
                             FlipYSprite();
                             isRight = true;
+                            iteration++;
                             break;
                         }
 
@@ -1303,18 +1392,24 @@ namespace TabletArtco
         /*
          * vertical w wave 竖直W波浪运动
          */
-        public void ActionTZigzag()
+        public void ActionTZigzag(Block block)
         {
             LogUtil.CustomLog("ActionTZigzag");
+            int zero = curPoint.X;
             bool isDown = false;
             if (curMoveArrow != MoveArrow.Up)
             {
                 curMoveArrow = MoveArrow.Down;
                 isDown = true;
             }
-            int zero = curPoint.X;
+
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int iteration = 0;
             while (isAnimationTag)
             {
+                if (block != null && iteration == repeat)
+                    break;
+
                 if (isDown)
                 {
                     for (double i = 0; i <= 360; i++)
@@ -1329,6 +1424,7 @@ namespace TabletArtco
                         else
                         {
                             isDown = false;
+                            iteration++;
                             break;
                         }
                         InvalidateStage();
@@ -1349,6 +1445,7 @@ namespace TabletArtco
                         else
                         {
                             isDown = true;
+                            iteration++;
                             break;
                         }
                         InvalidateStage();
@@ -1407,26 +1504,44 @@ namespace TabletArtco
         }
 
         //jump 上下跳
-        public void JumpSprite()
+        public void JumpSprite(Block block)
         {
             LogUtil.CustomLog("JumpSprite");
-            for (int i = 5; i > 0; i--)
+
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int iteration = 0;
+            while (isAnimationTag)
             {
-                MoveSprite(i * 10, 1, MoveArrow.Up, 100);
+                if (block != null && iteration == repeat)
+                    break;
+
+                for (int i = 5; i > 0; i--)
+                {
+                    MoveSprite(i * 10, 1, MoveArrow.Up, 100);
+                }
+                for (int i = 1; i <= 5; i++)
+                {
+                    MoveSprite(i * 10, 1, MoveArrow.Down, 100);
+                }
+
+                iteration++;
             }
-            for (int i = 1; i <= 5; i++)
-            {
-                MoveSprite(i * 10, 1, MoveArrow.Down, 100);
-            }
+            
         }
 
         //Left right jump 左右跳
-        public void RightLeftJumpLoop()
+        public void RightLeftJumpLoop(Block block)
         {
             LogUtil.CustomLog("RightLeftJumpLoop");
             MoveArrow moveArrow = MoveArrow.Left;
+
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int iteration = 0;
             while (isAnimationTag)
             {
+                if (block != null && iteration == repeat * 2)
+                    break;
+
                 moveArrow = moveArrow == MoveArrow.Left ? MoveArrow.Right : MoveArrow.Left;
                 int delay = 1;
                 int zero = curPoint.Y;
@@ -1451,16 +1566,26 @@ namespace TabletArtco
                 }
                 curPoint.X += (6 - (int)moveArrow);
                 Java.Lang.Thread.Sleep(100);
+
+                iteration++;
             }
         }
 
         //Sprite bitmap loop
-        public void AnimateSpritesLoop()
+        public void AnimateSpritesLoop(Block block)
         {
+            int repeat = Block.GetBlockTextOrVarName(block);
+            int i = 0;
+
             while (isAnimationTag)
             {
+                if (block != null && i == repeat)
+                    break;
+
                 SetNextBit();
                 Java.Lang.Thread.Sleep(1000);
+
+                i++;
             }
         }
 
@@ -1476,7 +1601,7 @@ namespace TabletArtco
                     {
                         return;
                     }
-                    int wait = (int)(value * 100.0f);
+                    int wait = (int)(value * 1000.0f);
                     Java.Lang.Thread.Sleep(wait);
                 }
             }
@@ -1486,7 +1611,7 @@ namespace TabletArtco
                 {
                     return;
                 }
-                int wait = (int)(value * 100.0f);
+                int wait = (int)(value * 1000.0f);
                 Java.Lang.Thread.Sleep(wait);
             }
         }
@@ -1495,7 +1620,7 @@ namespace TabletArtco
         public void FlipXSprite()
         {
             Matrix matrix = new Matrix();
-            matrix.SetScale(1, -1);
+            matrix.SetScale(-1, 1);
             for (int i = 0; i < curbitmapList.Count; i++)
             {
                 Bitmap bitmap = curbitmapList[i];
@@ -1509,10 +1634,13 @@ namespace TabletArtco
         public void FlipYSprite()
         {
             Matrix matrix = new Matrix();
-            matrix.SetScale(-1, 1);
-            Bitmap bitmap = curbitmapList[curIndex];
-            Bitmap newBM = Bitmap.CreateBitmap(bitmap, 0, 0, bitmap.Width, bitmap.Height, matrix, false);
-            curbitmapList[curIndex] = newBM;
+            matrix.SetScale(1, -1);
+            for (int i = 0; i < curbitmapList.Count; i++)
+            {
+                Bitmap bitmap = curbitmapList[i];
+                Bitmap newBM = Bitmap.CreateBitmap(bitmap, 0, 0, bitmap.Width, bitmap.Height, matrix, false);
+                curbitmapList[i] = newBM;
+            }
             InvalidateStage();
         }
 
