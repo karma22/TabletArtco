@@ -182,6 +182,7 @@
             android:layout_weight="890"
             android:background="@android:color/transparent">
             <!--background-->
+
             <LinearLayout
                 android:id="@+id/mainView"
                 android:layout_width="match_parent"
@@ -275,6 +276,14 @@
 						android:layout_alignParentRight="true"/>
 				</RelativeLayout>
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/mainView_highlight"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:visibility="invisible"
+                android:background="@drawable/center_frame_activation"/>
+
             <!--block area and button-->
 			<RelativeLayout
                 android:id="@+id/activate_block_wrapperview"
@@ -307,8 +316,8 @@
                     android:paddingBottom="4dp">
 					<ImageView
                         android:id="@+id/bt_scale"
-						android:layout_width="20dp"
-						android:layout_height="20dp"
+						android:layout_width="30dp"
+						android:layout_height="30dp"
 						android:src="@drawable/zoom_out"
 						android:layout_centerHorizontal="true"
 						android:layout_alignParentTop="true"/>
@@ -321,8 +330,8 @@
 						/>
 					<ImageView
                         android:id="@+id/bt_clear_block"
-						android:layout_width="20dp"
-						android:layout_height="20dp"
+						android:layout_width="30dp"
+						android:layout_height="30dp"
 						android:src="@drawable/Button_choice_blockdelete02"
 						android:layout_centerHorizontal="true"
 						android:layout_alignParentBottom="true"/>

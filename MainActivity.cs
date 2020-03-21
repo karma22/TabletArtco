@@ -33,6 +33,8 @@ namespace TabletArtco
         private bool activateBlockScale = false;
         private View dragView;
 
+        Android.Media.MediaRecorder recorder = new Android.Media.MediaRecorder();
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -314,6 +316,21 @@ namespace TabletArtco
                         case 5:
                             {
                                 // save project
+        
+                                //recorder.SetAudioSource(Android.Media.AudioSource.Mic);
+                                //recorder.SetVideoSource(Android.Media.VideoSource.Surface);
+                                ////recorder.SetProfile(CamcorderProfile.Get(CamcorderQuality.High));
+                                //recorder.SetOutputFile(UserDirectoryPath.userSoundPath + "/test.mp4");
+                                //recorder.SetVideoSize(500,500);
+
+                                //recorder.SetOutputFormat(Android.Media.OutputFormat.Mpeg4);
+                                //recorder.SetVideoEncoder(Android.Media.VideoEncoder.H264);
+                                //recorder.SetAudioEncoder(Android.Media.AudioEncoder.Aac);
+                                //recorder.SetVideoEncodingBitRate(512 * 1000);
+                                //recorder.SetVideoFrameRate(30);
+
+                                //recorder.Prepare();
+                                //recorder.Start();
 
                                 break;
                             }
@@ -322,6 +339,7 @@ namespace TabletArtco
                                 // to project activity
                                 Intent intent = new Intent(this, typeof(ProjectActivity));
                                 StartActivityForResult(intent, 6, null);
+
                                 break;
                             }
                         case 7:
@@ -533,6 +551,9 @@ namespace TabletArtco
             ViewUtil.SetViewHeight(mainView, (int)height);
             ViewUtil.SetViewHeight(centerView, (int)(482 / 549.0 * height));
 
+            LinearLayout mainViewHighlight = FindViewById<LinearLayout>(Resource.Id.mainView_highlight);
+            ViewUtil.SetViewHeight(mainViewHighlight, (int)height);
+
             int[] sbtsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
             int itemW = (int)(42 / 549.0 * height);
             // home、play、stop、full button
@@ -602,6 +623,8 @@ namespace TabletArtco
                                 {
                                     return;
                                 }
+
+                                mainViewHighlight.Visibility = ViewStates.Visible;
                                 isPlay = true;
                                 Project.RunSprite();
                                 //mediaManager.Play();
@@ -617,6 +640,8 @@ namespace TabletArtco
                                 {
                                     return;
                                 }
+
+                                mainViewHighlight.Visibility = ViewStates.Invisible;
                                 isPlay = false;
                                 Project.StopSprite();
                                 if (Project.currentBack != null)

@@ -106,6 +106,7 @@ namespace TabletArtco
         }
 
         public void SetSpeakText(string text) {
+            SetBackgroundResource(Resource.Drawable.SpeakBox);
             Text = text;
             Visibility = text != null && text.Length > 0 ? ViewStates.Visible : ViewStates.Invisible;
         }

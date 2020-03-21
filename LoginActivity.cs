@@ -14,7 +14,6 @@ namespace TabletArtco
     //[Activity(Theme = "@style/AppTheme")]
     public class LoginActivity : AppCompatActivity
     {
-        private LinearLayout loginLl { get; set; }
         private EditText accountEt { get; set; }
         private EditText pwdEt { get; set; }
         private ImageView remIv { get; set; }
@@ -59,7 +58,7 @@ namespace TabletArtco
                 Remember();
             };
 
-            FindViewById<TextView>(Resource.Id.loginBt).Click += (s, e) =>
+            FindViewById<ImageView>(Resource.Id.loginBt).Click += (s, e) =>
             {
                 SignIn();
             };

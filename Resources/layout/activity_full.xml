@@ -29,7 +29,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginRight="10dp"
-            android:background="#f00"
+            android:background="@drawable/close"
             android:layout_alignParentRight="true"/>
     </RelativeLayout>
 

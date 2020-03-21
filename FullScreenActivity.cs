@@ -23,7 +23,7 @@ namespace TabletArtco
         private bool isPlay;
         //private MediaManager mediaManager;
         private VideoPlayer videoPlayer;
-
+        private SoundPlayer bgmPlayer;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -74,6 +74,8 @@ namespace TabletArtco
             {
                 videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
             }
+            bgmPlayer = new SoundPlayer(this);
+
             FindViewById<ImageView>(Resource.Id.playBt).Click += (t, e) => {
                 Android.Util.Log.Info(Tag, "Click play animation start");
                 if (isPlay)
@@ -84,6 +86,7 @@ namespace TabletArtco
                 Project.RunSprite();
                 //mediaManager.Play();
                 videoPlayer.Play();
+                bgmPlayer.Play(SoundPlayer.bgmPath);
             };
 
             FindViewById<ImageView>(Resource.Id.stopBt).Click += (t, e) => {
@@ -96,7 +99,7 @@ namespace TabletArtco
                 Project.StopSprite();
                 if (Project.currentBack != null)
                 {
-                    videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+                    //videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
                 }
                 videoPlayer.Stop();
                 SoundPlayer.StopAll();
@@ -106,7 +109,6 @@ namespace TabletArtco
                 FindViewById<ImageView>(Resource.Id.stopBt).PerformClick();
                 Finish();
             };
-
 
             AddSpriteView();
         }

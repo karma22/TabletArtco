@@ -35,7 +35,8 @@ namespace TabletArtco
             mVideoView.SetOnPreparedListener(this);
             mVideoView.SetOnInfoListener(this);
             mVideoView.SetOnErrorListener(this);
-            PlayDefault();
+            if(!ActivatedSprite.mIsFull)
+                PlayDefault();
         }
 
         private void PlayDefault() {
