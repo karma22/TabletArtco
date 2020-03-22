@@ -20,6 +20,8 @@ namespace TabletArtco
         private EditText pwdEt { get; set; }
         private ImageView remIv { get; set; }
 
+        private Android.App.AlertDialog dialog;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -28,6 +30,12 @@ namespace TabletArtco
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_login);
             InitView();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            dialog?.Dismiss();
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
@@ -98,12 +106,11 @@ namespace TabletArtco
                 return;
             }
 
-
             View contentView = LayoutInflater.From(this).Inflate(Resource.Layout.dialog_loading, null, false);
             VideoView videoView = contentView.FindViewById<VideoView>(Resource.Id.loading_video);
             videoView.SetOnCompletionListener(this);
 
-            Android.App.AlertDialog dialog = new Android.App.AlertDialog.Builder(this).SetView(contentView).Create();
+            dialog = new Android.App.AlertDialog.Builder(this).SetView(contentView).Create();
             dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
             dialog.SetCancelable(false);
             dialog.Show();
@@ -142,7 +149,6 @@ namespace TabletArtco
                         DBManager.LoadMusic();
 
                         // Enter main page
-                        dialog.Dismiss();
                         Intent intent = new Intent(this, typeof(MainActivity));
                         StartActivity(intent);
                         Finish();

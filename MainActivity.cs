@@ -34,7 +34,7 @@ namespace TabletArtco
         private bool activateBlockScale = false;
         private View dragView;
 
-        Android.Media.MediaRecorder recorder = new Android.Media.MediaRecorder();
+        private Android.Media.MediaRecorder recorder = new Android.Media.MediaRecorder();
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -142,11 +142,16 @@ namespace TabletArtco
                         }
 
                         ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
-                        RequestOptions options = new RequestOptions().Placeholder(Resource.Drawable.home_bg).Frame(0);
+                        //RequestOptions options = new RequestOptions().Placeholder(Resource.Drawable.home_bg).Frame(0);
+                        //Glide.With(this)
+                        //    .AsBitmap()
+                        //    .Load(background.remoteVideoPath)
+                        //    .Apply(options)
+                        //    .Into(imgIv);
+
                         Glide.With(this)
-                            .AsBitmap()
-                            .Load(background.remoteVideoPath)
-                            .Apply(options)
+                            .Load(background.remotePreviewImgPath != null? background.remotePreviewImgPath : background.remoteVideoPath)
+                            .Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg))
                             .Into(imgIv);
 
                         Project.currentBack = background;
@@ -325,29 +330,34 @@ namespace TabletArtco
                         case 5:
                             {
                                 // save project
-        
-                                //recorder.SetAudioSource(Android.Media.AudioSource.Mic);
-                                //recorder.SetVideoSource(Android.Media.VideoSource.Surface);
-                                ////recorder.SetProfile(CamcorderProfile.Get(CamcorderQuality.High));
-                                //recorder.SetOutputFile(UserDirectoryPath.userSoundPath + "/test.mp4");
-                                //recorder.SetVideoSize(500,500);
 
-                                //recorder.SetOutputFormat(Android.Media.OutputFormat.Mpeg4);
-                                //recorder.SetVideoEncoder(Android.Media.VideoEncoder.H264);
-                                //recorder.SetAudioEncoder(Android.Media.AudioEncoder.Aac);
-                                //recorder.SetVideoEncodingBitRate(512 * 1000);
-                                //recorder.SetVideoFrameRate(30);
+                                recorder.SetAudioSource(Android.Media.AudioSource.Mic);
+                                recorder.SetVideoSource(Android.Media.VideoSource.Surface);
 
-                                //recorder.Prepare();
-                                //recorder.Start();
+                                //recorder.SetProfile(Android.Media.CamcorderProfile.Get(Android.Media.CamcorderQuality.High));
+
+                                recorder.SetOutputFormat(Android.Media.OutputFormat.Mpeg4);
+                                recorder.SetVideoEncoder(Android.Media.VideoEncoder.Default);
+                                recorder.SetAudioEncoder(Android.Media.AudioEncoder.Aac);
+                                recorder.SetVideoEncodingBitRate(512 * 1000);
+                                recorder.SetVideoFrameRate(30);
+
+                                recorder.SetOutputFile(UserDirectoryPath.userSoundPath + "/test.mp4");
+                                recorder.SetVideoSize(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this));
+                                
+                                recorder.Prepare();
+                                recorder.Start();
 
                                 break;
                             }
                         case 6:
                             {
                                 // to project activity
-                                Intent intent = new Intent(this, typeof(ProjectActivity));
-                                StartActivityForResult(intent, 6, null);
+                                //Intent intent = new Intent(this, typeof(ProjectActivity));
+                                //StartActivityForResult(intent, 6, null);
+
+                                recorder.Stop();
+                                recorder.Reset();
 
                                 break;
                             }
@@ -658,12 +668,12 @@ namespace TabletArtco
                                 mainViewHighlight.Visibility = ViewStates.Invisible;
                                 isPlay = false;
                                 Project.StopSprite();
+                                videoPlayer.Stop();
+                                SoundPlayer.StopAll();
                                 if (Project.currentBack != null)
                                 {
                                     //videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
                                 }
-                                videoPlayer.Stop();
-                                SoundPlayer.StopAll();
                                 break;
                             }
                         case 3:

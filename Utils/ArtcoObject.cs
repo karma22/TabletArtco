@@ -175,11 +175,13 @@ namespace TabletArtco
 
                 Sprite sprite = new Sprite();
                 sprite.name = name;
+                sprite.category = 100;
                 sprite.bitmap = bmpList[0];
                 Project.AddSprite(sprite);
+
                 int lastSprite = Project.mSprites.Count - 1;
-                //Project.mSprites[lastSprite].originBitmapList = bmpList;
-                //Project.mSprites[lastSprite].curbitmapList = bmpList;
+                Project.mSprites[lastSprite].originBitmapList = bmpList;
+                Project.mSprites[lastSprite].curbitmapList = bmpList;
                 Project.mSprites[lastSprite].originPoint.X = x;
                 Project.mSprites[lastSprite].originPoint.Y = y;
                 Project.mSprites[lastSprite].curPoint.X = x;

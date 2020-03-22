@@ -24,6 +24,8 @@ namespace TabletArtco
         // sprite animation thread
         public static List<Java.Lang.Thread> codeThreadList { get; set; } = new List<Java.Lang.Thread>();
 
+        public static Dictionary<string, int> sendSignalWait { get; set; } = new Dictionary<string, int>();
+
         public static void ChangeMode(bool isFull)
         {
             ActivatedSprite.mIsFull = isFull;
@@ -107,6 +109,7 @@ namespace TabletArtco
         {
             Android.Util.Log.Info("StopCode", "-----------------------");
             ActivatedSprite.isAnimationTag = false;
+            Project.sendSignalWait.Clear();
             for (int i = 0; i < Project.mSprites.Count; i++)
             {
                 var sprite = Project.mSprites[i];

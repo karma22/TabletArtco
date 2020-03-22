@@ -78,15 +78,15 @@ namespace TabletArtco
 
             if (isPlay && mPath != null)
             {
-                mPreImgIv.Visibility = Android.Views.ViewStates.Visible;
-                if (path != null)
-                {
-                    Glide.With(mCxt).Load(GlideUtil.GetGlideUrl(path)).Apply(new Com.Bumptech.Glide.Request.RequestOptions().Placeholder(Resource.Drawable.home_bg)).Into(mPreImgIv);
-                }
-                else if (img != null)
-                {
-                    Glide.With(mCxt).Load(GlideUtil.GetGlideUrl(path)).Apply(new Com.Bumptech.Glide.Request.RequestOptions().Placeholder(Resource.Drawable.home_bg)).Into(mPreImgIv);
-                }
+                //mPreImgIv.Visibility = Android.Views.ViewStates.Visible;
+                //if (path != null)
+                //{
+                //    Glide.With(mCxt).Load(GlideUtil.GetGlideUrl(path)).Apply(new Com.Bumptech.Glide.Request.RequestOptions().Placeholder(Resource.Drawable.home_bg)).Into(mPreImgIv);
+                //}
+                //else if (img != null)
+                //{
+                //    Glide.With(mCxt).Load(GlideUtil.GetGlideUrl(path)).Apply(new Com.Bumptech.Glide.Request.RequestOptions().Placeholder(Resource.Drawable.home_bg)).Into(mPreImgIv);
+                //}
             }
 
             mPath = path;

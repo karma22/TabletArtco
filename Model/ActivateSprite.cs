@@ -430,7 +430,9 @@ namespace TabletArtco
                 }
 
             }
+
             BlockThreadList.RemoveRange(0, BlockThreadList.Count);
+
             for (int i = 0; i < originBitmapList.Count; i++)
             { 
                 Bitmap bitmap = curbitmapList[i];
@@ -438,6 +440,7 @@ namespace TabletArtco
                 curbitmapList[i] = Bitmap.CreateBitmap(originBm);
                 //bitmap.Recycle();
             }
+
             curSize = new Size(curbitmapList[0].Width, curbitmapList[0].Height);
             stopThisSprite = false;
             isVisible = true;
@@ -445,6 +448,7 @@ namespace TabletArtco
             ChangeMode();
             curIndex = 0;
             curAngle = 0;
+
             if (mUpdateDelegate != null)
             {
                 mUpdateDelegate.UpdateView();
@@ -486,8 +490,14 @@ namespace TabletArtco
                         {
                             idx = 0;
                             list[0].collionSignal = false;
-                        } 
-                        continue;
+
+                            if(list[0].name.Equals("ControlRecvSig") && Project.sendSignalWait.ContainsKey(list[0].text))
+                            {
+                                Project.sendSignalWait[list[0].text]++;
+                            }
+                            continue;
+                        }
+                        break;
                     }
                     Block block = list[idx];
                     string blockName = list[idx].name;
@@ -645,6 +655,43 @@ namespace TabletArtco
                         if (block.text != null)
                         {
                             Signal.SendSignal(block.text);
+                        }
+                    }
+                    else if (blockName.Equals("ControlSendSignalWait"))
+                    {
+                        if (block.text != null)
+                        {
+                            if(!Project.sendSignalWait.ContainsKey(block.text))
+                            {
+                                Project.sendSignalWait.Add(block.text, 0);
+                                Signal.SendSignal(block.text);
+
+                                int num = 0;
+                                for (int i = 0; i < Project.mSprites.Count; i++)
+                                {
+                                    for (int j = 0; j < Project.mSprites[i].mBlocks.Count; j++)
+                                    {
+                                        Block temp = Project.mSprites[i].mBlocks[j][0];
+                                        if (temp.name.Equals("ControlRecvSig") && temp.text != null)
+                                        {
+                                            if (temp.text.Equals(block.text))
+                                            {
+                                                num++;
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                while (isAnimationTag && !stopThisSprite)
+                                {
+                                    Thread.Sleep(10);
+                                    if(Project.sendSignalWait.ContainsKey(block.text))
+                                    {
+                                        if (Project.sendSignalWait[block.text] == num)
+                                            break;
+                                    }
+                                }
+                            }
                         }
                     }
                     else if (blockName.Equals("ControlAdditionBackground"))
