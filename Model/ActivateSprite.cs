@@ -24,6 +24,7 @@ namespace TabletArtco
         public Point originPoint { get; set; } = new Point(0, 0);
 
         // animation arguments
+        public bool stopThisSprite = false;
         public bool isVisible { get; set; } = true;
         public Point curPoint { get; set; } = new Point(0, 0);
         public Size curSize { get; set; } = new Size(0, 0);
@@ -60,7 +61,7 @@ namespace TabletArtco
             {
                 sprite.name = sprite.name+"1";
             }
-            
+
             curbitmapList.Add(Bitmap.CreateBitmap(sprite.bitmap));
             originBitmapList.Add(Bitmap.CreateBitmap(sprite.bitmap));
             int width = sprite.bitmap.Width;
@@ -438,6 +439,7 @@ namespace TabletArtco
                 //bitmap.Recycle();
             }
             curSize = new Size(curbitmapList[0].Width, curbitmapList[0].Height);
+            stopThisSprite = false;
             isVisible = true;
             speakText = null;
             ChangeMode();
@@ -474,7 +476,7 @@ namespace TabletArtco
             List<int> repeat = new List<int>();
             List<int> loopCnt = new List<int>();
             int idx = 0;
-            while (isAnimationTag) {
+            while (isAnimationTag && !stopThisSprite) {
                 try
                 {
                     if (!isAnimationTag) break;
@@ -623,6 +625,7 @@ namespace TabletArtco
                     else if (blockName.Equals("ControlSpeak")) ControlSpeak(block.text);
                     else if (blockName.Equals("ControlSpeakStop")) ControlSpeak(null);
                     else if (blockName.Equals("ControlSound")) SoundPlayer(block.varValue);
+                    else if (blockName.Equals("ControlStop")) ControlStop();
                     else if (blockName.Equals("ControlChangeVal"))
                     {
                         if (block.varName != null && Variable.curVariableMap.ContainsKey(block.varName))
@@ -1009,7 +1012,7 @@ namespace TabletArtco
 
             int repeat = Block.GetBlockTextOrVarName(block);
             int i = 0;
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (block != null && i == repeat)
                     break;
@@ -1058,7 +1061,7 @@ namespace TabletArtco
 
             int repeat = Block.GetBlockTextOrVarName(block);
             int i = 0;
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (block != null && i == repeat)
                     break;
@@ -1102,7 +1105,7 @@ namespace TabletArtco
             bool flag = true;
             int repeat = Block.GetBlockTextOrVarName(block);
             int i = 0;
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (block != null && i == repeat * 2)
                     break;
@@ -1117,7 +1120,7 @@ namespace TabletArtco
         // 旋转
         public void RotateLoop(float angle, bool cw, bool isInfinite)
         {
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 angle = cw ? angle : 360.0f - angle;
                 curAngle += angle;
@@ -1138,7 +1141,7 @@ namespace TabletArtco
             int repeat = Block.GetBlockTextOrVarName(block);
             int i = 0;
 
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (i == repeat*(int)(360/angle))
                     break;
@@ -1193,14 +1196,14 @@ namespace TabletArtco
 
             int repeat = Block.GetBlockTextOrVarName(block);
             int iteration = 0;
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (block != null && iteration == repeat)
                     break;
 
                 if (isRight)
                 {
-                    for (double i = 0; i <= 360 && isAnimationTag; i++)
+                    for (double i = 0; i <= 360 && isAnimationTag && !stopThisSprite; i++)
                     {
                         InvalidateStage();
 
@@ -1223,7 +1226,7 @@ namespace TabletArtco
                 }
                 else
                 {
-                    for (double i = 0; i <= 360 && isAnimationTag; i++)
+                    for (double i = 0; i <= 360 && isAnimationTag && !stopThisSprite; i++)
                     {
                         InvalidateStage();
                         if (curPoint.X - 20 > 0)
@@ -1259,14 +1262,14 @@ namespace TabletArtco
 
             int repeat = Block.GetBlockTextOrVarName(block);
             int iteration = 0;
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (block != null && iteration == repeat)
                     break;
 
                 if (isDown)
                 {
-                    for (double i = 0; i <= 360; i++)
+                    for (double i = 0; i <= 360 && isAnimationTag && !stopThisSprite; i++)
                     {
                         InvalidateStage();
 
@@ -1288,7 +1291,7 @@ namespace TabletArtco
                 }
                 else
                 {
-                    for (double i = 0; i <= 360; i++)
+                    for (double i = 0; i <= 360 && isAnimationTag && !stopThisSprite; i++)
                     {
                         InvalidateStage();
 
@@ -1313,7 +1316,7 @@ namespace TabletArtco
         public void RandomMove()
         {
             LogUtil.CustomLog("RandomMove");
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 int random = (int)(1 + Java.Lang.Math.Random() * (9 - 1 + 1)); //1~8 move arrow
                 int n = (int)(1 + Java.Lang.Math.Random() * (6 - 1 + 1)); // 1~5 delay time
@@ -1337,14 +1340,14 @@ namespace TabletArtco
 
             int repeat = Block.GetBlockTextOrVarName(block);
             int iteration = 0;
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (block != null && iteration == repeat)
                     break;
 
                 if (isRight)
                 {
-                    for (double i = 0; i <= 360; i++)
+                    for (double i = 0; i <= 360 && isAnimationTag && !stopThisSprite; i++)
                     {
                         InvalidateStage();
 
@@ -1367,7 +1370,7 @@ namespace TabletArtco
                 }
                 else
                 {
-                    for (double i = 0; i <= 360; i++)
+                    for (double i = 0; i <= 360 && isAnimationTag && !stopThisSprite; i++)
                     {
                         InvalidateStage();
 
@@ -1407,14 +1410,14 @@ namespace TabletArtco
 
             int repeat = Block.GetBlockTextOrVarName(block);
             int iteration = 0;
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (block != null && iteration == repeat)
                     break;
 
                 if (isDown)
                 {
-                    for (double i = 0; i <= 360; i++)
+                    for (double i = 0; i <= 360 && isAnimationTag && !stopThisSprite; i++)
                     {
                         InvalidateStage();
 
@@ -1435,7 +1438,7 @@ namespace TabletArtco
                 }
                 else
                 {
-                    for (double i = 0; i <= 360; i++)
+                    for (double i = 0; i <= 360 && isAnimationTag && !stopThisSprite; i++)
                     {
                         InvalidateStage();
 
@@ -1471,7 +1474,7 @@ namespace TabletArtco
         {
             LogUtil.CustomLog("BounceMove");
             Wall wall = Wall.Default;
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (curMoveArrow != MoveArrow.RightDown && curMoveArrow != MoveArrow.LeftDown && curMoveArrow != MoveArrow.LeftUp)
                 {
@@ -1512,16 +1515,16 @@ namespace TabletArtco
 
             int repeat = Block.GetBlockTextOrVarName(block);
             int iteration = 0;
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (block != null && iteration == repeat)
                     break;
 
-                for (int i = 5; i > 0; i--)
+                for (int i = 5; i > 0 && isAnimationTag && !stopThisSprite; i--)
                 {
                     MoveSprite(i * 10, 1, MoveArrow.Up, 100);
                 }
-                for (int i = 1; i <= 5; i++)
+                for (int i = 1; i <= 5 && isAnimationTag && !stopThisSprite; i++)
                 {
                     MoveSprite(i * 10, 1, MoveArrow.Down, 100);
                 }
@@ -1539,7 +1542,7 @@ namespace TabletArtco
 
             int repeat = Block.GetBlockTextOrVarName(block);
             int iteration = 0;
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (block != null && iteration == repeat * 2)
                     break;
@@ -1547,7 +1550,7 @@ namespace TabletArtco
                 moveArrow = moveArrow == MoveArrow.Left ? MoveArrow.Right : MoveArrow.Left;
                 int delay = 1;
                 int zero = curPoint.Y;
-                for (int i = 0; i <= 180; i++)
+                for (int i = 0; i <= 180  && isAnimationTag && !stopThisSprite; i++)
                 {
                     curPoint.Y = (int)(-Java.Lang.Math.Sin(DegreeToRadian(i)) * 100.0) + zero;
                     curPoint.X += (6 - (int)moveArrow);
@@ -1579,7 +1582,7 @@ namespace TabletArtco
             int repeat = Block.GetBlockTextOrVarName(block);
             int i = 0;
 
-            while (isAnimationTag)
+            while (isAnimationTag && !stopThisSprite)
             {
                 if (block != null && i == repeat)
                     break;
@@ -1622,7 +1625,7 @@ namespace TabletArtco
         public void FlipXSprite()
         {
             Matrix matrix = new Matrix();
-            matrix.SetScale(-1, 1);
+            matrix.SetScale(1, -1);
             for (int i = 0; i < curbitmapList.Count; i++)
             {
                 Bitmap bitmap = curbitmapList[i];
@@ -1636,7 +1639,7 @@ namespace TabletArtco
         public void FlipYSprite()
         {
             Matrix matrix = new Matrix();
-            matrix.SetScale(1, -1);
+            matrix.SetScale(-1, 1);
             for (int i = 0; i < curbitmapList.Count; i++)
             {
                 Bitmap bitmap = curbitmapList[i];
@@ -1711,6 +1714,11 @@ namespace TabletArtco
             //LogUtil.CustomLog("3333");
             //Thread.Sleep(2000);
             //soundText = null;
+        }
+
+        public void ControlStop()
+        {
+            stopThisSprite = true;
         }
     }
 }

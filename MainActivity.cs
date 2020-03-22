@@ -11,6 +11,7 @@ using Java.Lang;
 using Android.Graphics;
 using System.Linq;
 using System.IO;
+using Com.Bumptech.Glide.Request;
 
 namespace TabletArtco
 {
@@ -27,8 +28,8 @@ namespace TabletArtco
         private int mSpriteIndex = -1;
         private int mLongPressSpriteIndex = -1;
         private bool isPlay;
-        //private MediaManager mediaManager;
         private VideoPlayer videoPlayer;
+        private bool isMute = false;
         private SoundPlayer bgmPlayer;
         private bool activateBlockScale = false;
         private View dragView;
@@ -139,6 +140,15 @@ namespace TabletArtco
                         {
                             return;
                         }
+
+                        ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
+                        RequestOptions options = new RequestOptions().Placeholder(Resource.Drawable.home_bg).Frame(0);
+                        Glide.With(this)
+                            .AsBitmap()
+                            .Load(background.remoteVideoPath)
+                            .Apply(options)
+                            .Into(imgIv);
+
                         Project.currentBack = background;
                         //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                         videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
@@ -508,6 +518,9 @@ namespace TabletArtco
                         switch (tag) {
                             case 0:
                                 {
+                                    if (isPlay)
+                                        break;
+
                                     VariableInitDialog dialog = new VariableInitDialog(this, (name, value) => {
                                         Variable.variableMap[name] = value;
                                         mVariableAdapter.NotifyDataSetChanged();
@@ -553,9 +566,9 @@ namespace TabletArtco
             LinearLayout mainViewHighlight = FindViewById<LinearLayout>(Resource.Id.mainView_highlight);
             ViewUtil.SetViewHeight(mainViewHighlight, (int)height);
 
-            int[] sbtsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4 };
+            int[] sbtsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4, Resource.Id.bt_center5 };
             int itemW = (int)(42 / 549.0 * height);
-            // home、play、stop、full button
+            // home、play、stop、full button, bgm mute
             for (int i = 0; i < sbtsResIds.Length; i++)
             {
                 ImageView imgBt1 = FindViewById<ImageView>(sbtsResIds[i]);
@@ -628,7 +641,9 @@ namespace TabletArtco
                                 Project.RunSprite();
                                 //mediaManager.Play();
                                 videoPlayer.Play();
-                                bgmPlayer.Play(SoundPlayer.bgmPath);
+                                if(!isMute)
+                                    bgmPlayer.Play(SoundPlayer.bgmPath);
+
                                 break;
                             }
                         case 2:
@@ -660,6 +675,26 @@ namespace TabletArtco
                                 //full button click
                                 Intent intent = new Intent(this, typeof(FullScreenActivity));
                                 StartActivity(intent);
+                                break;
+                            }
+                        case 4:
+                            {
+                                //bgm mute button click
+                                if (isPlay)
+                                {
+                                    return;
+                                }
+
+                                isMute = !isMute;
+                                if(isMute)
+                                {
+                                    ((ImageView)t).SetBackgroundResource(Resource.Drawable.BGM_mute);
+                                }
+                                else
+                                {
+                                    ((ImageView)t).SetBackgroundResource(Resource.Drawable.BGM);
+                                }
+
                                 break;
                             }
                         default:

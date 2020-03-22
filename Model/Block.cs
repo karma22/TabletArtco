@@ -5,8 +5,8 @@ namespace TabletArtco
     class Block
     {
         public static int[] blockTab0ResIds = {
-            Resource.Drawable.Eventblock_Start, Resource.Drawable.Eventblock_RecvSignal, Resource.Drawable.Eventblock_InputKey,
-            Resource.Drawable.Eventblock_Touch, Resource.Drawable.Eventblock_ClickSprite, Resource.Drawable.Eventblock_Clone
+            Resource.Drawable.Eventblock_Start, Resource.Drawable.Eventblock_RecvSignal, Resource.Drawable.Eventblock_Touch,
+            Resource.Drawable.Eventblock_ClickSprite, Resource.Drawable.Eventblock_Clone
         };
 
         public static int[] blockTab1ResIds = {
@@ -33,7 +33,7 @@ namespace TabletArtco
         public static int[] blockTab3ResIds = {
             Resource.Drawable.Contblock_Time1, Resource.Drawable.Contblock_Time2, Resource.Drawable.Contblock_TimeN,
             Resource.Drawable.Contblock_LoopN, Resource.Drawable.Contblock_loop, Resource.Drawable.Contblock_Flag,
-            Resource.Drawable.Contblock_FlipX, Resource.Drawable.Contblock_FlipY, Resource.Drawable.Contblock_NextSprite,
+            Resource.Drawable.Contblock_FlipY, Resource.Drawable.Contblock_FlipX, Resource.Drawable.Contblock_NextSprite,
             Resource.Drawable.Contblock_Show, Resource.Drawable.Contblock_Hide, Resource.Drawable.Contblock_Sound,
             Resource.Drawable.Contblock_Speak, Resource.Drawable.Contblock_SpeakStop, Resource.Drawable.Contblock_AdditionBackground,
             Resource.Drawable.Contblock_SendSignal, Resource.Drawable.Contblock_SendSigWait, Resource.Drawable.Contblock_XY,
@@ -49,8 +49,8 @@ namespace TabletArtco
         };
 
         public static string[] blockTab0ResIdStrs = {
-            "ControlStart", "ControlRecvSig", "EventblockInputKey", 
-            "ControlTouch", "ControlClickSprite", "EventblockClone"
+            "ControlStart", "ControlRecvSig", "ControlTouch",
+            "ControlClickSprite", "EventblockClone"
         };
         
         public static string[] blockTab1ResIdStrs = {
@@ -77,7 +77,7 @@ namespace TabletArtco
         public static string[] blockTab3ResIdStrs = {
             "ControlTime1", "ControlTime2", "ControlTimeN",
             "ControlLoopN", "ControlLoop", "ControlFlag",
-            "ControlFlipX", "ControlFlipY", "ControlNextSprite",
+            "ControlFlipY", "ControlFlipX", "ControlNextSprite",
             "ControlShow", "ControlHide", "ControlSound",
             "ControlSpeak", "ControlSpeakStop", "ControlAdditionBackground",
             "ControlSendSignal", "ControlSendSignalWait", "ControlXY",

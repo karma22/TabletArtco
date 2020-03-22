@@ -1,13 +1,9 @@
-﻿using System;
-using Android.Content;
-using Android.Graphics;
+﻿using Android.Content;
 using Android.Media;
-using Android.OS;
 using Android.Runtime;
 using Android.Views.Animations;
 using Android.Widget;
 using Com.Bumptech.Glide;
-using Com.Bumptech.Glide.Request;
 using Java.Lang;
 
 namespace TabletArtco
@@ -79,13 +75,6 @@ namespace TabletArtco
             mVideoView.StopPlayback();
 
             mSound = sound;
-
-            RequestOptions options = new RequestOptions().Placeholder(Resource.Drawable.home_bg).Frame(0);
-            Glide.With(mCxt)
-                .AsBitmap()
-                .Load(path)
-                .Apply(options)
-                .Into(mPreImgIv);
 
             if (isPlay && mPath != null)
             {
@@ -181,10 +170,10 @@ namespace TabletArtco
 
         public void OnPrepared(MediaPlayer mp)
         {
-            if(mp != soundPlayer)
-            {
-                mp.SetVolume(0f, 0f);
-            }
+            //if(mp != soundPlayer)
+            //{
+            //    mp.SetVolume(0f, 0f);
+            //}
             LogUtil.CustomLog("OnPrepared");
         }
 
