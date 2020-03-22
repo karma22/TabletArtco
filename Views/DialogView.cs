@@ -47,7 +47,8 @@ namespace TabletArtco
                 Resource.Id.tv_key1, Resource.Id.tv_key2, Resource.Id.tv_key3,
                 Resource.Id.tv_key4, Resource.Id.tv_key5, Resource.Id.tv_key6,
                 Resource.Id.tv_key7, Resource.Id.tv_key8, Resource.Id.tv_key9,
-                Resource.Id.tv_key10, Resource.Id.tv_key11, Resource.Id.tv_key12
+                Resource.Id.tv_key10, Resource.Id.tv_key11, Resource.Id.tv_key12,
+                Resource.Id.tv_delete
             };
             for (int i = 0; i < resIds.Length; i++)
             {
@@ -56,14 +57,14 @@ namespace TabletArtco
                 tv.Click += (t, e) =>
                 {
                     int tag = (int)((TextView)t).Tag;
-                    string[] values = { "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "" };
+                    string[] values = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "." };
                     TextView valueTv = view.FindViewById<TextView>(Resource.Id.tv_value);
                     PreHander(valueTv);
                     if (tag < 9)
                     {
                         valueTv.Text = valueTv.Text + values[tag];
                     }
-                    else if (tag > 10)
+                    else if (tag == 9 || tag == 12)
                     {
                         valueTv.Text = valueTv.Text.Length > 0 ? valueTv.Text.Substring(0, valueTv.Text.Length - 1) : "";
                     }

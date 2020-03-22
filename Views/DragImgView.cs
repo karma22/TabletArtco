@@ -102,11 +102,14 @@ namespace TabletArtco
 
         private void Initialize(Context cxt)
         {
+            SetBackgroundResource(Resource.Drawable.SpeakBox);
+            Gravity = GravityFlags.Center;
+            TextSize = 12f;
+            SetPadding(0, 0, 0, 10);
             SetSpeakText(null);
         }
 
         public void SetSpeakText(string text) {
-            SetBackgroundResource(Resource.Drawable.SpeakBox);
             Text = text;
             Visibility = text != null && text.Length > 0 ? ViewStates.Visible : ViewStates.Invisible;
         }

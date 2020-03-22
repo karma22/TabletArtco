@@ -72,7 +72,7 @@ namespace TabletArtco
             int height = ScreenUtil.ScreenHeight(this);
             int margin = (int)(20 / 1280.0 * width);
             int w = width - margin * 2;
-            int topH = (int)(60 / 800.0 * height);
+            int topH = (int)(90 / 975.0 * height);
             int conH = height - topH - margin;
 
             ScrollView scrollView = FindViewById<ScrollView>(Resource.Id.scrollView);
@@ -80,16 +80,16 @@ namespace TabletArtco
             svParams.Width = width;
             svParams.Height = topH;
             scrollView.LayoutParameters = svParams;
-            scrollView.SetPadding(margin, 0, margin, 0);
+            scrollView.SetPadding(margin, (int)(10 / 975.0 * height), margin, 0);
             LinearLayout topView = FindViewById<LinearLayout>(Resource.Id.grid_top_view);
             int[] resIds = {
                 Resource.Drawable.search_bg, Resource.Drawable.ss_animal_tab, Resource.Drawable.ss_nature_tab,
                 Resource.Drawable.ss_life_tab, Resource.Drawable.ss_music_tab, Resource.Drawable.ss_etc_tab,
                 Resource.Drawable.User_tab, Resource.Drawable.storage_recorder_button
             };
-            int editTvH = (int)(30 / 60.0 * topH);
+            int editTvH = (int)(45 / 90.0 * topH);
             int editTvW = (int)(166 / 35.0 * editTvH);
-            int itemH = (int)(34 / 60.0 * topH);
+            int itemH = (int)(50 / 90.0 * topH);
             int itemW = (int)(92 / 35.0 * itemH);
             for (int i = 0; i < resIds.Length; i++)
             {
@@ -159,12 +159,11 @@ namespace TabletArtco
             conView.LayoutParameters = conParams;
             conView.SetPadding(spacing, spacing, spacing, spacing);
 
-            int columnCount = 4;
-            mItemW = (int)((w - (columnCount + 1) * spacing * 1.0) / columnCount);
+            int columnCount = 7;
+            mItemW = (w - (columnCount + 1) * spacing) / columnCount;
             mItemH = mItemW;
 
             GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
-            gridView.SetColumnWidth(200);
             gridView.SetNumColumns(columnCount);
             gridView.SetVerticalSpacing(spacing);
             gridView.SetHorizontalSpacing(spacing);

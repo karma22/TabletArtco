@@ -54,10 +54,10 @@
             android:id="@+id/record_timer"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginStart="150dp"
-            android:layout_marginTop="170dp"
+            android:layout_marginStart="190dp"
+            android:layout_marginTop="165dp"
             android:text="00:00"
-            android:textSize="20dp"
+            android:textSize="25dp"
         />
         
     </RelativeLayout>

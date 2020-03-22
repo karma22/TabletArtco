@@ -36,7 +36,8 @@ namespace TabletArtco
             int height = ScreenUtil.ScreenHeight(this);
             int margin = (int)(20 / 1280.0 * width);
             int w = width - margin * 2;
-            int topH = (int)(60 / 800.0 * height);
+            //int topH = (int)(60 / 800.0 * height);
+            int topH = (int)(90 / 975.0 * height);
             int conH = height - topH - margin;
 
             ScrollView scrollView = FindViewById<ScrollView>(Resource.Id.scrollView);
@@ -44,7 +45,7 @@ namespace TabletArtco
             svParams.Width = width;
             svParams.Height = topH;
             scrollView.LayoutParameters = svParams;
-            scrollView.SetPadding(margin, 0, margin, 0);
+            scrollView.SetPadding(margin, (int)(10/975.0*height), margin, 0);
             LinearLayout topView = FindViewById<LinearLayout>(Resource.Id.grid_top_view);
             int[] resIds = {
                 Resource.Drawable.search_bg, Resource.Drawable.User_tab, Resource.Drawable.momochung_tab,
@@ -52,9 +53,9 @@ namespace TabletArtco
                 Resource.Drawable.ps_insect_tab, Resource.Drawable.ps_character_tab, Resource.Drawable.ps_food_tab,
                 Resource.Drawable.ps_traffic_tab, Resource.Drawable.ps_object_tab, Resource.Drawable.ps_etc_tab
             };
-            int editTvH = (int)(30 / 60.0 * topH);
+            int editTvH = (int)(38 / 90.0 * topH);
             int editTvW = (int)(166 / 35.0 * editTvH);
-            int itemH = (int)(34 / 60.0 * topH);
+            int itemH = (int)(42 / 90.0 * topH);
             int itemW = (int)(92 / 35.0 * itemH);
             for (int i = 0; i < resIds.Length; i++)
             {

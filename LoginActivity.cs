@@ -1,18 +1,20 @@
-﻿
-using Android.App;
+﻿using Android.App;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.Runtime;
 using Android.Widget;
 using System;
 using Android.Content;
-
+using Android.Graphics;
+using Android.Graphics.Drawables;
+using Android.Views;
+using Android.Media;
 
 namespace TabletArtco
 {
     [Activity(Theme = "@style/AppTheme", MainLauncher = true)]
     //[Activity(Theme = "@style/AppTheme")]
-    public class LoginActivity : AppCompatActivity
+    public class LoginActivity : AppCompatActivity, MediaPlayer.IOnCompletionListener
     {
         private EditText accountEt { get; set; }
         private EditText pwdEt { get; set; }
@@ -96,29 +98,62 @@ namespace TabletArtco
                 return;
             }
 
-            // If verification is passed，to sign in;
-            if (!DBManager.CheckLogin(account, pwd))
+
+            View contentView = LayoutInflater.From(this).Inflate(Resource.Layout.dialog_loading, null, false);
+            VideoView videoView = contentView.FindViewById<VideoView>(Resource.Id.loading_video);
+            videoView.SetOnCompletionListener(this);
+
+            Android.App.AlertDialog dialog = new Android.App.AlertDialog.Builder(this).SetView(contentView).Create();
+            dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
+            dialog.SetCancelable(false);
+            dialog.Show();
+
+            Android.Net.Uri url = Android.Net.Uri.Parse("android.resource://" + PackageName + "/raw/" + Resource.Raw.ARTCO_Loding);
+            videoView.SetVideoURI(url);
+            videoView.Start();
+
+            new Java.Lang.Thread(new Java.Lang.Runnable(() =>
             {
-                Toast.MakeText(this, "登录失败", ToastLength.Short).Show();
-                return;
-            }
+                // If verification is passed，to sign in;
+                if (!DBManager.CheckLogin(account, pwd))
+                {
+                    dialog.Dismiss();
+                    Toast.MakeText(this, "登录失败", ToastLength.Short).Show();
+                }
+                else
+                {
+                    //if password is remembered, write userinfo to sharedPreference
+                    Boolean isRem = SharedPres.GetBoolean("isremember", false);
+                    if (isRem)
+                    {
+                        Editor.PutString("username", account).Commit();
+                        Editor.PutString("password", pwd).Commit();
+                    }
 
-            //if password is remembered, write userinfo to sharedPreference
-            Boolean isRem = SharedPres.GetBoolean("isremember", false);
-            if (isRem)
-            {
-                Editor.PutString("username", account).Commit();
-                Editor.PutString("password", pwd).Commit();
-            }
+                    //new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
+                    GlideUtil.username = account;
+                    GlideUtil.pwd = pwd;
 
-            //new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
-            GlideUtil.username = account;
-            GlideUtil.pwd = pwd;
+                    try
+                    {
+                        DBManager.LoadSprites();
+                        DBManager.LoadBackgrounds();
+                        DBManager.LoadSounds();
+                        DBManager.LoadMusic();
 
-            // Enter main page
-            Intent intent = new Intent(this, typeof(MainActivity));
-            StartActivity(intent);
-            Finish();
+                        // Enter main page
+                        dialog.Dismiss();
+                        Intent intent = new Intent(this, typeof(MainActivity));
+                        StartActivity(intent);
+                        Finish();
+                    }
+                    catch
+                    {
+                        dialog.Dismiss();
+                    }
+                }
+
+            })).Start();
         }
 
         private ISharedPreferences SharedPres
@@ -135,6 +170,11 @@ namespace TabletArtco
             {
                 return SharedPres.Edit();
             }
+        }
+
+        public void OnCompletion(MediaPlayer mp)
+        {
+            mp.Start();
         }
     }
 }

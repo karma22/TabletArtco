@@ -42,7 +42,6 @@ namespace TabletArtco
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             SetContentView(Resource.Layout.activity_main);
-            LoadResources();
             InitView();
         }
 
@@ -224,6 +223,14 @@ namespace TabletArtco
                 if (FTPManager.ftpManager.UploadResource(stream, fileName))
                 {
                     Toast.MakeText(Application, "Upload Succeeded", ToastLength.Short).Show();
+                    
+                    Sprite sprite = new Sprite()
+                    {
+                        name = editText.Text,
+                        category = 0,
+                        remotePath = DBManager.imgPath + "sprites/" + GlideUtil.username + "/" + fileName
+                    };
+                    Sprite._sprites[0].Add(sprite);
                 }
                 else
                 {
@@ -236,14 +243,6 @@ namespace TabletArtco
             });
 
             builder.Show();
-        }
-
-        public void LoadResources()
-        {
-            DBManager.LoadSprites();
-            DBManager.LoadBackgrounds();
-            DBManager.LoadSounds();
-            DBManager.LoadMusic();
         }
 
         // init view

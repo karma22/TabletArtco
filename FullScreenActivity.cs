@@ -54,7 +54,19 @@ namespace TabletArtco
         protected override void OnPause()
         {
             base.OnPause();
-            //mediaManager.Stop();
+
+            if (!isPlay)
+            {
+                return;
+            }
+            isPlay = false;
+            Project.StopSprite();
+            if (Project.currentBack != null)
+            {
+                //videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+            }
+            videoPlayer.Stop();
+            SoundPlayer.StopAll();
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
@@ -106,7 +118,6 @@ namespace TabletArtco
             };
 
             FindViewById<ImageView>(Resource.Id.closeBt).Click += (t, e) => {
-                FindViewById<ImageView>(Resource.Id.stopBt).PerformClick();
                 Finish();
             };
 

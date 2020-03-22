@@ -27,7 +27,6 @@
             android:id="@+id/gridview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none"
-            android:layout_margin="4px"/>
+            android:scrollbars="none"/>
     </LinearLayout>
 </LinearLayout>
