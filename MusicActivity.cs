@@ -75,6 +75,8 @@ namespace TabletArtco
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(editTvW, editTvH);
                     EditText searchEt = new EditText(this);
                     searchEt.LayoutParameters = lp;
+                    searchEt.SetPadding((int)(30 / 166.0 * editTvW), 0, 0, 0);
+                    searchEt.Gravity = GravityFlags.CenterVertical;
                     searchEt.SetBackgroundResource(resIds[i]);
                     topView.AddView(searchEt);
                 }

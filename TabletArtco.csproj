@@ -243,6 +243,7 @@
     <Compile Include="Adapters\GridAdapter.cs" />
     <Compile Include="Adapters\Delegate.cs" />
     <Compile Include="Adapters\DataSource.cs" />
+    <Compile Include="Utils\ArtcoProject.cs" />
     <Compile Include="Utils\ArtcoObject.cs" />
     <Compile Include="Utils\IOUtil.cs" />
     <Compile Include="Views\RecordDialog.cs" />

@@ -34,7 +34,6 @@ namespace TabletArtco
         private bool activateBlockScale = false;
         private View dragView;
 
-        private Android.Media.MediaRecorder recorder = new Android.Media.MediaRecorder();
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -101,13 +100,17 @@ namespace TabletArtco
                         {
                             return;
                         }
+
                         new Thread(new Runnable(() =>
                         {
                             Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
+                            bitmap.HasAlpha = true;
+                            
                             sprite.bitmap = bitmap;
+                            Project.AddSprite(sprite);
+                            mSpriteIndex = spritesList.Count - 1;
+
                             RunOnUiThread(() => {
-                                Project.AddSprite(sprite);
-                                mSpriteIndex = spritesList.Count - 1;
                                 ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
                                 mSpriteAdapter.NotifyDataSetChanged();
                                 UpdateBlockView();
@@ -330,34 +333,19 @@ namespace TabletArtco
                         case 5:
                             {
                                 // save project
-
-                                recorder.SetAudioSource(Android.Media.AudioSource.Mic);
-                                recorder.SetVideoSource(Android.Media.VideoSource.Surface);
-
-                                //recorder.SetProfile(Android.Media.CamcorderProfile.Get(Android.Media.CamcorderQuality.High));
-
-                                recorder.SetOutputFormat(Android.Media.OutputFormat.Mpeg4);
-                                recorder.SetVideoEncoder(Android.Media.VideoEncoder.Default);
-                                recorder.SetAudioEncoder(Android.Media.AudioEncoder.Aac);
-                                recorder.SetVideoEncodingBitRate(512 * 1000);
-                                recorder.SetVideoFrameRate(30);
-
-                                recorder.SetOutputFile(UserDirectoryPath.userSoundPath + "/test.mp4");
-                                recorder.SetVideoSize(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this));
-                                
-                                recorder.Prepare();
-                                recorder.Start();
+                                SpeakDialog dialog = new SpeakDialog(this, (text) =>
+                                {
+                                    new ArtcoProject(this).SaveProject(text);
+                                });
+                                dialog.Show();
 
                                 break;
                             }
                         case 6:
                             {
                                 // to project activity
-                                //Intent intent = new Intent(this, typeof(ProjectActivity));
-                                //StartActivityForResult(intent, 6, null);
-
-                                recorder.Stop();
-                                recorder.Reset();
+                                Intent intent = new Intent(this, typeof(ProjectActivity));
+                                StartActivityForResult(intent, 6, null);
 
                                 break;
                             }

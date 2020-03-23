@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Android.Graphics;
 using Android.Util;
 using System.Threading;
+using System;
 
 namespace TabletArtco
 {
@@ -55,7 +56,7 @@ namespace TabletArtco
         {
             sprite  = Sprite.ToSprite(s.ToString());
             if(s.category == 0)
-                SetTransparentBit(s.bitmap);
+                SetTransparentBit(s.bitmap, 100);
             sprite.bitmap = s.bitmap;
             if (isClone)
             {
@@ -381,20 +382,24 @@ namespace TabletArtco
         }
 
         // bitmap transparent 
-        public void SetTransparentBit(Bitmap spriteImage)
+        public void SetTransparentBit(Bitmap spriteImage, int tolerance)
         {
             for (int i = 0; i < spriteImage.Width; i++)
             {
                 for (int j = 0; j < spriteImage.Height; j++)
                 {
                     int pixel = spriteImage.GetPixel(i, j);
-                    int a = Color.GetAlphaComponent(pixel);
                     int r = Color.GetRedComponent(pixel);
                     int g = Color.GetGreenComponent(pixel);
                     int b = Color.GetBlueComponent(pixel);
-                    if (r >= 180 && g >= 180 && b >= 180)
+
+                    if (r >= tolerance && g >= tolerance && b >= tolerance)
                     {
-                        spriteImage.SetPixel(i, j, Color.Transparent);
+                        int diff1 = Math.Abs(r - g);
+                        int diff2 = Math.Abs(r - b);
+                        int diff3 = Math.Abs(g - b);
+                        if (diff1 <= 30 && diff2 <= 30 && diff3 <= 30)
+                            spriteImage.SetPixel(i, j, Color.Transparent);
                     }
                 }
             }
@@ -696,9 +701,9 @@ namespace TabletArtco
                     }
                     else if (blockName.Equals("ControlAdditionBackground"))
                     {
-                        if (block.backgroudId != -1)
+                        if (block.backgroundId != -1)
                         {
-                            mUpdateDelegate?.UpdateBackground(block.backgroudId);
+                            mUpdateDelegate?.UpdateBackground(block.backgroundId);
                         }
                     }
                     //else if (blockName.Equals("GameRight")) TurnAndMoveForward(5);

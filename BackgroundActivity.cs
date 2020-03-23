@@ -140,6 +140,8 @@ namespace TabletArtco
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(editTvW, editTvH);
                     EditText searchEt = new EditText(this);
                     searchEt.LayoutParameters = lp;
+                    searchEt.SetPadding((int)(30/166.0 * editTvW), 0, 0, 0);
+                    searchEt.Gravity = GravityFlags.CenterVertical;
                     searchEt.SetBackgroundResource(resIds[i]);
                     topView.AddView(searchEt);
                 }
@@ -309,7 +311,7 @@ namespace TabletArtco
             if (block != null)
             {
                 block.text = background.name;
-                block.backgroudId = background.idx;
+                block.backgroundId = background.idx;
                 block.varName = background.remotePreviewImgPath;
                 block.varValue = background.remoteVideoPath;
                 Project.backgroundsList.Add(background.idx, background);

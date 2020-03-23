@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Android.Content;
@@ -25,7 +26,6 @@ namespace TabletArtco
 
         public bool SaveObject(ActivatedSprite sprite, string name)
         {
-            //string dirPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/object";
             string dirPath = UserDirectoryPath.objectPath;
             string filePath = dirPath + "/" + name + ".ArtcoObject";
 
@@ -57,19 +57,18 @@ namespace TabletArtco
                 for (int j = 0; j < codes[i].Count; j++)
                 {
                     var code = codes[i][j];
-                    //if (code.blockView.controls != null)
-                    //{
-                    //    string values = code.name;
-                    //    for (int k = 0; k < code.blockView.controls.Count; k++)
-                    //        values += ":" + code.blockView.controls[k].Text;
 
-                    //    values += "\n";
-                    //    header += values;
-                    //}
-                    //else
-                    //{
-                        header += code.name + "\n";
-                    //}
+                    header += code.name;
+                    if (code.text != null && code.text.Length > 0)
+                        header += ">>text>>" + code.text;
+                    if (code.varName != null && code.varName.Length > 0)
+                        header += ">>varName>>" + code.varName;
+                    if (code.varValue != null && code.varValue.Length > 0)
+                        header += ">>varValue>>" + code.varValue;
+                    if (code.backgroundId != -1)
+                        header += ">>backgroundId>>" + code.backgroundId;
+
+                    header += "\n";
                 }
             }
 
@@ -104,7 +103,7 @@ namespace TabletArtco
                     file.Write(bytes[i], 0, bytes[i].Length);
                 }
             }
-            catch (Exception)
+            catch (Java.Lang.Exception)
             {
                 return false;
             }
@@ -124,30 +123,34 @@ namespace TabletArtco
                 int y = int.Parse(splits[1]);
 
                 List<Block> codes = new List<Block>();
-                List<string> values = new List<string>();
 
                 int codeCnt = int.Parse(rdr.ReadLine());
                 for (int i = 0; i < codeCnt; i++)
                 {
                     string codeName = rdr.ReadLine();
-                    var split = codeName.Split(':');
+                    string[] split = codeName.Split(">>");
 
                     Block code = Block.GetBlockByName(split[0]);
-                    if (split.Length > 1)
+                    
+                    for(int j = 1; j < split.Length; j += 2)
                     {
-                        //code = new Block(Block.GetBlockByName(split[0]));
-                        //string value = split[1];
-                        //for (int j = 2; j < split.Length; j++)
-                        //    value += ":" + split[j];
-
-                        //values.Add(value);
+                        if(split[j].Equals("text"))
+                        {
+                            code.text = split[j + 1];
+                        }
+                        else if(split[j].Equals("varName"))
+                        {
+                            code.varName = split[j + 1];
+                        }
+                        else if(split[j].Equals("varValue"))
+                        {
+                            code.varValue = split[j + 1];
+                        }
+                        else if (split[j].Equals("backgroundId"))
+                        {
+                            code.backgroundId = Integer.ParseInt(split[j + 1]);
+                        }
                     }
-                    else
-                    {
-                        //code = new Block(Block.GetBlockByName(split[0]));
-                        //values.Add(null);
-                    }
-
                     codes.Add(code);
                 }
 
@@ -190,24 +193,9 @@ namespace TabletArtco
                 for (int i = 0; i < codes.Count; i++)
                 {
                     Project.mSprites[lastSprite].AddBlock(codes[i]);
-                    //if (values[i] != null)
-                    //{
-                    //    string[] value = values[i].Split(':');
-                    //    if (value.Length > 1)
-                    //    {
-                    //        for (int j = 0; j < codes[i].blockView.controls.Count; j++)
-                    //            codes[i].blockView.controls[j].Text = value[j];
-
-                    //        UserVariableManager.AddVariable(value[0], double.Parse(value[1]));
-                    //    }
-                    //    else
-                    //    {
-                    //        codes[i].blockView.controls[0].Text = value[0];
-                    //    }
-                    //}
                 }
             }
-            catch (Exception e)
+            catch (Java.Lang.Exception e)
             {
                 return false;
             }

@@ -87,6 +87,8 @@ namespace TabletArtco
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(editTvW, editTvH);
                     EditText searchEt = new EditText(this);
                     searchEt.LayoutParameters = lp;
+                    searchEt.SetPadding((int)(30 / 166.0 * editTvW), 0, 0, 0);
+                    searchEt.Gravity = GravityFlags.CenterVertical;
                     searchEt.SetBackgroundResource(resIds[i]);
                     topView.AddView(searchEt);
                 }
@@ -172,7 +174,16 @@ namespace TabletArtco
 
         public void ClickItem(int position)
         {
-            bool result = new ArtcoObject(this).LoadObject(filePathList[mIndex][position]);
+            bool result = false;
+            if (mIndex == 0)
+            {
+                result = new ArtcoProject(this).LoadProject(filePathList[mIndex][position]);
+            }
+            else
+            {
+                result = new ArtcoObject(this).LoadObject(filePathList[mIndex][position]);
+            }
+
             Intent intent = new Intent();
             if (result)
                 SetResult(Result.Ok, intent);
