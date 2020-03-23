@@ -111,7 +111,9 @@ namespace TabletArtco
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             viewHolder.txtTv.Tag = position;
             viewHolder.txtTv.Text = name;
+            viewHolder.txtTv.SetTextSize(Android.Util.ComplexUnitType.Dip, 20);
             viewHolder.txtTv.SetTextColor(selectIndex == position ? Color.Red : Color.Black); 
+
             if (mImgList != null && mImgList.Count > 0)
             {
                 string url = mImgList[position];
@@ -473,6 +475,198 @@ namespace TabletArtco
             dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
         }
     }
+
+    /***********************************************************************************
+    ************************************************************************************
+    * 
+    * ControlXYDialog
+    * 
+    ************************************************************************************
+    ************************************************************************************/
+    class ControlXYDialog : Delegate, DataSource
+    {
+        Action<string, string> mAction;
+
+        public Context mCxt;
+        public AlertDialog dialog = null;
+        public List<string> mList { get; set; } = new List<string>();
+
+        public int selectIndexX = -1;
+        //public int selectIndexY = -1;
+
+        public ListAdapter mAdapterX;
+        //public ListAdapter mAdapterY;
+
+        public int selectTextBox = 0;
+        public int VariableSelelctMode = 0;
+
+        public ControlXYDialog(Context context, Action<string, string> action)
+        {
+            mCxt = context;
+            mAction = action;
+            initView(context);
+        }
+
+        public void Show()
+        {
+            dialog?.Show();
+        }
+
+        public void Dismiss()
+        {
+            dialog?.Dismiss();
+        }
+
+        private void initView(Context context)
+        {
+            View contentView = LayoutInflater.From(context).Inflate(Resource.Layout.dialog_xy_select, null, false);
+            RelativeLayout view = contentView.FindViewById<RelativeLayout>(Resource.Id.VariableSelectView);
+
+            view.Visibility = ViewStates.Visible;
+            dialog = new AlertDialog.Builder(context).SetView(contentView).Create();
+            TextView cancelBt = view.FindViewById<TextView>(Resource.Id.tv_cancel);
+            TextView confirmBt = view.FindViewById<TextView>(Resource.Id.tv_confirm);
+            TextView valueTvX = view.FindViewById<TextView>(Resource.Id.tv_valueX);
+            TextView valueTvY = view.FindViewById<TextView>(Resource.Id.tv_valueY);
+
+            cancelBt.Click += (t, e) =>
+            {
+                dialog.Dismiss();
+            };
+            confirmBt.Click += (t, e) =>
+            {
+                mAction?.Invoke(valueTvX.Text, valueTvY.Text);
+                dialog.Dismiss();
+            };
+            valueTvX.Click += (t, e) =>
+            {
+                selectTextBox = 0;
+            };
+            valueTvY.Click += (t, e) =>
+            {
+                selectTextBox = 1;
+            };
+
+            mAdapterX = new ListAdapter(this, this);
+            ListView listViewX = view.FindViewById<ListView>(Resource.Id.listviewX);
+            listViewX.Adapter = mAdapterX;
+
+            HandleInput(view);
+            dialog.Window.SetLayout(ScreenUtil.dip2px(context, 347), ScreenUtil.dip2px(context, 339));
+            dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
+        }
+
+        public void HandleInput(View view)
+        {
+            int[] resIds = {
+                Resource.Id.tv_key1, Resource.Id.tv_key2, Resource.Id.tv_key3,
+                Resource.Id.tv_key4, Resource.Id.tv_key5, Resource.Id.tv_key6,
+                Resource.Id.tv_key7, Resource.Id.tv_key8, Resource.Id.tv_key9,
+                Resource.Id.tv_key10, Resource.Id.tv_key11, Resource.Id.tv_key12,
+            };
+            for (int i = 0; i < resIds.Length; i++)
+            {
+                TextView tv = view.FindViewById<TextView>(resIds[i]);
+                tv.Tag = i;
+                tv.Click += (t, e) =>
+                {
+                    int tag = (int)((TextView)t).Tag;
+                    string[] values = { "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "" };
+                    TextView valueTv;
+                    if (selectTextBox==0)
+                        valueTv = view.FindViewById<TextView>(Resource.Id.tv_valueX);
+                    else
+                        valueTv = view.FindViewById<TextView>(Resource.Id.tv_valueY);
+
+                    PreHander(valueTv);
+                    if (tag < 9)
+                    {
+                        valueTv.Text = valueTv.Text + values[tag];
+                    }
+                    else if (tag < 11)
+                    {
+                        valueTv.Text = valueTv.Text.Length > 0 ? valueTv.Text + values[tag] : "";
+                    }
+                    else
+                    {
+                        valueTv.Text = valueTv.Text.Length > 0 ? valueTv.Text.Substring(0, valueTv.Text.Length - 1) : "";
+                    }
+                };
+            }
+        }
+
+        public void PreHander(TextView tv)
+        {
+            if (VariableSelelctMode == 1)
+            {
+                selectIndexX = -1;
+                VariableSelelctMode = 0;
+                tv.Text = "";
+            }
+        }
+
+        public void ItemClickHander(int position)
+        {
+            VariableSelelctMode = 1;
+            TextView valueTv;
+            if (selectTextBox == 0)
+                valueTv = dialog.FindViewById<TextView>(Resource.Id.tv_valueX);
+            else
+                valueTv = dialog.FindViewById<TextView>(Resource.Id.tv_valueY);
+            valueTv.Text = mList[position];
+        }
+
+        public int GetItemsCount(Java.Lang.Object adapter)
+        {
+            return mList.Count;
+        }
+
+        public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
+        {
+            View convertView = LayoutInflater.From(mCxt).Inflate(Resource.Layout.item_variable, parent, false);
+            ViewUtil.SetViewHeight(convertView, ScreenUtil.dip2px(mCxt, 36));
+            ViewHolder holder = new ViewHolder();
+            holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.imgIv);
+            holder.txtTv = convertView.FindViewById<TextView>(Resource.Id.varTv);
+            convertView.Tag = holder;
+            convertView.Click += (t, e) =>
+            {
+                ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
+                int position = (int)viewHolder.txtTv.Tag;
+                ClickItem(position);
+            };
+            return convertView;
+        }
+
+        public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
+        {
+            string name = mList[position];
+            ViewHolder viewHolder = (ViewHolder)contentView.Tag;
+            viewHolder.txtTv.Tag = position;
+            viewHolder.txtTv.Text = name;
+            viewHolder.txtTv.SetTextSize(Android.Util.ComplexUnitType.Dip, 20);
+            viewHolder.txtTv.SetTextColor(selectIndexX == position ? Color.Red : Color.Black);
+            viewHolder.txtTv.SetPadding(0, 0, 0, 0);
+            viewHolder.imgIv.Visibility = ViewStates.Gone;
+        }
+
+        public void ClickItem(int position)
+        {
+            selectIndexX = position;
+            mAdapterX.NotifyDataSetChanged();
+            ItemClickHander(position);
+        }
+
+        //定义ViewHolder内部类，用于对控件实例进行缓存
+        class ViewHolder : Java.Lang.Object
+        {
+            public ImageView imgIv;
+            public TextView txtTv;
+        }
+    }
+
+
+
 
     /***********************************************************************************
     ************************************************************************************

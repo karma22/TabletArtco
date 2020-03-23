@@ -17,6 +17,8 @@
             android:layout_height="46dp"
             android:layout_marginTop="30dp"
             android:layout_marginRight="40dp"
+            android:textSize="20dp"
+            android:textStyle="bold"
             android:textAlignment="textEnd"
             android:gravity="center_vertical"
             android:layout_alignParentRight="true"/>
@@ -114,13 +116,6 @@
                 android:textAlignment="center"
                 android:text="还没有变量哦"/>
         </RelativeLayout>
-        <TextView
-            android:id="@+id/tv_delete"
-            android:layout_width="53dp"
-            android:layout_height="33dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="26dp"
-            android:layout_marginLeft="22dp"/>
         <TextView
             android:id="@+id/tv_cancel"
             android:layout_width="79dp"

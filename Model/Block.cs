@@ -178,6 +178,29 @@ namespace TabletArtco
                     return list;
                 }
             }
+            List<string> FiveList = new List<string> { "ControlXY" };
+            if (FiveList.Contains(block.name))
+            {
+                if (!string.IsNullOrEmpty(block.varName) && !string.IsNullOrEmpty(block.varValue))
+                {
+                    List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+                    Dictionary<string, string> dic = new Dictionary<string, string>();
+                    dic.Add("x", 27 / 100.0f + "");
+                    dic.Add("y", 24 / 100.0f + "");
+                    dic.Add("w", 63 / 100.0f + "");
+                    dic.Add("h", 24 / 100.0f + "");
+                    dic.Add("text", block.varName);
+                    Dictionary<string, string> dic1 = new Dictionary<string, string>();
+                    dic1.Add("x", 27 / 100.0f + "");
+                    dic1.Add("y", 58 / 100.0f + "");
+                    dic1.Add("w", 63 / 100.0f + "");
+                    dic1.Add("h", 24 / 100.0f + "");
+                    dic1.Add("text", block.varValue);
+                    list.Add(dic);
+                    list.Add(dic1);
+                    return list;
+                }
+            }
             return null;
         }
 
@@ -203,7 +226,8 @@ namespace TabletArtco
                 new List<string>{ "ControlSpeak" },
                 new List<string>{ "ControlSound" },
                 new List<string>{ "ControlAdditionBackground" },
-                new List<string>{ "ControlStart" }
+                new List<string>{ "ControlStart" },
+                new List<string>{ "ControlXY" }
             };
             for (int i = 0; i < list.Count; i++)
             {

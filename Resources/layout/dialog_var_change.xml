@@ -34,6 +34,8 @@
             android:layout_height="32dp"
             android:layout_marginTop="66dp"
             android:layout_marginRight="38dp"
+            android:textSize="20dp"
+            android:textStyle="bold"
             android:textAlignment="textEnd"
             android:gravity="center_vertical"
             android:layout_alignParentRight="true"/>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="24dp"
     android:orientation="horizontal"
-    android:background="@drawable/xml_variable_item_bg">
+    android:background="@drawable/bg_inputbox">
     <TextView
         android:id="@+id/nameTv"
         android:layout_width="0px"
@@ -26,19 +26,14 @@
         android:textSize="12dp"
         android:lines="1"
         android:layout_weight="1"
-        android:background="@drawable/xml_variable_value_item_bg"
         android:padding="2dp"/>
-    <FrameLayout
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginRight="5dp">
-        <ImageView
-            android:id="@+id/deleteIv"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:background="@drawable/ic_mtrl_chip_close_circle"
-            android:layout_gravity="center"
-            android:layout_marginLeft="2dp"/>
-    </FrameLayout>
+    
+    <ImageView
+        android:id="@+id/deleteIv"
+        android:layout_width="17dp"
+        android:layout_height="17dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="2dp"
+        android:background="@drawable/bg_inputbox_button"/>
     
 </LinearLayout>

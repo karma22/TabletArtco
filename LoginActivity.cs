@@ -20,7 +20,8 @@ namespace TabletArtco
         private EditText pwdEt { get; set; }
         private ImageView remIv { get; set; }
 
-        private Android.App.AlertDialog dialog;
+        //private Android.App.AlertDialog dialog;
+        private Dialog dialog;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -110,8 +111,10 @@ namespace TabletArtco
             VideoView videoView = contentView.FindViewById<VideoView>(Resource.Id.loading_video);
             videoView.SetOnCompletionListener(this);
 
-            dialog = new Android.App.AlertDialog.Builder(this).SetView(contentView).Create();
+            dialog = new Dialog(this, Resource.Style.Theme_Design_NoActionBar);
+            dialog.SetContentView(contentView);
             dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
+            dialog.Window.SetLayout(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this));
             dialog.SetCancelable(false);
             dialog.Show();
 
@@ -125,7 +128,10 @@ namespace TabletArtco
                 if (!DBManager.CheckLogin(account, pwd))
                 {
                     dialog.Dismiss();
-                    Toast.MakeText(this, "登录失败", ToastLength.Short).Show();
+                    RunOnUiThread(() =>
+                    {
+                        Toast.MakeText(this, "登录失败", ToastLength.Short).Show();
+                    }); 
                 }
                 else
                 {

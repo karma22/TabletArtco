@@ -237,11 +237,19 @@ namespace TabletArtco
             {
                 float scaleX = fullSize.Width * 1.0f / notFullSize.Width;
                 float scaleY = fullSize.Height * 1.0f / notFullSize.Height;
-                curPoint.X = (int) (originPoint.X * scaleX);
-                curPoint.Y = (int) (originPoint.Y * scaleY);
+
+                originPoint.X = (int)(originPoint.X * scaleX);
+                originPoint.Y = (int)(originPoint.Y * scaleY);
+                curPoint.X = originPoint.X;
+                curPoint.Y = originPoint.Y;
             }
             else
             {
+                float scaleX = notFullSize.Width * 1.0f / fullSize.Width;
+                float scaleY = notFullSize.Height * 1.0f / fullSize.Height;
+
+                originPoint.X = (int)(originPoint.X * scaleX);
+                originPoint.Y = (int)(originPoint.Y * scaleY);
                 curPoint.X = originPoint.X;
                 curPoint.Y = originPoint.Y;
             }
@@ -354,8 +362,17 @@ namespace TabletArtco
             Bitmap bitmap = originBitmapList[0];
             int width = bitmap.Width;
             int height = bitmap.Height;
-            int mW = notFullSize.Width - width + 1;
-            int mH = notFullSize.Height - height + 1;
+            int mW, mH;
+            if(mIsFull)
+            {
+                mW = fullSize.Width - width + 1;
+                mH = fullSize.Height - height + 1;
+            }
+            else
+            {
+                mW = notFullSize.Width - width + 1;
+                mH = notFullSize.Height - height + 1;
+            }
 
             int oX = originPoint.X + x;
             int oY = originPoint.Y + y;
@@ -450,7 +467,6 @@ namespace TabletArtco
             stopThisSprite = false;
             isVisible = true;
             speakText = null;
-            ChangeMode();
             curIndex = 0;
             curAngle = 0;
 
@@ -641,6 +657,7 @@ namespace TabletArtco
                     else if (blockName.Equals("ControlSpeakStop")) ControlSpeak(null);
                     else if (blockName.Equals("ControlSound")) SoundPlayer(block.varValue);
                     else if (blockName.Equals("ControlStop")) ControlStop();
+                    else if (blockName.Equals("ControlXY")) ControlXY(block);
                     else if (blockName.Equals("ControlChangeVal"))
                     {
                         if (block.varName != null && Variable.curVariableMap.ContainsKey(block.varName))
@@ -1771,6 +1788,45 @@ namespace TabletArtco
         public void ControlStop()
         {
             stopThisSprite = true;
+        }
+
+        public void ControlXY(Block block)
+        {
+            int x = 0;
+            int y = 0;
+
+            if (block != null)
+            {
+                if ( (block.varName != null && block.varName.Length > 0) && (block.varValue != null && block.varValue.Length > 0) )
+                {
+                    if (System.Int32.TryParse(block.varName, out int valueX))
+                    {
+                        x = valueX;
+                    }
+                    else
+                    {
+                        if (Variable.curVariableMap.ContainsKey(block.varName))
+                            x = int.Parse(Variable.curVariableMap[block.varName]);
+                        else
+                            return;
+                    }
+
+                    if (System.Int32.TryParse(block.varValue, out int valueY))
+                    {
+                        y = valueY;
+                    }
+                    else
+                    {
+                        if (Variable.curVariableMap.ContainsKey(block.varValue))
+                            y = int.Parse(Variable.curVariableMap[block.varValue]);
+                        else
+                            return;
+                    }
+                }
+            }
+            curPoint.X = x;
+            curPoint.Y = y;
+            InvalidateStage();
         }
     }
 }

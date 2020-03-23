@@ -57,6 +57,7 @@ namespace TabletArtco
 
                 ProgressDialog progressDialog = new ProgressDialog(this);
                 progressDialog.SetProgressStyle(ProgressDialogStyle.Spinner);
+                progressDialog.SetMessage("Loading...");
                 progressDialog.SetCancelable(false);
                 progressDialog.Show();
 
@@ -299,7 +300,7 @@ namespace TabletArtco
                     category = backgrounds.Count,
                     mode = 0,
                     remoteVideoPath = filePath[position],
-                    remotePreviewImgPath = null,
+                    remotePreviewImgPath = "",
                     level = 0,
                 };
             }

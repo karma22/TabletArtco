@@ -48,7 +48,6 @@ namespace TabletArtco
         protected override void OnResume()
         {
             base.OnResume();
-            Project.ChangeMode(false);
             UpdateMainView();
             AddSpriteView();
             mSpriteAdapter.NotifyDataSetChanged();
@@ -73,6 +72,23 @@ namespace TabletArtco
             videoPlayer.Stop();
             SoundPlayer.StopAll();
             //mediaManager.Stop();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            // initialize ActivatedSprite
+            Project.mSprites.RemoveRange(0, Project.mSprites.Count);
+            mSpriteIndex = -1;
+
+            // initialize Background
+            Project.currentBack = null;
+            videoPlayer.ClickHomeBt();
+            SoundPlayer.bgmPath = null;
+
+            // initialize Variavles
+            Variable.ClearVariable();
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
@@ -145,15 +161,9 @@ namespace TabletArtco
                         }
 
                         ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
-                        //RequestOptions options = new RequestOptions().Placeholder(Resource.Drawable.home_bg).Frame(0);
-                        //Glide.With(this)
-                        //    .AsBitmap()
-                        //    .Load(background.remoteVideoPath)
-                        //    .Apply(options)
-                        //    .Into(imgIv);
 
                         Glide.With(this)
-                            .Load(background.remotePreviewImgPath != null? background.remotePreviewImgPath : background.remoteVideoPath)
+                            .Load(background.remotePreviewImgPath.Equals("") ? background.remoteVideoPath : background.remotePreviewImgPath)
                             .Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg))
                             .Into(imgIv);
 
@@ -702,7 +712,7 @@ namespace TabletArtco
             }
 
             ActivatedSprite.notFullSize = new Android.Util.Size((int)width-paddingL*2, (int)(481 / 549.0 * height));
-            ActivatedSprite.fullSize = new Android.Util.Size(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this)-ScreenUtil.dip2px(this, 30));
+            ActivatedSprite.fullSize = new Android.Util.Size(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this)-ScreenUtil.dip2px(this, 50));
           
 
             // video surfaceview
@@ -1096,6 +1106,25 @@ namespace TabletArtco
                                         bundle.PutInt("column", tag);
                                         intent.PutExtra("bundle", bundle);
                                         StartActivityForResult(intent, clickType, null);
+                                        break;
+                                    }
+                                // ControlXY
+                                case 10:
+                                    {
+                                        List<string> varlist = new List<string>();
+                                        foreach (string name in Variable.variableMap.Keys)
+                                        {
+                                            varlist.Add(name);
+                                        }
+                                        ControlXYDialog dialog = new ControlXYDialog(this, (X, Y) =>
+                                        {
+                                            block.varName = X;
+                                            block.varValue = Y;
+                                            UpdateBlockView();
+                                        });
+                                        dialog.mList = varlist;
+                                        dialog.Show();
+
                                         break;
                                     }
                                 default:

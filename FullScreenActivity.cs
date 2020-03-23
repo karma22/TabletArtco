@@ -11,6 +11,8 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Com.Bumptech.Glide;
+using Com.Bumptech.Glide.Request;
 
 namespace TabletArtco
 {
@@ -54,12 +56,14 @@ namespace TabletArtco
         protected override void OnPause()
         {
             base.OnPause();
+            Project.ChangeMode(false);
 
             if (!isPlay)
             {
                 return;
             }
             isPlay = false;
+
             Project.StopSprite();
             if (Project.currentBack != null)
             {
@@ -82,10 +86,17 @@ namespace TabletArtco
             VideoView videoView = FindViewById<VideoView>(Resource.Id.videoview);
             ImageView imgIv = FindViewById<ImageView>(Resource.Id.preImg);
             videoPlayer = new VideoPlayer(videoView, imgIv, this);
+            
             if (Project.currentBack != null)
             {
+                Glide.With(this)
+                    .Load(Project.currentBack.remotePreviewImgPath.Equals("") ? Project.currentBack.remoteVideoPath : Project.currentBack.remotePreviewImgPath)
+                    .Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg))
+                    .Into(imgIv);
+
                 videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
             }
+
             bgmPlayer = new SoundPlayer(this);
 
             FindViewById<ImageView>(Resource.Id.playBt).Click += (t, e) => {

@@ -18,6 +18,8 @@ namespace TabletArtco
         private string mPath;
         private string mSound;
 
+        private ImageView gifImageView;
+
         public VideoPlayer(VideoView videoView, ImageView preImgIv, Context context)
         {
             mVideoView = videoView;
@@ -27,6 +29,9 @@ namespace TabletArtco
         }
 
         private void init() {
+            gifImageView = ((Android.App.Activity)mCxt).FindViewById<ImageView>(Resource.Id.loading_imageview);
+            Glide.With(mCxt).AsGif().Load(Resource.Drawable.gifLoding).Into(gifImageView);
+
             mVideoView.SetOnCompletionListener(this);
             mVideoView.SetOnPreparedListener(this);
             mVideoView.SetOnInfoListener(this);
@@ -96,6 +101,12 @@ namespace TabletArtco
             }
             mVideoView.SetVideoPath(mPath);
 
+            mVideoView.Start();
+            if(!isPlay)
+            {
+                gifImageView.Visibility = Android.Views.ViewStates.Visible;
+            }
+
             if (isPlay)
             {
                 new Thread(new Runnable(() =>
@@ -135,6 +146,8 @@ namespace TabletArtco
         {
             isPlay = false;
             StopSound();
+            gifImageView.Visibility = Android.Views.ViewStates.Invisible;
+
             if (mPath == null)
             {
                 return;
@@ -207,7 +220,13 @@ namespace TabletArtco
             LogUtil.CustomLog("OnInfo");
             if(what == MediaInfo.VideoRenderingStart)
             {
+                if(!isPlay && Project.currentBack != null)
+                {
+                    mVideoView.Pause();
+                    mVideoView.SeekTo(0);
+                }
                 mPreImgIv.Visibility = Android.Views.ViewStates.Invisible;
+                gifImageView.Visibility = Android.Views.ViewStates.Invisible;
             }
             return true;
         }

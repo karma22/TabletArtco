@@ -104,8 +104,8 @@ namespace TabletArtco
         {
             SetBackgroundResource(Resource.Drawable.SpeakBox);
             Gravity = GravityFlags.Center;
-            TextSize = 12f;
-            SetPadding(0, 0, 0, 10);
+            TextSize = 25f;
+            SetPadding(0, 0, 0, 15);
             SetSpeakText(null);
         }
 
