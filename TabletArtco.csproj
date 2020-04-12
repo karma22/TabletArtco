@@ -305,7 +305,6 @@
     <AndroidResource Include="Resources\mipmap-xxhdpi\ic_launcher_round.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_foreground.png" />
-    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
     <AndroidResource Include="Resources\mipmap-hdpi\Button_choice_projectcalling.png">
       <SubType>
       </SubType>
@@ -1549,18 +1548,6 @@
       </Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\Contblock_SetVal.png">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\drawable\Eventblock_ClickSprite2.png">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\drawable\Eventblock_Touch2.png">
       <SubType>
       </SubType>
       <Generator>

@@ -28,6 +28,7 @@ namespace TabletArtco
             SetContentView(Resource.Layout.activity_grid);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             InitView();
+
         }
 
         private void InitView()
