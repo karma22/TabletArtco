@@ -496,6 +496,7 @@ namespace TabletArtco
                     {
                         return;
                     }
+
                     if (spritesList[mSpriteIndex].mBlocks.Count==0 && tabIndex != 0)
                     {
                         Block b = new Block();
@@ -693,7 +694,10 @@ namespace TabletArtco
                                 SoundPlayer.StopAll();
                                 if (Project.currentBack != null)
                                 {
-                                    //videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+                                    if(!Project.currentBack.remoteVideoPath.Equals(videoPlayer.mPath))
+                                    {
+                                        videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+                                    }
                                 }
                                 break;
                             }

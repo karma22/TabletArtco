@@ -121,9 +121,21 @@ namespace TabletArtco
             {
                 if (mBlocks.Count > 0)
                 {
-                    List<Block> list = mBlocks[curRow];
-                    block.row = curRow;
-                    list.Add(block);
+                    List<string> checkList = new List<string>
+                    {
+                        "ActionSlow", "ActionFast", "ActionFlash",
+                        "ActionRRotate", "ActionLRotate", "ActionRotateLoop",
+                        "ActionWave", "ActionTWave", "ActionRandomMove",
+                        "ActionZigzag", "ActionTZigzag", "ActionBounce",
+                        "ActionJump", "ActionRLJump", "ActionAnimate"
+                    };
+
+                    if (!checkList.Contains(mBlocks[curRow][mBlocks[curRow].Count - 1].name))
+                    {
+                        List<Block> list = mBlocks[curRow];
+                        block.row = curRow;
+                        list.Add(block);
+                    }
                 }
             }
         }
@@ -469,6 +481,8 @@ namespace TabletArtco
             speakText = null;
             curIndex = 0;
             curAngle = 0;
+            curPoint.X = originPoint.X;
+            curPoint.Y = originPoint.Y;
 
             if (mUpdateDelegate != null)
             {
@@ -1569,7 +1583,7 @@ namespace TabletArtco
                 int arrowNum = (int)curMoveArrow;
                 int wallNum = (int)wall;
                 if (wall != Wall.Default) {
-                    arrowNum = wallNum % 2 == 0 ? 5 - arrowNum : (wallNum == arrowNum ? arrowNum - 1 : arrowNum + 1);
+                    arrowNum = wallNum % 2 == 1 ? 5 - arrowNum : (wallNum == arrowNum ? arrowNum - 1 : arrowNum + 1);
                     curMoveArrow = (MoveArrow)arrowNum;
                 }
                 Java.Lang.Thread.Sleep(50);
@@ -1607,16 +1621,15 @@ namespace TabletArtco
         public void RightLeftJumpLoop(Block block)
         {
             LogUtil.CustomLog("RightLeftJumpLoop");
-            MoveArrow moveArrow = MoveArrow.Left;
+            MoveArrow moveArrow = curMoveArrow == MoveArrow.Default ? MoveArrow.Right : curMoveArrow;
 
             int repeat = Block.GetBlockTextOrVarName(block);
             int iteration = 0;
             while (isAnimationTag && !stopThisSprite)
             {
-                if (block != null && iteration == repeat * 2)
+                if (block != null && iteration == repeat)
                     break;
 
-                moveArrow = moveArrow == MoveArrow.Left ? MoveArrow.Right : MoveArrow.Left;
                 int delay = 1;
                 int zero = curPoint.Y;
                 for (int i = 0; i <= 180  && isAnimationTag && !stopThisSprite; i++)
