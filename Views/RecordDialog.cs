@@ -56,7 +56,7 @@ namespace TabletArtco
                     Directory.CreateDirectory(UserDirectoryPath.userSoundPath);
                 }
 
-                SpeakDialog dialog = new SpeakDialog(context, (text) => {
+                SaveDialog dialog = new SaveDialog(context, (text) => {
                     fileName = text;
 
                     record.Visibility = ViewStates.Invisible;

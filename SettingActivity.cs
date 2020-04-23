@@ -22,8 +22,8 @@ namespace TabletArtco
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            RequestedOrientation = Android.Content.PM.ScreenOrientation.Portrait;
-            //Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
+            RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
+            Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_setting);
             InitView();
         }
@@ -36,29 +36,41 @@ namespace TabletArtco
 
         public void InitView()
         {
-            var version = VersionUtil.GetAppVersionName(this);
-            TextView versionTv = FindViewById<TextView>(Resource.Id.versionTv);
-            versionTv.Text = version == null ? "" : version;
+            Intent intent = new Intent();
+            Bundle bundle = new Bundle();
 
-            TextView cacheTv = FindViewById<TextView>(Resource.Id.cacheTv);
-            cacheTv.Text = GlideUtil.GetCacheSize(Glide.GetPhotoCacheDir(this));
+            FindViewById<ImageView>(Resource.Id.bg_blue).Click += (t, e) => {    
+                bundle.PutString("model", "blue");
+                intent.PutExtra("bundle", bundle);
 
-            FindViewById<RelativeLayout>(Resource.Id.cacheRl).Click += (t, e) =>
-            {
-                new Thread(new Runnable(() =>
-                {
-                    Glide.Get(this).ClearDiskCache();
-                    RunOnUiThread(()=> {
-                        ToastUtil.ShowToast(this, "缓存清除成功");
-                        cacheTv.Text = GlideUtil.GetCacheSize(Glide.GetPhotoCacheDir(this));
-                    });
-                })).Start();
+                SetResult(Result.Ok, intent);
+                Finish();
             };
 
-            FindViewById<RelativeLayout>(Resource.Id.feedbackRl).Click += (t, e) => {
-                Intent intent = new Intent(this, typeof(FeedbackActivity));
-                StartActivity(intent);
+            FindViewById<ImageView>(Resource.Id.bg_red).Click += (t, e) => {
+                bundle.PutString("model", "red");
+                intent.PutExtra("bundle", bundle);
+
+                SetResult(Result.Ok, intent);
+                Finish();
             };
+
+            FindViewById<ImageView>(Resource.Id.bg_yellow).Click += (t, e) => {
+                bundle.PutString("model", "yellow");
+                intent.PutExtra("bundle", bundle);
+
+                SetResult(Result.Ok, intent);
+                Finish();
+            };
+
+            FindViewById<ImageView>(Resource.Id.bg_black).Click += (t, e) => {
+                bundle.PutString("model", "black");
+                intent.PutExtra("bundle", bundle);
+
+                SetResult(Result.Ok, intent);
+                Finish();
+            };
+
         }
     }
 }

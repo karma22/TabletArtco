@@ -48,6 +48,7 @@ namespace TabletArtco
             int width = ScreenUtil.ScreenWidth(this);
             int height = ScreenUtil.ScreenHeight(this);
             int margin = (int)(20 / 1280.0 * width);
+            int padding = 4;
             int w = width - margin * 2;
             int topH = (int)(90 / 975.0 * height);
             int conH = height - topH - margin;
@@ -82,22 +83,37 @@ namespace TabletArtco
                 }
                 else
                 {
-                    //LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(i == resIds.Length - 1 ? itemH : itemW, itemH);
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(itemW, itemH);
-                    lp.LeftMargin = margin / 3;
-                    ImageView imgIv = new ImageView(this);
-                    imgIv.LayoutParameters = lp;
-                    imgIv.Tag = i;
-                    imgIv.SetImageResource(resIds[i]);
-                    topView.AddView(imgIv);
-                    if (i == resIds.Length - 1)
-                    {
-                        imgIv.Click += (t, e) =>
-                        {
-                            SoundPlayer.StopAll();
-                            int tag = (int)(((ImageView)t).Tag);
-                            mIndex = tag - 1;
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(itemW + 2*padding, itemH + 2*padding);
 
+                    ImageView imgIv = new ImageView(this);
+                    imgIv.SetImageResource(resIds[i]);
+
+                    FrameLayout frameLayout = new FrameLayout(this);
+                    frameLayout.LayoutParameters = lp;
+                    frameLayout.SetPadding(padding, padding, padding, padding);
+                    frameLayout.Tag = i;
+                    if (i == 1)
+                        frameLayout.SetBackgroundResource(Resource.Drawable.tab_select);
+
+                    frameLayout.AddView(imgIv);
+                    topView.AddView(frameLayout);
+
+                    frameLayout.Click += (t, e) =>
+                    {
+                        SoundPlayer.StopAll();
+
+                        int tag = (int)(((FrameLayout)t).Tag);
+                        mIndex = tag - 1;
+
+                        for (int j = 1; j < resIds.Length; j++)
+                        {
+                            FrameLayout fl = (FrameLayout)topView.GetChildAt(j);
+                            fl.Background = null;
+                        }
+                        ((FrameLayout)t).SetBackgroundResource(Resource.Drawable.tab_select);
+
+                        if (tag == resIds.Length - 1)
+                        {
                             if (Directory.Exists(dirPath))
                             {
                                 filePath = Directory.GetFiles(dirPath);
@@ -108,20 +124,10 @@ namespace TabletArtco
                                     fileName[i] = Path.GetFileNameWithoutExtension(filePath[i]);
                                 }
                             }
+                        }
 
-                            UpdateView();
-                        };
-                    }
-                    else
-                    {
-                        imgIv.Click += (t, e) =>
-                        {
-                            SoundPlayer.StopAll();
-                            int tag = (int)(((ImageView)t).Tag);
-                            mIndex = tag - 1;
-                            UpdateView();
-                        };
-                    }
+                        UpdateView();
+                    };
                 }
             }
 

@@ -181,6 +181,23 @@ namespace TabletArtco
 
                         break;
                     }
+                // select background theme
+                case 5:
+                    {
+                        Bundle bundle = data.GetBundleExtra("bundle");
+                        string bg = bundle.GetString("model");
+
+                        if(bg.Equals("blue"))
+                            FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background);
+                        else if(bg.Equals("red"))
+                            FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background_red);
+                        else if (bg.Equals("yellow"))
+                            FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background_yellow);
+                        else if (bg.Equals("black"))
+                            FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background_black);
+
+                        break;
+                    }
                 // load sprite or project
                 case 6:
                     {
@@ -343,7 +360,7 @@ namespace TabletArtco
                         case 5:
                             {
                                 // save project
-                                SpeakDialog dialog = new SpeakDialog(this, (text) =>
+                                SaveDialog dialog = new SaveDialog(this, (text) =>
                                 {
                                     new ArtcoProject(this).SaveProject(text);
                                 });
@@ -363,7 +380,7 @@ namespace TabletArtco
                             {
                                 // to setting activity
                                 Intent intent = new Intent(this, typeof(SettingActivity));
-                                StartActivity(intent);
+                                StartActivityForResult(intent, 5, null);
                                 break;
                             }
                         case 8:
@@ -434,7 +451,7 @@ namespace TabletArtco
                     }
                 };
             }
-            ChangeLeftList(0);
+            ChangeLeftList(1);
             FindViewById<ScrollView>(Resource.Id.left_blocks_view_wrapper).SetOnDragListener(this);
         }
 
@@ -564,18 +581,24 @@ namespace TabletArtco
             LinearLayout mainView = FindViewById<LinearLayout>(Resource.Id.mainView);
             FrameLayout centerView = FindViewById<FrameLayout>(Resource.Id.centerView);
             double width = ScreenUtil.ScreenWidth(this) * 890 / 1280.0;
-            double height = ScreenUtil.ScreenHeight(this) * 545 / 800.0;
+            //double height = ScreenUtil.ScreenHeight(this) * 545 / 800.0;
+            double height = ScreenUtil.ScreenHeight(this) * 545 / 800.0 - 15;
             int paddingL = (int)(18 / 913.0 * width);
             int paddingT = (int)(20 / 549.0 * height);
             mainView.SetPadding(paddingL, paddingT, paddingL, 0);
             ViewUtil.SetViewHeight(mainView, (int)height);
-            ViewUtil.SetViewHeight(centerView, (int)(482 / 549.0 * height));
+            ViewUtil.SetViewHeight(centerView, (int)(482 / 545.0 * height));
 
             LinearLayout mainViewHighlight = FindViewById<LinearLayout>(Resource.Id.mainView_highlight);
-            ViewUtil.SetViewHeight(mainViewHighlight, (int)height);
+            ViewUtil.SetViewHeight(mainViewHighlight, (int)(ScreenUtil.ScreenHeight(this) * 545 / 800.0));
 
             int[] sbtsResIds = { Resource.Id.bt_center1, Resource.Id.bt_center2, Resource.Id.bt_center3, Resource.Id.bt_center4, Resource.Id.bt_center5 };
             int itemW = (int)(42 / 549.0 * height);
+
+            LinearLayout rl = FindViewById<LinearLayout>(Resource.Id.rl_center);
+            ViewUtil.SetViewSize(rl, itemW * 15 / 4, itemW * 3 / 4);
+            rl.SetY(itemW / 8);
+
             // home、play、stop、full button, bgm mute
             for (int i = 0; i < sbtsResIds.Length; i++)
             {
@@ -916,12 +939,12 @@ namespace TabletArtco
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.block_view);
             int width = (int)(ScreenUtil.ScreenWidth(this) * 890 / 1280.0) - ScreenUtil.dip2px(this, 30);
             int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - ScreenUtil.dip2px(this, 28));
-            int margin = 10;
+            int margin = 3;
             int itemW = (int)((GridViewH - margin) / 2.0);
-            int padding = 10;
-            int column = (width - padding * 2) / (itemW + margin);
-            padding = (width - column * itemW - (column - 1) * margin)/2;
-            column = column - 1;
+            //int padding = 5;
+            int column = (width - itemW/2 + margin) / (itemW + margin);
+            //padding = (width - column * itemW - (column - 1) * margin)/2;
+            //column = column - 1;
             blockView.RemoveAllViews();
             if (mSpriteIndex > -1)
             {
@@ -936,9 +959,9 @@ namespace TabletArtco
                     {
                         ImageView view = new ImageView(this);
                         view.SetImageResource(Resource.Drawable.Revision_line);
-                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(itemW, itemW);
-                        layoutParams.LeftMargin =  padding;
-                        layoutParams.TopMargin = originY;
+                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(itemW/2, itemW/2);
+                        //layoutParams.LeftMargin = padding;
+                        layoutParams.TopMargin = originY + itemW/4;
                         blockView.AddView(view, layoutParams);
                     }
 
@@ -949,7 +972,8 @@ namespace TabletArtco
                         FrameLayout view = new FrameLayout(this);
                         view.SetBackgroundResource(block.resourceId);
                         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(itemW, itemW);
-                        layoutParams.LeftMargin = itemW + padding+margin + (itemW+margin)*(j%column);
+                        //layoutParams.LeftMargin = padding + itemW /2 + (itemW + margin) * (j % column);
+                        layoutParams.LeftMargin = itemW / 2 + (itemW + margin) * (j % column);
                         layoutParams.TopMargin = originY;
                         blockView.AddView(view, layoutParams);
                         view.SetOnLongClickListener(this);
@@ -1261,16 +1285,17 @@ namespace TabletArtco
                                 int width = (int)(ScreenUtil.ScreenWidth(this) * 890 / 1280.0) - ScreenUtil.dip2px(this, 30);
                                 int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - ScreenUtil.dip2px(this, 28));
 
-                                int margin = 10;
+                                int margin = 3;
                                 int itemW = (int)((GridViewH - margin) / 2.0);
                                 LogUtil.CustomLog("itemW="+itemW + ", width=" + width);
-                                int padding = 10;
-                                int columnNum = (width - padding * 2) / (itemW + margin);
-                                padding = (width - columnNum * itemW - (columnNum - 1) * margin) / 2;
-                                columnNum = columnNum - 1;
+                                //int padding = 10;
+                                int columnNum = (width - itemW/2 + margin) / (itemW + margin);
+                                //padding = (width - columnNum * itemW - (columnNum - 1) * margin) / 2;
+                                //columnNum = columnNum - 1;
                                 float x = e.GetX();
                                 float y = e.GetY();
-                                int firstX = itemW + padding + margin-margin/2;
+                                //int firstX = itemW + padding + margin-margin/2;
+                                int firstX = itemW/2;
                                 int firstY = -margin/2;
                                 int add = itemW + margin;
                                 if (x>firstX)
@@ -1477,7 +1502,7 @@ namespace TabletArtco
                     }
                 case 1:
                     {
-                        SpeakDialog dialog = new SpeakDialog(this, (text) =>
+                        SaveDialog dialog = new SaveDialog(this, (text) =>
                         {
                             new ArtcoObject(this).SaveObject(spritesList[mLongPressSpriteIndex], text);
                         });
