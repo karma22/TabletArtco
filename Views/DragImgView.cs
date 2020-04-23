@@ -13,7 +13,6 @@ namespace TabletArtco
 {
     public class DragImgView: ImageView
     {
-        private Context mCxt;
         private int nap = 200;
         private long currentTime;
         private float rawX;

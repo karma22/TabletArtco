@@ -860,6 +860,10 @@ namespace TabletArtco
             containerView.RemoveAllViews();
             imgList.RemoveRange(0, imgList.Count);
             speakViewList.RemoveRange(0, speakViewList.Count);
+
+            TextView tvX = FindViewById<TextView>(Resource.Id.tv_coordX);
+            TextView tvY = FindViewById<TextView>(Resource.Id.tv_coordY);
+
             for (int i = 0; i < spritesList.Count; i++)
             {
                 ActivatedSprite activatedSprite = spritesList[i];
@@ -876,6 +880,8 @@ namespace TabletArtco
                     if (!isPlay)
                     {
                         activatedSprite.AddToOriginPoint((int)x, (int)y);
+                        tvX.Text = "X : " + activatedSprite.originPoint.X;
+                        tvY.Text = "Y : " + activatedSprite.originPoint.Y;
                     }
                 };
                 imgIv.ClickAction += (t) =>

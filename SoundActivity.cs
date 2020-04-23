@@ -125,7 +125,19 @@ namespace TabletArtco
                     {
                         frameLayout.Click += (t, e) =>
                         {
-                            new RecordDialog(this, UpdateView).Show();
+                            new RecordDialog(this, () => {
+                                if (Directory.Exists(dirPath))
+                                {
+                                    filePath = Directory.GetFiles(dirPath);
+
+                                    fileName = new string[filePath.Length];
+                                    for (int i = 0; i < fileName.Length; i++)
+                                    {
+                                        fileName[i] = Path.GetFileNameWithoutExtension(filePath[i]);
+                                    }
+                                }
+                                UpdateView();
+                            }).Show();
                         };
                     }
                     else 

@@ -7930,82 +7930,88 @@ namespace TabletArtco
 			public const int tv_confirm = 2131296800;
 			
 			// aapt resource value: 0x7F090221
-			public const int tv_delete = 2131296801;
+			public const int tv_coordX = 2131296801;
 			
 			// aapt resource value: 0x7F090222
-			public const int tv_key1 = 2131296802;
+			public const int tv_coordY = 2131296802;
 			
 			// aapt resource value: 0x7F090223
-			public const int tv_key10 = 2131296803;
+			public const int tv_delete = 2131296803;
 			
 			// aapt resource value: 0x7F090224
-			public const int tv_key11 = 2131296804;
+			public const int tv_key1 = 2131296804;
 			
 			// aapt resource value: 0x7F090225
-			public const int tv_key12 = 2131296805;
+			public const int tv_key10 = 2131296805;
 			
 			// aapt resource value: 0x7F090226
-			public const int tv_key2 = 2131296806;
+			public const int tv_key11 = 2131296806;
 			
 			// aapt resource value: 0x7F090227
-			public const int tv_key3 = 2131296807;
+			public const int tv_key12 = 2131296807;
 			
 			// aapt resource value: 0x7F090228
-			public const int tv_key4 = 2131296808;
+			public const int tv_key2 = 2131296808;
 			
 			// aapt resource value: 0x7F090229
-			public const int tv_key5 = 2131296809;
+			public const int tv_key3 = 2131296809;
 			
 			// aapt resource value: 0x7F09022A
-			public const int tv_key6 = 2131296810;
+			public const int tv_key4 = 2131296810;
 			
 			// aapt resource value: 0x7F09022B
-			public const int tv_key7 = 2131296811;
+			public const int tv_key5 = 2131296811;
 			
 			// aapt resource value: 0x7F09022C
-			public const int tv_key8 = 2131296812;
+			public const int tv_key6 = 2131296812;
 			
 			// aapt resource value: 0x7F09022D
-			public const int tv_key9 = 2131296813;
+			public const int tv_key7 = 2131296813;
 			
 			// aapt resource value: 0x7F09022E
-			public const int tv_message = 2131296814;
+			public const int tv_key8 = 2131296814;
 			
 			// aapt resource value: 0x7F09022F
-			public const int tv_name = 2131296815;
+			public const int tv_key9 = 2131296815;
 			
 			// aapt resource value: 0x7F090230
-			public const int tv_tips = 2131296816;
+			public const int tv_message = 2131296816;
 			
 			// aapt resource value: 0x7F090231
-			public const int tv_tips_X = 2131296817;
+			public const int tv_name = 2131296817;
 			
 			// aapt resource value: 0x7F090232
-			public const int tv_tips_Y = 2131296818;
+			public const int tv_tips = 2131296818;
 			
 			// aapt resource value: 0x7F090233
-			public const int tv_value = 2131296819;
+			public const int tv_tips_X = 2131296819;
 			
 			// aapt resource value: 0x7F090234
-			public const int tv_valueX = 2131296820;
+			public const int tv_tips_Y = 2131296820;
 			
 			// aapt resource value: 0x7F090235
-			public const int tv_valueY = 2131296821;
+			public const int tv_value = 2131296821;
 			
 			// aapt resource value: 0x7F090236
-			public const int uniform = 2131296822;
+			public const int tv_valueX = 2131296822;
 			
 			// aapt resource value: 0x7F090237
-			public const int unlabeled = 2131296823;
+			public const int tv_valueY = 2131296823;
 			
 			// aapt resource value: 0x7F090238
-			public const int up = 2131296824;
+			public const int uniform = 2131296824;
 			
 			// aapt resource value: 0x7F090239
-			public const int useLogo = 2131296825;
+			public const int unlabeled = 2131296825;
 			
 			// aapt resource value: 0x7F09023A
-			public const int valueTv = 2131296826;
+			public const int up = 2131296826;
+			
+			// aapt resource value: 0x7F09023B
+			public const int useLogo = 2131296827;
+			
+			// aapt resource value: 0x7F09023C
+			public const int valueTv = 2131296828;
 			
 			// aapt resource value: 0x7F090011
 			public const int VariableAddOrSetView = 2131296273;
@@ -8013,44 +8019,44 @@ namespace TabletArtco
 			// aapt resource value: 0x7F090012
 			public const int VariableIintView = 2131296274;
 			
-			// aapt resource value: 0x7F09023C
-			public const int variableListView = 2131296828;
+			// aapt resource value: 0x7F09023E
+			public const int variableListView = 2131296830;
 			
 			// aapt resource value: 0x7F090013
 			public const int VariableSelectView = 2131296275;
 			
-			// aapt resource value: 0x7F09023B
-			public const int varTv = 2131296827;
-			
-			// aapt resource value: 0x7F090240
-			public const int videoview = 2131296832;
-			
 			// aapt resource value: 0x7F09023D
-			public const int video_surface = 2131296829;
-			
-			// aapt resource value: 0x7F09023E
-			public const int video_surface_container = 2131296830;
-			
-			// aapt resource value: 0x7F09023F
-			public const int video_view = 2131296831;
-			
-			// aapt resource value: 0x7F090241
-			public const int view_offset_helper = 2131296833;
+			public const int varTv = 2131296829;
 			
 			// aapt resource value: 0x7F090242
-			public const int visible = 2131296834;
+			public const int videoview = 2131296834;
+			
+			// aapt resource value: 0x7F09023F
+			public const int video_surface = 2131296831;
+			
+			// aapt resource value: 0x7F090240
+			public const int video_surface_container = 2131296832;
+			
+			// aapt resource value: 0x7F090241
+			public const int video_view = 2131296833;
 			
 			// aapt resource value: 0x7F090243
-			public const int volume_item_container = 2131296835;
+			public const int view_offset_helper = 2131296835;
 			
 			// aapt resource value: 0x7F090244
-			public const int withText = 2131296836;
+			public const int visible = 2131296836;
 			
 			// aapt resource value: 0x7F090245
-			public const int wrap_content = 2131296837;
+			public const int volume_item_container = 2131296837;
 			
 			// aapt resource value: 0x7F090246
-			public const int zoom = 2131296838;
+			public const int withText = 2131296838;
+			
+			// aapt resource value: 0x7F090247
+			public const int wrap_content = 2131296839;
+			
+			// aapt resource value: 0x7F090248
+			public const int zoom = 2131296840;
 			
 			static Id()
 			{
