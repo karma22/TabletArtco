@@ -15,7 +15,7 @@ namespace TabletArtco
         private Context mCxt;
         private MediaPlayer soundPlayer;
         private bool isPlay;
-        private string mPath;
+        public string mPath;
         private string mSound;
 
         private ImageView gifImageView;

@@ -18,7 +18,7 @@ namespace TabletArtco
 
         private int mItemW;
         private int mItemH;
-        private int mIndex = 5;
+        private int mIndex = 9;
 
         private Block block;
 
@@ -114,6 +114,7 @@ namespace TabletArtco
             int width = ScreenUtil.ScreenWidth(this);
             int height = ScreenUtil.ScreenHeight(this);
             int margin = (int)(20 / 1280.0 * width);
+            int padding = 4;
             int w = width - margin * 2;
             int topH = (int)(90 / 975.0 * height);
             int conH = height - topH - margin;
@@ -127,8 +128,8 @@ namespace TabletArtco
             LinearLayout topView = FindViewById<LinearLayout>(Resource.Id.grid_top_view);
             int[] resIds = {
                 Resource.Drawable.search_bg, Resource.Drawable.bs_themeBackground_tab, Resource.Drawable.bs_cartoonbackground_tab,
-                Resource.Drawable.bs_reallifebackground_tab, Resource.Drawable.momochung_tab, Resource.Drawable.User_tab,
-                Resource.Drawable.OpenDirectory,
+                Resource.Drawable.bs_reallifebackground_tab, Resource.Drawable.bs_planeBackground_tab ,Resource.Drawable.momochung_tab,
+                Resource.Drawable.National_studies_tab, Resource.Drawable.User_tab, Resource.Drawable.OpenDirectory,
             };
             int editTvH = (int)(45 / 90.0 * topH);
             int editTvW = (int)(166 / 35.0 * editTvH);
@@ -148,17 +149,24 @@ namespace TabletArtco
                 }
                 else
                 {
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(i == resIds.Length - 1 ? itemH : itemW, itemH);
-                    lp.LeftMargin = margin / 3;
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(i == resIds.Length - 1 ? itemH + 2*padding : itemW + 2*padding, itemH + 2*padding);
+
                     ImageView imgIv = new ImageView(this);
-                    imgIv.Tag = i;
-                    imgIv.LayoutParameters = lp;
                     imgIv.SetImageResource(resIds[i]);
-                    topView.AddView(imgIv);
+
+                    FrameLayout frameLayout = new FrameLayout(this);
+                    frameLayout.LayoutParameters = lp;
+                    frameLayout.SetPadding(padding, padding, padding, padding);
+                    frameLayout.Tag = i;
+                    if (i == 5)
+                        frameLayout.SetBackgroundResource(Resource.Drawable.tab_select);
+
+                    frameLayout.AddView(imgIv);
+                    topView.AddView(frameLayout);
 
                     if(i == resIds.Length - 1)
                     {
-                        imgIv.Click += (t, e) =>
+                        frameLayout.Click += (t, e) =>
                         {
                             Intent intent = new Intent();
                             intent.SetAction(Intent.ActionGetContent);
@@ -166,33 +174,34 @@ namespace TabletArtco
                             StartActivityForResult(Intent.CreateChooser(intent, "Open"), 0);
                         };
                     }
-                    else if(i == resIds.Length - 2)
+                    else
                     {
-                        imgIv.Click += (t, e) =>
+                        frameLayout.Click += (t, e) =>
                         {
-                            int tag = (int)(((ImageView)t).Tag);
+                            int tag = (int)(((FrameLayout)t).Tag);
                             mIndex = tag + 4;
 
-                            if (Directory.Exists(dirPath))
+                            for (int j = 1; j < resIds.Length; j++)
                             {
-                                filePath = Directory.GetFiles(dirPath);
+                                FrameLayout fl = (FrameLayout)topView.GetChildAt(j);
+                                fl.Background = null;
+                            }
+                            ((FrameLayout)t).SetBackgroundResource(Resource.Drawable.tab_select);
 
-                                fileName = new string[filePath.Length];
-                                for (int i = 0; i < fileName.Length; i++)
+                            if (tag == resIds.Length - 2)
+                            {
+                                if (Directory.Exists(dirPath))
                                 {
-                                    fileName[i] = Path.GetFileNameWithoutExtension(filePath[i]);
+                                    filePath = Directory.GetFiles(dirPath);
+
+                                    fileName = new string[filePath.Length];
+                                    for (int i = 0; i < fileName.Length; i++)
+                                    {
+                                        fileName[i] = Path.GetFileNameWithoutExtension(filePath[i]);
+                                    }
                                 }
                             }
 
-                            UpdateView();
-                        };
-                    }
-                    else
-                    {
-                        imgIv.Click += (t, e) =>
-                        {
-                            int tag = (int)(((ImageView)t).Tag);
-                            mIndex = tag + 4;
                             UpdateView();
                         };
                     }
