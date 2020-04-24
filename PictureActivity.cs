@@ -52,7 +52,7 @@ namespace TabletArtco
                 Resource.Drawable.search_bg, Resource.Drawable.User_tab, Resource.Drawable.momochung_tab,
                 Resource.Drawable.ps_sea_tab, Resource.Drawable.ps_animal_tab, Resource.Drawable.ps_plants_tab,
                 Resource.Drawable.ps_insect_tab, Resource.Drawable.ps_character_tab, Resource.Drawable.ps_food_tab,
-                Resource.Drawable.ps_traffic_tab, Resource.Drawable.ps_object_tab, Resource.Drawable.ps_etc_tab
+                Resource.Drawable.ps_traffic_tab, Resource.Drawable.ps_object_tab, Resource.Drawable.National_studies_tab
             };
             int editTvH = (int)(38 / 90.0 * topH);
             int editTvW = (int)(166 / 35.0 * editTvH);
