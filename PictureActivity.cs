@@ -35,6 +35,7 @@ namespace TabletArtco
             int width = ScreenUtil.ScreenWidth(this);
             int height = ScreenUtil.ScreenHeight(this);
             int margin = (int)(20 / 1280.0 * width);
+            int padding = 4;
             int w = width - margin * 2;
             //int topH = (int)(60 / 800.0 * height);
             int topH = (int)(90 / 975.0 * height);
@@ -51,7 +52,7 @@ namespace TabletArtco
                 Resource.Drawable.search_bg, Resource.Drawable.User_tab, Resource.Drawable.momochung_tab,
                 Resource.Drawable.ps_sea_tab, Resource.Drawable.ps_animal_tab, Resource.Drawable.ps_plants_tab,
                 Resource.Drawable.ps_insect_tab, Resource.Drawable.ps_character_tab, Resource.Drawable.ps_food_tab,
-                Resource.Drawable.ps_traffic_tab, Resource.Drawable.ps_object_tab, Resource.Drawable.ps_etc_tab
+                Resource.Drawable.ps_traffic_tab, Resource.Drawable.ps_object_tab, Resource.Drawable.National_studies_tab
             };
             int editTvH = (int)(38 / 90.0 * topH);
             int editTvW = (int)(166 / 35.0 * editTvH);
@@ -71,17 +72,33 @@ namespace TabletArtco
                 }
                 else
                 {
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(itemW, itemH);
-                    lp.LeftMargin = margin / 3;
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(itemW + 2*padding, itemH + 2*padding);
+
                     ImageView imgIv = new ImageView(this);
-                    imgIv.Tag = i;
-                    imgIv.LayoutParameters = lp;
                     imgIv.SetImageResource(resIds[i]);
-                    topView.AddView(imgIv);
-                    imgIv.Click += (t, e) =>
+
+                    FrameLayout frameLayout = new FrameLayout(this);
+                    frameLayout.LayoutParameters = lp;
+                    frameLayout.SetPadding(padding, padding, padding, padding);
+                    frameLayout.Tag = i;
+                    if (i == 1)
+                        frameLayout.SetBackgroundResource(Resource.Drawable.tab_select);
+
+                    frameLayout.AddView(imgIv);
+                    topView.AddView(frameLayout);
+
+                    frameLayout.Click += (t, e) =>
                     {
-                        int tag = (int)(((ImageView)t).Tag);
+                        int tag = (int)(((FrameLayout)t).Tag);
                         mIndex = tag - 1;
+
+                        for (int j = 1; j < resIds.Length; j++)
+                        {
+                            FrameLayout fl = (FrameLayout)topView.GetChildAt(j);
+                            fl.Background = null;
+                        }
+                        ((FrameLayout)t).SetBackgroundResource(Resource.Drawable.tab_select);
+
                         UpdateView();
                     };
                 }

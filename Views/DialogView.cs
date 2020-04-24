@@ -63,9 +63,28 @@ namespace TabletArtco
                     {
                         valueTv.Text = valueTv.Text + values[tag];
                     }
-                    else if (tag < 11)
+                    else if (tag == 9)
                     {
-                        valueTv.Text = valueTv.Text.Length > 0 ? valueTv.Text + values[tag] : "";
+                        if(valueTv.Text.Length == 0)
+                        {
+                            valueTv.Text = "0.";
+                        }
+                        else
+                        {
+                            if( valueTv.Text.IndexOf(".") == -1 )
+                                valueTv.Text = valueTv.Text + values[tag];
+                        }
+                    }
+                    else if (tag == 10)
+                    {
+                        if(valueTv.Text.Length == 0)
+                        {
+                            valueTv.Text = "0.";
+                        }
+                        else
+                        {
+                            valueTv.Text = valueTv.Text + values[tag];
+                        }
                     }
                     else
                     {
@@ -706,6 +725,53 @@ namespace TabletArtco
                 dialog.Dismiss();
             };
             dialog.Window.SetLayout(ScreenUtil.dip2px(context, 343), ScreenUtil.dip2px(context, 157));
+            dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
+        }
+    }
+
+    /***********************************************************************************
+    ************************************************************************************
+    * 
+    * SpeakDialog
+    * 
+    ************************************************************************************
+    ************************************************************************************/
+    class SaveDialog : ParentDialog
+    {
+        Action<string> mAction;
+
+        public SaveDialog(Context context, Action<string> action) : base(context)
+        {
+            mAction = action;
+            initView(context);
+        }
+
+        //信号输入
+        private void initView(Context context)
+        {
+            View contentView = LayoutInflater.From(context).Inflate(Resource.Layout.dialog_save, null, false);
+            RelativeLayout view = contentView.FindViewById<RelativeLayout>(Resource.Id.SignalView);
+            view.Visibility = ViewStates.Visible;
+            dialog = new AlertDialog.Builder(context).SetView(contentView).Create();
+            ImageView cancelBt = view.FindViewById<ImageView>(Resource.Id.save_close);
+            TextView confirmBt = view.FindViewById<TextView>(Resource.Id.save_ok);
+            EditText textEt = view.FindViewById<EditText>(Resource.Id.save_et);
+
+            cancelBt.Click += (t, e) =>
+            {
+                dialog.Dismiss();
+            };
+            confirmBt.Click += (t, e) =>
+            {
+                if (textEt.Text.Length <= 0)
+                {
+                    Toast.MakeText(context, "输入内容不能为空", ToastLength.Long);
+                    return;
+                }
+                mAction?.Invoke(textEt.Text);
+                dialog.Dismiss();
+            };
+            dialog.Window.SetLayout(ScreenUtil.dip2px(context, 406), ScreenUtil.dip2px(context, 240));
             dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
         }
     }

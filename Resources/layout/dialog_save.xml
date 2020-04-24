@@ -1,0 +1,37 @@
+﻿
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+    <RelativeLayout
+        android:id="@+id/SignalView"
+        android:layout_width="406dp"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/dialog_save">
+        
+        <EditText
+            android:id="@+id/save_et"
+            android:layout_width="250dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="135dp"
+            android:lines="1"
+            android:background="@android:color/transparent"/>
+        
+        <TextView
+            android:id="@+id/save_ok"
+            android:layout_width="105dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="290dp"
+            android:layout_marginTop="125dp" />
+
+        <ImageView
+            android:id="@+id/save_close"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/close"/>
+        
+    </RelativeLayout>
+</RelativeLayout>
