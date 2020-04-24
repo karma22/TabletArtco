@@ -238,6 +238,7 @@
     <Compile Include="BackgroundActivity.cs" />
     <Compile Include="EducationActivity.cs" />
     <Compile Include="MusicActivity.cs" />
+    <Compile Include="Services\ScreenRecordService.cs" />
     <Compile Include="SoundActivity.cs" />
     <Compile Include="PictureActivity.cs" />
     <Compile Include="Adapters\GridAdapter.cs" />
@@ -245,7 +246,10 @@
     <Compile Include="Adapters\DataSource.cs" />
     <Compile Include="Utils\ArtcoProject.cs" />
     <Compile Include="Utils\ArtcoObject.cs" />
+    <Compile Include="Utils\FileUtil.cs" />
     <Compile Include="Utils\IOUtil.cs" />
+    <Compile Include="Utils\PermissionUtil.cs" />
+    <Compile Include="Utils\RecordUtil.cs" />
     <Compile Include="Views\RecordDialog.cs" />
     <Compile Include="Views\DragGridView.cs" />
     <Compile Include="Utils\Util.cs" />

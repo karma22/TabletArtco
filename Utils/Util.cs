@@ -29,6 +29,14 @@ namespace TabletArtco
             return frame.Top;
         }
 
+        public static Android.Util.DisplayMetricsDensity DensityDpi(Context cxt) {
+            return cxt.Resources.DisplayMetrics.DensityDpi;
+        }
+
+        public static int Density(Context cxt) {
+            return (int)cxt.Resources.DisplayMetrics.Density;
+        }
+
         public static int dip2px(Context context, float dpValue)
         {
             float scale = context.Resources.DisplayMetrics.Density;

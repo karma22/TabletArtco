@@ -1,31 +1,31 @@
 ﻿
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Android.App;
 using Android.Content;
 using Android.Graphics;
+using Android.Net;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Com.Bumptech.Glide;
 using Com.Bumptech.Glide.Request;
+using Java.Lang;
 
 namespace TabletArtco
 {
     [Activity(Label = "FullScreenActivity")]
-    public class FullScreenActivity : Activity, UpdateDelegate
+    public class FullScreenActivity : Activity, UpdateDelegate, IServiceConnection, RecordUtil.RecordListener
     {
         private static string Tag = "FullScreenActivity";
         private List<DragImgView> imgList = new List<DragImgView>();
         private List<SpeakView> speakViewList = new List<SpeakView>();
+        private bool isRecord;
         private bool isPlay;
         //private MediaManager mediaManager;
         private VideoPlayer videoPlayer;
         private SoundPlayer bgmPlayer;
+        int mRequestCode = 1;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -77,12 +77,53 @@ namespace TabletArtco
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            foreach (Android.Content.PM.Permission permission in grantResults) {
+                if (permission == Android.Content.PM.Permission.Denied)
+                {
+                    Android.App.AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.SetTitle("申请权限");
+                    builder.SetMessage("这些权限很重要");
+                    builder.SetNegativeButton("取消",(s, e)=> { 
+                    
+                    });
+                    builder.SetPositiveButton("设置", (s, e) => {
+                        Intent intent = new Intent();
+                        intent.SetAction(Android.Provider.Settings.ActionApplicationDetailsSettings);
+                        intent.SetData(Uri.Parse("package:" + PackageName));
+                        StartActivity(intent);
+                    });
+
+                    AlertDialog dialog = builder.Create();
+                    dialog.Show();
+                    break;
+                }
+            }
+        }
+
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            if (requestCode == mRequestCode && resultCode == Result.Ok)
+            {
+                try
+                {
+                    RecordUtil.setUpData((int)resultCode, data);
+                }
+                catch (Exception e)
+                {
+                    e.PrintStackTrace();
+                }
+            }
+            else
+            {
+                ToastUtil.ShowToast(this, "拒绝录屏");
+            }
         }
 
         // init view
         public void InitView()
         {
-            Project.ChangeMode(true);
+            Project.ChangeMode(true); 
             VideoView videoView = FindViewById<VideoView>(Resource.Id.videoview);
             ImageView imgIv = FindViewById<ImageView>(Resource.Id.preImg);
             videoPlayer = new VideoPlayer(videoView, imgIv, this);
@@ -98,6 +139,19 @@ namespace TabletArtco
             }
 
             bgmPlayer = new SoundPlayer(this);
+
+            FindViewById<ImageView>(Resource.Id.recordBt).Click += (t, e) => {
+                if (isRecord)
+                {
+                    RecordUtil.stopScreenRecord(this);
+                }
+                else 
+                {
+                    ToastUtil.ShowToast(this, "start");
+                    RecordUtil.startScreenRecord(this, 1);
+                }
+                isRecord = !isRecord;
+            };
 
             FindViewById<ImageView>(Resource.Id.playBt).Click += (t, e) => {
                 Android.Util.Log.Info(Tag, "Click play animation start");
@@ -132,8 +186,15 @@ namespace TabletArtco
                 Finish();
             };
 
+            Intent service = new Intent(this, typeof(ScreenRecordService));
+            //StartService(service);
+            ApplicationContext.BindService(service, this, Bind.AutoCreate);
+            RecordUtil.addRecordListener(this);
+
+            PermissionUtil.checkPermission(this);
+
             AddSpriteView();
-        }
+        }    
 
         // main screen add animate sprite view
         public void AddSpriteView()
@@ -216,7 +277,6 @@ namespace TabletArtco
             JudgeCollision();
         }
 
-
         // check Collision
         public void JudgeCollision()
         {
@@ -277,5 +337,43 @@ namespace TabletArtco
                 }
             });
         }
+
+        public void OnServiceConnected(ComponentName name, IBinder service)
+        {
+            ScreenRecordService.RecordBinder recordBinder = (ScreenRecordService.RecordBinder)service;
+            ScreenRecordService screenRecordService = recordBinder.getRecordService();
+            RecordUtil.setScreenService(screenRecordService);
+        }
+
+        public void OnServiceDisconnected(ComponentName name)
+        {
+           
+        }
+
+        void RecordUtil.RecordListener.onStartRecord()
+        {
+           
+        }
+
+        void RecordUtil.RecordListener.onPauseRecord()
+        {
+           
+        }
+
+        void RecordUtil.RecordListener.onResumeRecord()
+        {
+           
+        }
+
+        void RecordUtil.RecordListener.onStopRecord(string stopTip)
+        {
+            ToastUtil.ShowToast(this, stopTip);
+        }
+
+        void RecordUtil.RecordListener.onRecording(string timeTip)
+        {
+            FindViewById<TextView>(Resource.Id.timeTv).Text = timeTip;
+        }
     }
 }
+ 
