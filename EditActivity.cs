@@ -220,7 +220,7 @@ namespace TabletArtco
             {
                 curColorIv?.SetBackgroundColor(Color.ParseColor(color));
             };
-            editView.SetSrcBitmap(operateList[0]);
+            editView.SetSrcBitmap(Bitmap.CreateBitmap(operateList[0]));
             RelativeLayout.LayoutParams conParams = new RelativeLayout.LayoutParams(areaParams.Width, areaParams.Height);
             conParams.AddRule(LayoutRules.CenterInParent);
             areaView.AddView(editView, conParams);

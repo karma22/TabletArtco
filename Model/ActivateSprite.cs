@@ -85,11 +85,11 @@ namespace TabletArtco
             {
                 Bitmap bitmap = originBitmapList[i];
                 originBitmapList.Remove(bitmap);
-                //bitmap.Recycle();
+                bitmap.Recycle();
 
                 Bitmap b = curbitmapList[i];
                 curbitmapList.Remove(b);
-                //b.Recycle();
+                b.Recycle();
             }
             for (int i = 0; i < list.Count; i++)
             {
@@ -472,7 +472,7 @@ namespace TabletArtco
                 Bitmap bitmap = curbitmapList[i];
                 Bitmap originBm = originBitmapList[i];
                 curbitmapList[i] = Bitmap.CreateBitmap(originBm);
-                //bitmap.Recycle();
+                bitmap.Recycle();
             }
 
             curSize = new Size(curbitmapList[0].Width, curbitmapList[0].Height);
@@ -800,7 +800,7 @@ namespace TabletArtco
                 curSize = new Size(newBM.Width, newBM.Height);
                 curPoint = new Point(center.X - newBM.Width / 2, center.Y - newBM.Height / 2);
                 curbitmapList[i] = newBM;
-                //curBitmap.Recycle();
+                curBitmap.Recycle();
             }
         }
 

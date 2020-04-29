@@ -5,6 +5,7 @@ using System.Text;
 using Android.Content;
 using Android.Graphics;
 using Java.Lang;
+using Com.Bumptech.Glide;
 
 namespace TabletArtco
 {
@@ -14,7 +15,7 @@ namespace TabletArtco
         public List<Bitmap> images { get; set; } = new List<Bitmap>();
         public List<int> imgSizes { get; set; } = new List<int>();
         public string name { get; set; }
-        public int x { get; set; }
+        public int x { get; set; } 
         public int y { get; set; }
 
         private Context context;
@@ -24,7 +25,7 @@ namespace TabletArtco
             this.context = context;
         }
 
-        public bool SaveObject(ActivatedSprite sprite, string name)
+        public bool SaveObject(ActivatedSprite sprite, string name, bool isCover = false)
         {
             string dirPath = UserDirectoryPath.objectPath;
             string filePath = dirPath + "/" + name + ".ArtcoObject";
@@ -34,13 +35,15 @@ namespace TabletArtco
                 Directory.CreateDirectory(dirPath);
             }
 
-            //if (File.Exists(filePath))
-            //{
-            //    MessageBoxDialog dialog = new MessageBoxDialog(context, "该文件已存在, 是否覆盖?", () => {
-
-            //    });
-            //    dialog.Show();
-            //}
+            if (File.Exists(filePath) && !isCover)
+            {
+                MessageBoxDialog dialog = new MessageBoxDialog(context, "该文件已存在, 是否覆盖?", () =>
+                {
+                    SaveObject(sprite, name, true);
+                });
+                dialog.Show();
+                return false;
+            }
 
             string header = sprite.sprite.name + "\n";
             header += sprite.curPoint.X.ToString() + ":" + sprite.curPoint.Y.ToString() + "\n";
@@ -172,28 +175,26 @@ namespace TabletArtco
                     file.Seek(startPoint, SeekOrigin.Begin);
                     byte[] bytes = new byte[spriteSizes[i]];
                     int readSize = file.Read(bytes, 0, spriteSizes[i]);
-                    bmpList.Add(BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length));
+                    Bitmap bitmap = BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length);
+                    bmpList.Add(Bitmap.CreateScaledBitmap(bitmap, bitmap.Width-1, bitmap.Height-1, false));
                     startPoint += readSize;
                 }
 
                 Sprite sprite = new Sprite();
                 sprite.name = name;
                 sprite.category = 100;
-                sprite.bitmap = bmpList[0];
+                sprite.bitmap = Bitmap.CreateBitmap(bmpList[0]);
                 Project.AddSprite(sprite);
-
                 int lastSprite = Project.mSprites.Count - 1;
-                Project.mSprites[lastSprite].originBitmapList = bmpList;
-                Project.mSprites[lastSprite].curbitmapList = bmpList;
+                Project.mSprites[lastSprite].SetSrcBitmapList(bmpList);
                 Project.mSprites[lastSprite].originPoint.X = x;
                 Project.mSprites[lastSprite].originPoint.Y = y;
                 Project.mSprites[lastSprite].curPoint.X = x;
                 Project.mSprites[lastSprite].curPoint.Y = y;
-
                 for (int i = 0; i < codes.Count; i++)
                 {
                     Project.mSprites[lastSprite].AddBlock(codes[i]);
-                }
+                }                
             }
             catch (Java.Lang.Exception e)
             {

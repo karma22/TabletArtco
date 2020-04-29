@@ -40,11 +40,6 @@ namespace TabletArtco
                 }
             }
             return;
-        }
-
-        //internal static void checkPermission(FullScreenActivity fullScreenActivity)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        } 
     }
-}
+}  

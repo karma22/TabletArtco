@@ -221,6 +221,7 @@ namespace TabletArtco
         public static string userBackgroundPath { get; } = Android.OS.Environment.ExternalStorageDirectory.Path + "/Artco/background";
         public static string userSoundPath { get; } = Android.OS.Environment.ExternalStorageDirectory.Path + "/Artco/sound";
         public static string userMusicPath { get; } = Android.OS.Environment.ExternalStorageDirectory.Path + "/Artco/music";
+        public static string userVideoPath { get; } = Android.OS.Environment.ExternalStorageDirectory.Path + "/Artco/video";
     }
 
 }

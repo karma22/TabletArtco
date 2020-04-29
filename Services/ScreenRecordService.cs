@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Android.Annotation;
 using Android.App;
 using Android.Content;
@@ -201,7 +202,7 @@ namespace TabletArtco
         [TargetApi(Value = 21)]
         private void setUpMediaRecorder()
         {
-            mRecordFilePath = getSaveDirectory() + File.Separator + JavaSystem.CurrentTimeMillis() + ".mp4";
+            mRecordFilePath = getSaveDirectory() + Java.IO.File.Separator + JavaSystem.CurrentTimeMillis() + ".mp4";
             if (mMediaRecorder == null)
             {
                 mMediaRecorder = new MediaRecorder();
@@ -220,7 +221,7 @@ namespace TabletArtco
             {
                 mMediaRecorder.Prepare();
             }
-            catch (IOException e)
+            catch (Java.IO.IOException e)
             {
                 e.PrintStackTrace();
             }
@@ -245,7 +246,11 @@ namespace TabletArtco
         {
             if (Android.OS.Environment.ExternalStorageState.Equals(Android.OS.Environment.MediaMounted))
             {
-                return Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+                if (!Directory.Exists(UserDirectoryPath.userVideoPath))
+                {
+                    Directory.CreateDirectory(UserDirectoryPath.userVideoPath);
+                }
+                return UserDirectoryPath.userVideoPath;
             }
             else
             {
