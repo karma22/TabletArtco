@@ -11,7 +11,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0px"
-        android:layout_weight="80">
+        android:layout_weight="80"
+        android:orientation="horizontal">
         <RelativeLayout  
             android:layout_width="0px"
             android:layout_height="match_parent"
@@ -30,6 +31,7 @@
             android:layout_height="match_parent"
             android:layout_weight="890"
             android:gravity="right"
+            android:orientation="horizontal"
             android:paddingTop="10px"
             android:paddingBottom="8px">
             <ImageView
@@ -118,6 +120,7 @@
         android:layout_width="match_parent"
         android:layout_height="0px"
         android:layout_weight="720"
+        android:orientation="horizontal"
         android:background="@android:color/transparent">
         <LinearLayout
             android:layout_width="0px"
@@ -243,6 +246,59 @@
                         android:id="@+id/ContainerView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"/>
+
+                    <RelativeLayout
+                        android:id="@+id/p_wrapper_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="invisible">               
+                        <LinearLayout
+                            android:id="@+id/successView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/success"
+                            android:orientation="horizontal"
+                            android:gravity="bottom"
+                            android:paddingLeft="80dp"
+                            android:paddingRight="80dp"
+                            android:paddingBottom="10dp"
+                            android:visibility="invisible">
+                            <ImageView
+                                android:id="@+id/p_next_bt"
+                                android:layout_width="0px"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:scaleType="fitEnd"
+                                android:src="@drawable/p_next_step_button"/>
+                            <ImageView
+                                android:id="@+id/p_again_bt"
+                                android:layout_width="0px"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:scaleType="fitEnd"
+                                android:src="@drawable/p_again_button"
+                                android:layout_marginLeft="30dp"
+                                android:layout_marginRight="30dp"/>
+                            <ImageView
+                                android:id="@+id/p_stop_bt"
+                                android:layout_width="0px"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:scaleType="fitEnd"
+                                android:src="@drawable/p_stop_here_button"/>
+                        </LinearLayout>
+                        <ImageView
+                            android:id="@+id/p_start"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:scaleType="fitEnd"
+                            android:src="@drawable/p_start_button"    
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginRight="10dp"/>
+                    </RelativeLayout>
                 </FrameLayout>
 
 				<RelativeLayout
@@ -262,6 +318,7 @@
                         android:layout_height="10dp"
                         android:layout_toRightOf="@id/bt_center1"
                         android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
                         android:background="@drawable/xy_coordinate">
                         <TextView
                             android:id="@+id/tv_coordX"
@@ -289,7 +346,7 @@
 					<ImageView
 						android:id="@+id/bt_empty"
 						android:layout_width="20px"
-						android:layout_height="0dp"
+						android:layout_height="0px"
 						android:layout_centerInParent="true"/>
 					<ImageView
 						android:id="@+id/bt_center3"
@@ -318,6 +375,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:visibility="invisible"
+                android:orientation="horizontal"
                 android:background="@drawable/center_frame_activation"/>
 
             <!--block area and button-->

@@ -36,11 +36,12 @@ namespace TabletArtco
             mVideoView.SetOnPreparedListener(this);
             mVideoView.SetOnInfoListener(this);
             mVideoView.SetOnErrorListener(this);
-            if(!ActivatedSprite.mIsFull)
-                PlayDefault();
         }
 
-        private void PlayDefault() {
+        public void PlayDefault() {
+            if (ActivatedSprite.mIsFull)
+                return;
+
             Android.Net.Uri url = Android.Net.Uri.Parse("android.resource://" + mCxt.PackageName + "/raw/" + Resource.Raw.default_video);
             mVideoView.SetVideoURI(url);
             mVideoView.Start();
@@ -49,6 +50,9 @@ namespace TabletArtco
 
         private void HidePreImg()
         {
+            if (mPreImgIv == null) {
+                return;
+            }
             new Thread(new Runnable(() =>
             {
                 while (true)
@@ -69,9 +73,28 @@ namespace TabletArtco
         public void PreImageViewVisible()
         {
             mPreImgIv.ClearAnimation();
-            mPreImgIv.Alpha = 1;
+            mPreImgIv.Alpha = 0;
             mPreImgIv.Visibility = Android.Views.ViewStates.Visible;
         }
+
+        public void SetUri(int path, bool isRecycle)
+        {
+            mVideoView.Pause();
+            StopSound();
+            mVideoView.StopPlayback();
+            Android.Net.Uri url = Android.Net.Uri.Parse("android.resource://" + mCxt.PackageName + "/raw/" + path);
+            mVideoView.SetVideoURI(url);
+            HidePreImg();
+            if (isPlay)
+            {
+                new Thread(new Runnable(() =>
+                {
+                    Thread.Sleep(100);
+                    Play();
+                })).Start();
+            }
+        }
+
 
         public void SetPath(string path, string img, string sound)
         {
@@ -80,7 +103,6 @@ namespace TabletArtco
             mVideoView.StopPlayback();
 
             mSound = sound;
-
             if (isPlay && mPath != null)
             {
                 //mPreImgIv.Visibility = Android.Views.ViewStates.Visible;

@@ -230,6 +230,7 @@
     <Compile Include="Manager\FTPManager.cs" />
     <Compile Include="Manager\MediaManager2.cs" />
     <Compile Include="Model\Music.cs" />
+    <Compile Include="Model\Practice.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LoginActivity.cs" />
@@ -264,7 +265,6 @@
     <Compile Include="Views\DialogView.cs" />
     <Compile Include="Adapters\ListAdapter.cs" />
     <Compile Include="Model\Sound.cs" />
-    <Compile Include="TestActivity.cs" />
     <Compile Include="Views\DragImgView.cs" />
     <Compile Include="Adapters\VariableAdapter.cs" />
     <Compile Include="Views\EditView.cs" />
@@ -286,9 +286,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidResource Include="Resources\drawable\p_next_step_button.png">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+    </AndroidResource>
     <AndroidResource Include="Resources\layout\activity_main.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\raw\explain_12.mp4" />
     <AndroidResource Include="Resources\values\colors.xml" />
     <AndroidResource Include="Resources\values\ic_launcher_background.xml" />
     <AndroidResource Include="Resources\values\strings.xml" />
@@ -1828,6 +1833,26 @@
     <Folder Include="Resources\animation\" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="Assets\explain_11.mp4" />
+    <AndroidAsset Include="Assets\explain_12.mp4" />
+    <AndroidAsset Include="Assets\explain_13.mp4" />
+    <AndroidAsset Include="Assets\explain_14.mp4" />
+    <AndroidAsset Include="Assets\explain_15.mp4" />
+    <AndroidAsset Include="Assets\explain_16.mp4" />
+    <AndroidAsset Include="Assets\explain_17.mp4" />
+    <AndroidAsset Include="Assets\explain_18.mp4" />
+    <AndroidAsset Include="Assets\explain_19.mp4" />
+    <AndroidAsset Include="Assets\explain_20.mp4" />
+    <AndroidAsset Include="Assets\Practice_11.mp4" />
+    <AndroidAsset Include="Assets\Practice_12.mp4" />
+    <AndroidAsset Include="Assets\Practice_13.mp4" />
+    <AndroidAsset Include="Assets\Practice_14.mp4" />
+    <AndroidAsset Include="Assets\Practice_15.mp4" />
+    <AndroidAsset Include="Assets\Practice_16.mp4" />
+    <AndroidAsset Include="Assets\Practice_17.mp4" />
+    <AndroidAsset Include="Assets\Practice_18.mp4" />
+    <AndroidAsset Include="Assets\Practice_19.mp4" />
+    <AndroidAsset Include="Assets\Practice_20.mp4" />
     <AndroidAsset Include="Assets\Stage_Default.mp4" />
     <AndroidAsset Include="Assets\Stage_Default.wav" />
   </ItemGroup>
@@ -2076,6 +2101,93 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\mipmap-xxhdpi\ic_launcher_round.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\figure_Back.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\figure_front.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\figure_Jump_Left.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\figure_Jump_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\figure_Left.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\figure_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\p_again_button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\p_start_button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\p_stop_here_button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\Success.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\explain_11.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\explain_13.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\explain_14.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\explain_15.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\explain_16.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\explain_17.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\explain_18.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\explain_19.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\explain_20.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Practice_11.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Practice_12.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Practice_13.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Practice_14.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Practice_15.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Practice_16.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Practice_17.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Practice_18.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Practice_19.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Practice_20.mp4" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

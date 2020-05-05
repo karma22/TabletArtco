@@ -8,10 +8,11 @@ using Android.Content;
 using Android.Views;
 using Com.Bumptech.Glide;
 using Java.Lang;
-using Android.Graphics;
+using Android.Graphics; 
 using System.Linq;
 using System.IO;
 using Com.Bumptech.Glide.Request;
+using System.Drawing.Printing;
 
 namespace TabletArtco
 {
@@ -29,11 +30,13 @@ namespace TabletArtco
         private int mLongPressSpriteIndex = -1;
         private bool isPlay;
         private VideoPlayer videoPlayer;
+        private VideoPlayer p_videoPlayer;
         private bool isMute = false;
         private SoundPlayer bgmPlayer;
         private bool activateBlockScale = false;
         private View dragView;
-
+        private bool isPractice = false;
+        private Practice practice;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -141,14 +144,30 @@ namespace TabletArtco
                     {
                         Bundle bundle = data.GetBundleExtra("bundle");
                         Background background = Background.ToBackground(bundle.GetString("model"));
+                        if (isPractice && !bundle.GetBoolean("isPractice")) {
+                            ChangeLeftList(1);
+                            changeLeftTopButtonImage(1);
+                            Project.mSprites.RemoveRange(0, Project.mSprites.Count);
+                            mSpriteIndex = -1;
+                            mSpriteAdapter.NotifyDataSetChanged();
+                            AddSpriteView();
+                            UpdateBlockView();
+                        }
+
                         if (background == null)
                         {
                             return;
                         }
                         Project.currentBack = background;
-
                         //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                         videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+
+                        isPractice = bundle.GetBoolean("isPractice");
+                        if (isPractice) {
+                            LoadPracticeProject(bundle);
+                        } 
+
+                        
                         break;
                     }
                 // select background callback
@@ -254,6 +273,60 @@ namespace TabletArtco
             }
         }
 
+        public void LoadPracticeProject(Bundle bundle) {
+            ChangeLeftList(5);
+            changeLeftTopButtonImage(5);
+            Project.mSprites.RemoveRange(0, Project.mSprites.Count);
+            mSpriteIndex = -1;
+            mSpriteAdapter.NotifyDataSetChanged();
+            AddSpriteView();
+            UpdateBlockView();
+            int row = bundle.GetInt("row");
+            int column = bundle.GetInt("column");
+            if (row == 0)
+            {
+                Bitmap bitmap = BitmapFactory.DecodeResource(Resources, Resource.Drawable.figure_front);
+                Sprite sprite = new Sprite();
+                sprite.bitmap = Bitmap.CreateScaledBitmap(bitmap, bitmap.Width - 1, bitmap.Height - 1, false);
+                sprite.name = "小飞";
+
+                practice = Practice.createPracticeMode("" + (column + 1));
+                if (practice == null)
+                {
+                    return;
+                }
+                Project.AddSprite(sprite);
+                int[] srcs = { Resource.Drawable.figure_front, Resource.Drawable.figure_Back,
+                                               Resource.Drawable.figure_Left, Resource.Drawable.figure_right,
+                                               Resource.Drawable.figure_Jump_Left, Resource.Drawable.figure_Jump_right };
+                List<Bitmap> list = new List<Bitmap>();
+                for (int i = 0; i < 6; i++)
+                {
+                    Bitmap b = BitmapFactory.DecodeResource(Resources, srcs[i]);
+                    b = Bitmap.CreateScaledBitmap(b, b.Width - 1, b.Height - 1, false);
+                    list.Add(b);
+                }
+                Project.mSprites[0].SetSrcBitmapList(list);
+                Project.mSprites[0].Location(practice.pointsList[0].X, practice.pointsList[0].Y);
+                Project.mSprites[0].isVisible = false;
+                UpdateMainView();
+                mSpriteIndex = 0;
+                ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
+                mSpriteAdapter.NotifyDataSetChanged();
+                UpdateBlockView();
+                AddSpriteView();
+                videoPlayer.SetUri(practice.explainId, false);
+                videoPlayer.Play();
+
+                FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Visible;
+                FindViewById<LinearLayout>(Resource.Id.successView).Visibility = ViewStates.Invisible;
+                FindViewById<ImageView>(Resource.Id.p_start).Visibility = ViewStates.Visible;
+            }
+            else
+            {
+                practice = null;
+            }
+        }
 
         public void InputFileNameDlg(Stream stream)
         {
@@ -415,45 +488,54 @@ namespace TabletArtco
             for (int i = 0; i < btsResIds.Length; i++)
             {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
+                imgBt.Tag = i;
                 //ViewUtil.SetViewSize(imgBt, itemW, (int)(itemW * 45.0 / 55));
                 imgBt.Click += (t, e) =>
                 {
                     new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
-                    if (isPlay)
+                    if (isPlay || isPractice)
                     {
                         return;
                     }
-                    int[] normalImgResId = {
+                    int tag = (int)((ImageView)t).Tag;
+                    changeLeftTopButtonImage(tag);
+                };
+            }
+            ChangeLeftList(1);
+            FindViewById<ScrollView>(Resource.Id.left_blocks_view_wrapper).SetOnDragListener(this);
+        }
+
+        public void changeLeftTopButtonImage(int index) {
+            int[] btsResIds = {
+                Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4, Resource.Id.bt_left_select5
+            };
+            int[] normalImgResId = {
                         Resource.Drawable.Button_event_Deactivation,
                         Resource.Drawable.Button_coding1_Deactivation,
                         Resource.Drawable.Button_coding2_Deactivation,
                         Resource.Drawable.Button_control_Deactivation,
                         Resource.Drawable.Button_AI_Deactivation,
                     };
-                    int[] selectImgResId = {
+            int[] selectImgResId = {
                         Resource.Drawable.Button_event_activation,
                         Resource.Drawable.Button_coding1_activation,
                         Resource.Drawable.Button_coding2_activation,
                         Resource.Drawable.Button_control_activation,
                         Resource.Drawable.Button_AI_activation,
                     };
-                    for (int j = 0; j < 5; j++)
-                    {
-                        ImageView tempBt = FindViewById<ImageView>(btsResIds[j]);
-                        if (tempBt == t)
-                        {
-                            tempBt.SetImageResource(selectImgResId[j]);
-                            ChangeLeftList(j);
-                        }
-                        else
-                        {
-                            tempBt.SetImageResource(normalImgResId[j]);
-                        }
-                    }
-                };
+            for (int j = 0; j < 5; j++)
+            {
+                ImageView tempBt = FindViewById<ImageView>(btsResIds[j]);
+                if (index == j)
+                {
+                    tempBt.SetImageResource(selectImgResId[j]);
+                    ChangeLeftList(j);
+                }
+                else
+                {
+                    tempBt.SetImageResource(normalImgResId[j]);
+                }
             }
-            ChangeLeftList(1);
-            FindViewById<ScrollView>(Resource.Id.left_blocks_view_wrapper).SetOnDragListener(this);
         }
 
         //change left blocks list
@@ -462,8 +544,16 @@ namespace TabletArtco
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.left_blocks_view);
             blockView.RemoveAllViews();
 
-            int[] resIds = index == 0 ? Block.blockTab0ResIds : index == 1 ? Block.blockTab1ResIds : index == 2 ? Block.blockTab2ResIds : index == 3 ? Block.blockTab3ResIds : Block.blockTab4ResIds;
-            string[] resIdStrs = index == 0 ? Block.blockTab0ResIdStrs : index == 1 ? Block.blockTab1ResIdStrs : index == 2 ? Block.blockTab2ResIdStrs : index == 3 ? Block.blockTab3ResIdStrs : Block.blockTab4ResIdStrs;
+            List<int[]> ids = new List<int[]>() {
+                Block.blockTab0ResIds, Block.blockTab1ResIds, Block.blockTab2ResIds, Block.blockTab3ResIds, Block.blockTab4ResIds, Block.blockTab5ResIds
+            };
+
+            List<string[]> idstrs = new List<string[]>() {
+                Block.blockTab0ResIdStrs, Block.blockTab1ResIdStrs, Block.blockTab2ResIdStrs, Block.blockTab3ResIdStrs, Block.blockTab4ResIdStrs, Block.blockTab5ResIdStrs
+            };
+            
+            int[] resIds = ids[index]; 
+            string[] resIdStrs = idstrs[index];
             int margin = 12;
             int padding = 4;
             double rowWidth = ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2);
@@ -512,8 +602,22 @@ namespace TabletArtco
                     block.name = resIdStrs[tempIndex];
                     block.tabIndex = tabIndex;
                     block.index = tempIndex;
-                    spritesList[mSpriteIndex].AddBlock(block);
-                    UpdateBlockView();
+                    if (isPractice)
+                    {
+                        List<Block> list = spritesList[mSpriteIndex].mBlocks[0];
+                        if (practice.solutionList.Count > list.Count)
+                        {
+                            // 练习block匹配才加入
+                            if (practice.solutionList[list.Count] == block.name) {
+                                spritesList[mSpriteIndex].AddBlock(block);
+                                UpdateBlockView();
+                            }
+                        }
+                    }
+                    else {
+                        spritesList[mSpriteIndex].AddBlock(block);
+                        UpdateBlockView();
+                    }
                 };
             }
 
@@ -645,7 +749,6 @@ namespace TabletArtco
                                     imgBt = FindViewById<ImageView>(btsResIds[4]);
                                     imgBt.SetImageResource(Resource.Drawable.Button_AI_Deactivation);
 
-
                                     ChangeLeftList(1);
 
                                     // initialize Background
@@ -704,7 +807,7 @@ namespace TabletArtco
                             }
                         case 3:
                             {
-                                if (isPlay)
+                                if (isPlay || isPractice)
                                 {
                                     return;
                                 }
@@ -752,6 +855,7 @@ namespace TabletArtco
             //mediaManager = new MediaManager(surfaceView, imgIv, this);
 
             videoPlayer = new VideoPlayer(videoView, imgIv, this);
+            videoPlayer.PlayDefault();
             bgmPlayer = new SoundPlayer(this);
             bgmPlayer.PlayLocal(Resource.Raw.Stage_Default);
             
@@ -782,6 +886,62 @@ namespace TabletArtco
             };
             listView.Adapter = mVariableAdapter;
 
+            FindViewById<ImageView>(Resource.Id.p_start).Click += (t, e) =>
+            {
+                FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Invisible;
+                Project.mSprites[0].isVisible = true;
+                UpdateMainView();
+                videoPlayer.Stop();
+                videoPlayer.SetUri(practice.practiceId, true);
+                videoPlayer.Play();
+                new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+                {
+                    Thread.Sleep(10);
+                    RunOnUiThread(() =>
+                    {
+                        videoPlayer.Stop();
+                    });
+                })).Start();
+            };
+
+            FindViewById<ImageView>(Resource.Id.p_next_bt).Click += (t, e) =>
+            {
+                if (practice.level == "10")
+                {
+                    FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Invisible;
+                    Project.mSprites[0].isVisible = true;
+                    UpdateMainView();
+                }
+                else 
+                {
+                    int level = int.Parse(practice.level);
+
+                    List<List<Background>> backgrounds = Background._backgrounds;
+
+                    Project.currentBack = backgrounds[0][level];
+                    //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                    videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+                    practice = Practice.createPracticeMode((level + 1) + "");
+
+                    Bundle bundle = new Bundle();
+                    bundle.PutInt("row", 0);
+                    bundle.PutInt("column", level);
+                    LoadPracticeProject(bundle);
+                }
+            };
+
+            FindViewById<ImageView>(Resource.Id.p_again_bt).Click += (t, e) =>
+            {
+                FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Invisible;
+                Project.mSprites[0].isVisible = true;
+                UpdateMainView();
+            };
+
+            FindViewById<ImageView>(Resource.Id.p_stop_bt).Click += (t, e) =>
+            {
+                Intent intent = new Intent(this, typeof(BackgroundActivity));
+                StartActivityForResult(intent, 2, null);
+            };
 
             RelativeLayout activate_block_wrapperview = FindViewById<RelativeLayout>(Resource.Id.activate_block_wrapperview);
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.block_view);
@@ -877,12 +1037,13 @@ namespace TabletArtco
                 layoutParams.LeftMargin = activatedSprite.curPoint.X;
                 layoutParams.TopMargin = activatedSprite.curPoint.Y;
                 containerView.AddView(imgIv, layoutParams);
+                imgIv.Visibility = activatedSprite.isVisible ? ViewStates.Visible : ViewStates.Invisible;
                 imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 imgList.Add(imgIv);
                 imgIv.Tag = 100+i;
                 imgIv.MoveAction += (t, x, y) =>
                 {
-                    if (!isPlay)
+                    if (!isPlay && !isPractice)
                     {
                         activatedSprite.AddToOriginPoint((int)x, (int)y);
                         tvX.Text = "X : " + activatedSprite.originPoint.X;
@@ -1449,6 +1610,7 @@ namespace TabletArtco
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             viewHolder.bgIv.Tag = position;
             viewHolder.deleteFl.Tag = position;
+            viewHolder.deleteFl.Visibility = isPractice ? ViewStates.Gone : ViewStates.Visible;
             viewHolder.bgIv.SetBackgroundResource(position == mSpriteIndex ? Resource.Drawable.xml_asprite_item_bg_s : Resource.Drawable.xml_asprite_item_bg_n);
             if (sprite.originBitmapList.Count > 0)
             {

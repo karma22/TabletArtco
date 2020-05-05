@@ -188,10 +188,12 @@ namespace TabletArtco
             Intent intent = new Intent();
             Bundle bundle = new Bundle();
             bundle.PutString("model", background.ToString());
+            bundle.PutBoolean("isPractice", mIndex<2 ? true : false);
+            bundle.PutInt("row", mIndex);
+            bundle.PutInt("column", position);
             intent.PutExtra("bundle", bundle);
             SetResult(Result.Ok, intent);
             Finish();
-
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存

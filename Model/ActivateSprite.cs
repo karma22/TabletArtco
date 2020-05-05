@@ -217,12 +217,12 @@ namespace TabletArtco
             ResetRowColumn();
         }
 
-        public void Location() {
+        public void Location(int sx = -1, int sy = -1) {
             Bitmap bitmap = originBitmapList[0];
             int width = bitmap.Width;
             int height = bitmap.Height;
-            int x = (int)(1 + Java.Lang.Math.Random() * (notFullSize.Width - width + 1));
-            int y = (int)(1 + Java.Lang.Math.Random() * (notFullSize.Height - height + 1));
+            int x = sx ==-1 ? (int)(1 + Java.Lang.Math.Random() * (notFullSize.Width - width + 1)) : sx;
+            int y = sy ==-1 ? (int)(1 + Java.Lang.Math.Random() * (notFullSize.Height - height + 1)) : sy;
             curPoint.X = Java.Lang.Math.Abs(x);
             curPoint.Y = Java.Lang.Math.Abs(y);
             originPoint.X = curPoint.X;
@@ -743,7 +743,7 @@ namespace TabletArtco
                     //else if (blockName.Equals("GameUp")) TurnAndMoveForward(8);
                     //else if (blockName.Equals("GameJump")) ArrowJump();
 
-                        Java.Lang.Thread.Sleep(10);
+                    Java.Lang.Thread.Sleep(10);
                 }
                 catch (Java.Lang.Exception e)
                 {

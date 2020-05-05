@@ -1,5 +1,6 @@
 ﻿ using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Net;
 using System.Text;
 using Java.Lang;
@@ -245,6 +246,31 @@ namespace TabletArtco
 
                 Music._bgms[category].Add(new Music(name, path));
             }
+        }
+
+        public static Stream LoadPractise() 
+        {
+            return GetStreamFromHTTP(_host +  "/artco/backgrounds/Practice_Explain/path.xml");
+        }
+
+        public static WebClient GetHttpClient()
+        {
+            return new WebClient();
+        }
+
+        public static Stream GetStreamFromHTTP(string path)
+        {
+            string remotePath = path;
+            var client = GetHttpClient();
+            try
+            {
+                return client.OpenRead(remotePath);
+            }
+            catch (Exception e) 
+            {
+                return null;
+            }
+            
         }
 
         public static WebClient GetWebClient()
