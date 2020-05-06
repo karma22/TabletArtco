@@ -520,6 +520,7 @@ namespace TabletArtco
                 {
                     if (!isAnimationTag) break;
                     if (idx >= list.Count) {
+                        mUpdateDelegate?.RowAnimateComplete();
                         Thread.Sleep(10);
                         if (list.Count>0 && isEvent(list[0].name))
                         {
@@ -737,11 +738,11 @@ namespace TabletArtco
                             mUpdateDelegate?.UpdateBackground(block.backgroundId);
                         }
                     }
-                    //else if (blockName.Equals("GameRight")) TurnAndMoveForward(5);
-                    //else if (blockName.Equals("GameDown")) TurnAndMoveForward(6);
-                    //else if (blockName.Equals("GameLeft")) TurnAndMoveForward(7);
-                    //else if (blockName.Equals("GameUp")) TurnAndMoveForward(8);
-                    //else if (blockName.Equals("GameJump")) ArrowJump();
+                    else if (blockName.Equals("GameRight")) TurnAndMoveForward(MoveArrow.Right);
+                    else if (blockName.Equals("GameDown")) TurnAndMoveForward(MoveArrow.Down);
+                    else if (blockName.Equals("GameLeft")) TurnAndMoveForward(MoveArrow.Left);
+                    else if (blockName.Equals("GameUp")) TurnAndMoveForward(MoveArrow.Up);
+                    else if (blockName.Equals("GameJump")) ArrowJump();
 
                     Java.Lang.Thread.Sleep(10);
                 }
@@ -1840,6 +1841,102 @@ namespace TabletArtco
             curPoint.X = x;
             curPoint.Y = y;
             InvalidateStage();
+        }
+
+
+        //1000 548
+        //203 224
+        //99 100
+        //&& MoveGame.moveGame.CheckPath(_arrow, curPoint.X, curPoint.Y, 200)
+        public void ArrowJump()
+        {
+            curIndex = 5;
+            int delay = 5;
+            int zero = curPoint.Y;
+            int hdis = (int)(boundSize.Width * 99.0 / 1000 * 2);
+            int originX = curPoint.X;
+            for (double i = 0; i <= 180; i++)
+            {
+                curPoint.Y = (int)(-Java.Lang.Math.Sin(DegreeToRadian(i)) * 100.0) + zero;
+                curPoint.X = originX + (int)(i / 180 * hdis);
+                if (i % 10 == 0 && i != 0 && i < 91)
+                {
+                    delay++;
+                }
+                else if (i % 10 == 0 && i != 0 && i > 90)
+                {
+                    delay--;
+                }
+                Thread.Sleep(delay);
+                InvalidateStage();
+            }
+            Thread.Sleep(500);
+        }
+
+        public void TurnAndMoveForward(MoveArrow arrow)
+        {
+            //Resource.Drawable.figure_right, Resource.Drawable.figure_Left,
+            //        Resource.Drawable.figure_front, Resource.Drawable.figure_Back,
+            //        Resource.Drawable.figure_Jump_Left, Resource.Drawable.figure_Jump_right };
+            switch (arrow) {
+                case MoveArrow.Right: {
+                        curIndex = 0;
+                        break;
+                    }
+                case MoveArrow.Left:
+                    {
+                        curIndex = 1;
+                        break;
+                    }
+                case MoveArrow.Down:
+                    {
+                        curIndex = 2;
+                        break;
+                    }
+                case MoveArrow.Up:
+                    {
+                        curIndex = 3;
+                        break;
+                    }
+                default: {
+                        break;
+                    }
+
+            }
+
+            int hdis = (int)(boundSize.Width * 99.0 / 1000);
+            int vdis = (int)(boundSize.Height * 100.0 / 548);
+            InvalidateStage();
+            Thread.Sleep(500);
+            switch (arrow)
+            {
+                case MoveArrow.Right:
+                    {
+                        RightMove(hdis);
+                        break;
+                    }
+                case MoveArrow.Left:
+                    {
+                        LeftMove(hdis); 
+                        break;
+                    }
+                case MoveArrow.Down:
+                    {
+                        DownMove(vdis);
+                        break;
+                    }
+                case MoveArrow.Up:
+                    {
+                        UpMove(vdis);
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+            InvalidateStage();
+            Thread.Sleep(500);
         }
     }
 }

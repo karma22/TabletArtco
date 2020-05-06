@@ -113,7 +113,7 @@ namespace TabletArtco
             }
 
             Practice practice = new Practice();
-
+            practice.level = level;
             practice.explainId = explains[index - 1];
             practice.practiceId = practices[index - 1];
 

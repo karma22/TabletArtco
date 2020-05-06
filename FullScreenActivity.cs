@@ -374,6 +374,11 @@ namespace TabletArtco
         {
             FindViewById<TextView>(Resource.Id.timeTv).Text = timeTip;
         }
+
+        public void RowAnimateComplete()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
  
