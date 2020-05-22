@@ -178,7 +178,7 @@ namespace TabletArtco
         {
             if (mMediaRecorder != null)
             {
-                if (Build.VERSION.SdkInt >= Build.VERSION_CODES.N)
+                if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
                 {
                     mMediaRecorder.Pause();
                 }
@@ -189,7 +189,7 @@ namespace TabletArtco
         {
             if (mMediaRecorder != null)
             {
-                if (Build.VERSION.SdkInt >= Build.VERSION_CODES.N)
+                if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
                 {
                     mMediaRecorder.Resume();
                 }

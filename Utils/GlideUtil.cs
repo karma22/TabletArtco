@@ -103,22 +103,23 @@ namespace TabletArtco
             if (megaByte < 1)
             {
                 BigDecimal result1 = new BigDecimal(kiloByte);
-                return result1.SetScale(2, BigDecimal.RoundHalfUp).ToPlainString() + "KB";
+                
+                return result1.SetScale(2, Java.Math.RoundOptions.HalfUp).ToPlainString() + "KB";
             }
             double gigaByte = megaByte / 1024;
             if (gigaByte < 1)
             {
                 BigDecimal result2 = new BigDecimal(megaByte);
-                return result2.SetScale(2, BigDecimal.RoundHalfUp).ToPlainString() + "MB";
+                return result2.SetScale(2, Java.Math.RoundOptions.HalfUp).ToPlainString() + "MB";
             }
             double teraBytes = gigaByte / 1024;
             if (teraBytes < 1)
             {
                 BigDecimal result3 = new BigDecimal(gigaByte);
-                return result3.SetScale(2, BigDecimal.RoundHalfUp).ToPlainString() + "GB";
+                return result3.SetScale(2, Java.Math.RoundOptions.HalfUp).ToPlainString() + "GB";
             }
             BigDecimal result4 = new BigDecimal(teraBytes);
-            return result4.SetScale(2, BigDecimal.RoundHalfUp).ToPlainString() + "TB";
+            return result4.SetScale(2, Java.Math.RoundOptions.HalfUp).ToPlainString() + "TB";
         }
 
     }

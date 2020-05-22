@@ -28,7 +28,8 @@ namespace TabletArtco
          */
         public static bool isScreenRecordEnable()
         {
-            return Build.VERSION.SdkInt >= Build.VERSION_CODES.Lollipop;
+            //return Build.VERSION.SdkInt >= Build.VERSION_CODES.Lollipop;     
+            return Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop;
         }
 
 
