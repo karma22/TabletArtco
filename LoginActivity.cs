@@ -159,14 +159,15 @@ namespace TabletArtco
                         StartActivity(intent);
                         Finish();
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        ToastUtil.ShowToast(this, "资源获取失败!");
                         dialog.Dismiss();
                     }
                 }
-
             })).Start();
         }
+
 
         private ISharedPreferences SharedPres
         {

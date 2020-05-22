@@ -17,6 +17,8 @@ namespace TabletArtco
 
         private static List<OnPageRecordListener> s_PageRecordListener = new List<OnPageRecordListener>();
 
+        private static string mName;
+
         //true,录制结束的提示语正在显示
         public static bool s_IsRecordingTipShowing = false;
 
@@ -57,8 +59,9 @@ namespace TabletArtco
         /**
          * 开始录制
          */
-        public static void startScreenRecord(Activity activity, int requestCode)
+        public static void startScreenRecord(Activity activity, int requestCode, string name)
         {
+            mName = name;
             if (isScreenRecordEnable())
             {
                 if (s_ScreenRecordService != null && !s_ScreenRecordService.ismIsRunning())
@@ -83,7 +86,7 @@ namespace TabletArtco
                     }
                     else
                     {
-                        s_ScreenRecordService.startRecord();
+                        s_ScreenRecordService.startRecord(mName);
                     }
                 }
             }
@@ -100,7 +103,7 @@ namespace TabletArtco
                 if (s_ScreenRecordService != null && !s_ScreenRecordService.ismIsRunning())
                 {
                     s_ScreenRecordService.setResultData(resultCode, resultData);
-                    s_ScreenRecordService.startRecord();
+                    s_ScreenRecordService.startRecord(mName);
                 }
             }
         }

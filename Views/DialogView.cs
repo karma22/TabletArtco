@@ -7,6 +7,9 @@ using Android.Graphics;
 using System.Collections.Generic;
 using System;
 using Com.Bumptech.Glide;
+using Java.Interop;
+using Android.Runtime;
+using Android.Views.InputMethods;
 
 namespace TabletArtco
 {
@@ -17,7 +20,7 @@ namespace TabletArtco
     * 
     ************************************************************************************
     ************************************************************************************/
-    class ParentDialog : Delegate, DataSource
+    class ParentDialog : Java.Lang.Object ,Delegate, DataSource
     {
         public Context mCxt;
         public AlertDialog dialog = null;
@@ -736,15 +739,32 @@ namespace TabletArtco
     * 
     ************************************************************************************
     ************************************************************************************/
-    class SaveDialog : ParentDialog
+    class SaveDialog : ParentDialog, TextView.IOnEditorActionListener
     {
         Action<string> mAction;
+        Context mCxt;
+        EditText textEt;
 
         public SaveDialog(Context context, Action<string> action) : base(context)
         {
             mAction = action;
+            mCxt = context;
             initView(context);
         }
+
+        public bool OnEditorAction(TextView v, [GeneratedEnum] ImeAction actionId, KeyEvent e)
+        {
+           
+            if (textEt.Text.Length <= 0)
+            {
+                Toast.MakeText(mCxt, "输入内容不能为空", ToastLength.Long);
+                return false;
+            }
+            mAction?.Invoke(textEt.Text);
+            dialog.Dismiss();
+            return true;
+        }
+
 
         //信号输入
         private void initView(Context context)
@@ -755,7 +775,8 @@ namespace TabletArtco
             dialog = new AlertDialog.Builder(context).SetView(contentView).Create();
             ImageView cancelBt = view.FindViewById<ImageView>(Resource.Id.save_close);
             TextView confirmBt = view.FindViewById<TextView>(Resource.Id.save_ok);
-            EditText textEt = view.FindViewById<EditText>(Resource.Id.save_et);
+            textEt = view.FindViewById<EditText>(Resource.Id.save_et);
+            textEt.SetOnEditorActionListener(this);
 
             cancelBt.Click += (t, e) =>
             {

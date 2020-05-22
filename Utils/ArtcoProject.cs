@@ -152,6 +152,7 @@ namespace TabletArtco
                 List<List<string>> values = new List<List<string>>();
 
                 string backgroundname = rdr.ReadLine();
+                Project.currentBack = Background.GetNameToBack(backgroundname);
                 int variablecount = int.Parse(rdr.ReadLine());
                 int spritecount = int.Parse(rdr.ReadLine());
 

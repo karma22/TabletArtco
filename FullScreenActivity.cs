@@ -22,9 +22,12 @@ namespace TabletArtco
         private List<SpeakView> speakViewList = new List<SpeakView>();
         private bool isRecord;
         private bool isPlay;
+        private string name;
         //private MediaManager mediaManager;
         private VideoPlayer videoPlayer;
         private SoundPlayer bgmPlayer;
+        private ImageView recordBt;
+        private TextView timeTv;
         int mRequestCode = 1;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -50,6 +53,14 @@ namespace TabletArtco
                     }
                 });
             };
+            if (Project.currentBack != null)
+            {
+                Glide.With(this)
+                    .Load(Project.currentBack.remotePreviewImgPath.Equals("") ? Project.currentBack.remoteVideoPath : Project.currentBack.remotePreviewImgPath)
+                    .Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg))
+                    .Into(FindViewById<ImageView>(Resource.Id.preImg));
+                videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+            }
             AddSpriteView();   
         }
 
@@ -71,6 +82,15 @@ namespace TabletArtco
             }
             videoPlayer.Stop();
             SoundPlayer.StopAll();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            if (isRecord)
+            {
+                RecordUtil.stopScreenRecord(this);
+            }
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
@@ -108,6 +128,8 @@ namespace TabletArtco
                 try
                 {
                     RecordUtil.setUpData((int)resultCode, data);
+                    changeRecordState(true);
+                    startAnimation();
                 }
                 catch (Exception e)
                 {
@@ -117,6 +139,7 @@ namespace TabletArtco
             else
             {
                 ToastUtil.ShowToast(this, "拒绝录屏");
+                startAnimation();
             }
         }
 
@@ -139,18 +162,16 @@ namespace TabletArtco
             }
 
             bgmPlayer = new SoundPlayer(this);
-
+            recordBt = FindViewById<ImageView>(Resource.Id.recordBt);
             FindViewById<ImageView>(Resource.Id.recordBt).Click += (t, e) => {
-                if (isRecord)
-                {
-                    RecordUtil.stopScreenRecord(this);
+
+                if (!isRecord) {
+                    SaveDialog dialog = new SaveDialog(this, (text) =>
+                    {
+                        name = text;
+                    });
+                    dialog.Show();
                 }
-                else 
-                {
-                    ToastUtil.ShowToast(this, "start");
-                    RecordUtil.startScreenRecord(this, 1);
-                }
-                isRecord = !isRecord;
             };
 
             FindViewById<ImageView>(Resource.Id.playBt).Click += (t, e) => {
@@ -159,15 +180,21 @@ namespace TabletArtco
                 {
                     return;
                 }
-                isPlay = true;
-                Project.RunSprite();
-                //mediaManager.Play();
-                videoPlayer.Play();
-                bgmPlayer.Play(SoundPlayer.bgmPath);
+
+
+
+                if (name != null)
+                {
+                    RecordUtil.startScreenRecord(this, 1, name);
+                }
+                else {
+                    startAnimation();
+                }
             };
 
             FindViewById<ImageView>(Resource.Id.stopBt).Click += (t, e) => {
                 Android.Util.Log.Info(Tag, "Click play animation stop");
+                changeRecordState(false);
                 if (!isPlay)
                 {
                     return;
@@ -183,6 +210,7 @@ namespace TabletArtco
             };
 
             FindViewById<ImageView>(Resource.Id.closeBt).Click += (t, e) => {
+                FindViewById<ImageView>(Resource.Id.stopBt).PerformClick();
                 Finish();
             };
 
@@ -194,7 +222,15 @@ namespace TabletArtco
             PermissionUtil.checkPermission(this);
 
             AddSpriteView();
-        }    
+        }
+
+        private void startAnimation() {
+            isPlay = true;
+            Project.RunSprite();
+            //mediaManager.Play();
+            videoPlayer.Play();
+            bgmPlayer.Play(SoundPlayer.bgmPath);
+        }
 
         // main screen add animate sprite view
         public void AddSpriteView()
@@ -218,7 +254,7 @@ namespace TabletArtco
                 {
                     if (!isPlay)
                     {
-                        activatedSprite.AddToOriginPoint((int)x, (int)y);
+                        //activatedSprite.AddToOriginPoint((int)x, (int)y);
                     }
                 };
                 imgIv.ClickAction += (t) =>
@@ -226,11 +262,11 @@ namespace TabletArtco
                     int tag = (int)((DragImgView)t).Tag;
                     if (!isPlay)
                     {
-                        Intent intent = new Intent(this, typeof(EditActivity));
-                        Bundle bundle = new Bundle();
-                        bundle.PutInt("position", tag - 100);
-                        intent.PutExtra("bundle", bundle);
-                        StartActivityForResult(intent, 10, null);
+                        //Intent intent = new Intent(this, typeof(EditActivity));
+                        //Bundle bundle = new Bundle();
+                        //bundle.PutInt("position", tag - 100);
+                        //intent.PutExtra("bundle", bundle);
+                        //StartActivityForResult(intent, 10, null);
                     }
                     else
                     {
@@ -338,6 +374,24 @@ namespace TabletArtco
             });
         }
 
+        private void changeRecordState(bool isStart) {
+            if (isStart)
+            {
+                isRecord = true;
+                
+            }
+            else {
+                if (isRecord)
+                {
+                    recordBt.Visibility = ViewStates.Visible;
+                    FindViewById<TextView>(Resource.Id.timeTv).Text = "";
+                    isRecord = false;
+                    RecordUtil.stopScreenRecord(this);
+                    name = null;
+                }
+            }
+        }
+
         public void OnServiceConnected(ComponentName name, IBinder service)
         {
             ScreenRecordService.RecordBinder recordBinder = (ScreenRecordService.RecordBinder)service;
@@ -373,11 +427,18 @@ namespace TabletArtco
         void RecordUtil.RecordListener.onRecording(string timeTip)
         {
             FindViewById<TextView>(Resource.Id.timeTv).Text = timeTip;
+            if (isRecord)
+            {
+                recordBt.Visibility = recordBt.Visibility == ViewStates.Visible ? ViewStates.Invisible : ViewStates.Visible;
+            }
+            else {
+                recordBt.Visibility = ViewStates.Visible;
+            }
         }
 
         public void RowAnimateComplete()
         {
-            throw new System.NotImplementedException();
+            
         }
     }
 }

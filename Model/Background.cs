@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 
 namespace TabletArtco
 {
@@ -21,6 +22,22 @@ namespace TabletArtco
         {
             //return name + "\n" + idx + "\n" + category + "\n" + mode + "\n" + remoteVideoPath + "\n" + remotePreviewImgPath + "\n" + isPng + "\n" + level + "\n" + (remoteSoundPath == null ? "" : remoteSoundPath);
             return name + "\n" + idx + "\n" + category + "\n" + mode + "\n" + remoteVideoPath + "\n" + remotePreviewImgPath + "\n" + level;
+        }
+
+        public static Background GetNameToBack(string name)
+        {
+            foreach (var backgrounds in _backgrounds)
+            {
+                foreach (var tab in backgrounds)
+                {
+                    
+                    var ret = tab.name.Equals(name);
+                    if (ret)
+                        return tab;
+                }
+            }
+
+            return null;
         }
 
         public static Background ToBackground(string backgroundstr) {

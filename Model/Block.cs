@@ -45,7 +45,8 @@ namespace TabletArtco
         };
         public static int[] blockTab5ResIds = {
             Resource.Drawable.Edublock_Down, Resource.Drawable.Edublock_Jump, Resource.Drawable.Edublock_Up,
-            Resource.Drawable.Edublock_Left, Resource.Drawable.Edublock_LoopN, Resource.Drawable.Edublock_Right
+            Resource.Drawable.Edublock_Left, Resource.Drawable.Edublock_LoopN, Resource.Drawable.Edublock_Right,
+            Resource.Drawable.Gameblock_Flag
         };
 
         public static string[] blockTab0ResIdStrs = {
@@ -89,7 +90,8 @@ namespace TabletArtco
         };
         public static string[] blockTab5ResIdStrs = {
             "GameDown", "GameJump", "GameUp",
-            "GameLeft", "GameLoopN", "GameRight"
+            "GameLeft", "GameLoopN", "GameRight",
+            "GameFlag"
         };
 
         public static List<Dictionary<string, string>> TextViewLocations(Block block) {
@@ -104,6 +106,7 @@ namespace TabletArtco
                 "ActionZigzagN", "ActionTZigzagN",
                 "ActionJumpN", "ActionRLJumpN", "ActionAnimateN",
                 "ControlTimeN", "ControlLoopN",
+                "GameLoopN"
             };
             if (oneList.Contains(block.name))
             {

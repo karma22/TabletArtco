@@ -16,7 +16,10 @@ namespace TabletArtco
         //public static string _host { get; } = "http://www.playartco.com:8081";
 
         //public static string _host { get; } = "http://file.playartco.com";
-        public static string _host { get; } = "http://112.219.93.149";
+        //public static string _host { get; } = "http://112.219.93.149";
+
+        public static string _host { get; } = "http://182.151.21.32";
+        
 
         public static string url_login = _host + "/LoginCheck.php";
         public static string url_sprite = _host + "/SelectSpriteTable.php";
@@ -29,24 +32,27 @@ namespace TabletArtco
 
         public static bool CheckLogin(string id, string passwd)
         {
-            string result;
-
-            using (WebClient client = GetWebClient())
+            try
             {
-                NameValueCollection postData = new NameValueCollection(){
+                string result;
+                using (WebClient client = GetWebClient())
+                {
+                    NameValueCollection postData = new NameValueCollection() {
                                     { "id", id },  //order: {"parameter name", "parameter value"}
                                     { "passwd", passwd }
                                 };
-                try
-                {
                     result = Encoding.UTF8.GetString(client.UploadValues(url_login, postData));
                 }
-                catch (Exception e)
-                {
-                    result = "false";
-                }
+                return result.Equals("true");
             }
-            return result.Equals("true");
+            catch (WebException ex)
+            {
+                using (HttpWebResponse hr = (HttpWebResponse)ex.Response)
+                {
+                   
+                }
+                return false;
+            }
         }
 
         public static void LoadSprites()
@@ -62,6 +68,7 @@ namespace TabletArtco
 
             // user Sprite (category = 0)
             string[] fileNames = FTPManager.ftpManager.GetFtpFolderItems();
+            LogUtil.CustomLog("===========LoadSprites==========" + fileNames.ToString());
             using (WebClient client = GetWebClient())
             {
                 for (int i = 0; i < fileNames.Length; i++)
@@ -80,12 +87,13 @@ namespace TabletArtco
 
             //I will add a security check function
             string result;
+            
             using (WebClient client = GetWebClient())
             {
                 byte[] bytes = client.DownloadData(url_sprite);
                 result = Encoding.UTF8.GetString(bytes);
             }
-
+            LogUtil.CustomLog("=========" + result);
             const int rowCnt = 4;
             string[] datas = result.Split('\n');
             for (int i = 0; i <= datas.Length - rowCnt; i += rowCnt)

@@ -37,6 +37,7 @@ namespace TabletArtco
         private View dragView;
         private bool isPractice = false;
         private Practice practice;
+        private bool isPracticeStart = false;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -67,7 +68,48 @@ namespace TabletArtco
                 });
             };
 
-            videoPlayer?.PreImageViewVisible();
+            if (Project.currentBack != null)
+            {
+                if (!isPractice)
+                {
+                    ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
+                    Glide.With(this)
+                        .Load(Project.currentBack.remotePreviewImgPath.Equals("") ? Project.currentBack.remoteVideoPath : Project.currentBack.remotePreviewImgPath)
+                        .Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg))
+                        .Into(imgIv);
+                    //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                    videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+                }
+                else
+                {
+                    if (!isPracticeStart)
+                    {
+                        videoPlayer.SetUri(practice.explainId, false);
+                        videoPlayer.Play();
+                    }
+                    else
+                    {
+                        new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+                        {
+                            Thread.Sleep(10);
+                            videoPlayer.Play();
+                            new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+                            {
+                                Thread.Sleep(10);
+                                RunOnUiThread(() =>
+                                {
+                                    videoPlayer.Stop();
+                                });
+                            })).Start();
+                        })).Start();
+                    }
+                }
+            }
+            else {
+                ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
+                imgIv.SetImageResource(Resource.Drawable.home_bg);
+                imgIv.Visibility = ViewStates.Visible;
+            }
         }
 
         protected override void OnPause()
@@ -114,6 +156,9 @@ namespace TabletArtco
                 //Select Sprite callback
                 case 0:
                     {
+                        if (isPractice) {
+                            break;
+                        }
                         Bundle bundle = data.GetBundleExtra("bundle");
                         Sprite sprite = Sprite.ToSprite(bundle.GetString("model"));
                         if (sprite == null)
@@ -159,16 +204,17 @@ namespace TabletArtco
                         {
                             return;
                         }
+
+                        ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
+                        Glide.With(this).Load(background.remotePreviewImgPath.Equals("") ? background.remoteVideoPath : background.remotePreviewImgPath).Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg)).Into(imgIv);
                         Project.currentBack = background;
-                        //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                         videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
 
                         isPractice = bundle.GetBoolean("isPractice");
                         if (isPractice) {
+                            isPracticeStart = false;
                             LoadPracticeProject(bundle);
                         } 
-
-                        
                         break;
                     }
                 // select background callback
@@ -193,14 +239,9 @@ namespace TabletArtco
                         }
 
                         ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
-
-                        Glide.With(this)
-                            .Load(background.remotePreviewImgPath.Equals("") ? background.remoteVideoPath : background.remotePreviewImgPath)
-                            .Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg))
-                            .Into(imgIv);
-
+                        Glide.With(this).Load(background.remotePreviewImgPath.Equals("") ? background.remoteVideoPath : background.remotePreviewImgPath).Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg)).Into(imgIv);
+                        isPractice = false;
                         Project.currentBack = background;
-                        //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                         videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
 
                         break;
@@ -625,7 +666,12 @@ namespace TabletArtco
                         if (practice.solutionList.Count > list.Count)
                         {
                             // 练习block匹配才加入
-                            if (practice.solutionList[list.Count] == block.name) {
+                            if (practice.solutionList[list.Count].Contains(block.name)) {
+                                LogUtil.CustomLog("=========" + practice.solutionList[list.Count]);
+                                var arr = practice.solutionList[list.Count].Split(":");
+                                if (arr.Length>1) {
+                                    block.text = arr[1];
+                                };
                                 spritesList[mSpriteIndex].AddBlock(block);
                                 UpdateBlockView();
                             }
@@ -905,6 +951,7 @@ namespace TabletArtco
 
             FindViewById<ImageView>(Resource.Id.p_start).Click += (t, e) =>
             {
+                isPracticeStart = true;
                 FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Invisible;
                 Project.mSprites[0].isVisible = true;
                 UpdateMainView();

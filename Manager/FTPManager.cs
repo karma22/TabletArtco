@@ -11,7 +11,8 @@ namespace TabletArtco
         static FTPManager()
         {
             //ftpManager = new FTPManager("103.120.226.173", "sangsang", "sangsang", "artco");
-            ftpManager = new FTPManager("112.219.93.149", "sangsang", "sangsang", "artco");
+            //ftpManager = new FTPManager("112.219.93.149", "sangsang", "sangsang", "artco");
+            ftpManager = new FTPManager("182.151.21.32", "sangsang", "sangsang1024", "artco");
         }
 
         private readonly string id;

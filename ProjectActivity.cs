@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Security.AccessControl;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Service.Voice;
 using Android.Views;
 using Android.Widget;
 using Com.Bumptech.Glide;
+using Com.Bumptech.Glide.Manager;
 
 namespace TabletArtco
 {
@@ -16,8 +19,8 @@ namespace TabletArtco
         private int mItemH;
         private int mIndex;
 
-        private List<string[]> filePathList = new List<string[]>();
-        private List<string[]> fileNameList = new List<string[]>();
+        private List<List<string>> filePathList = new List<List<string>>();
+        private List<List<string>> fileNameList = new List<List<string>>();
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -43,19 +46,25 @@ namespace TabletArtco
                 if (Directory.Exists(path[i]))
                 {
                     string[] pathList = Directory.GetFiles(path[i]);
-                    filePathList.Add(pathList);
-
-                    string[] nameList = new string[pathList.Length];
-                    for (int j = 0; j < nameList.Length; j++)
+                    List<string> list = new List<string>();
+                    for (int j=0; j<pathList.Length; j++) 
                     {
-                        nameList[j] = Path.GetFileNameWithoutExtension(pathList[j]);
+                        list.Add(pathList[j]);
+                    }
+                    filePathList.Add(list);
+
+
+                    List<string> nameList = new List<string>();
+                    for (int j = 0; j < pathList.Length; j++)
+                    {
+                        nameList.Add(Path.GetFileNameWithoutExtension(pathList[j]));
                     }
                     fileNameList.Add(nameList);
                 }
                 else
                 {
-                    filePathList.Add(new string[0]);
-                    fileNameList.Add(new string[0]);
+                    filePathList.Add(new List<string>());
+                    fileNameList.Add(new List<string>());
                 }
             }
 
@@ -157,7 +166,7 @@ namespace TabletArtco
         // Delegate interface
         public int GetItemsCount(Java.Lang.Object adapter)
         {
-            return fileNameList[mIndex].Length;
+            return fileNameList[mIndex].Count;
         }
 
         public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
@@ -168,12 +177,20 @@ namespace TabletArtco
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
             holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
             holder.txtTv = convertView.FindViewById<TextView>(Resource.Id.sprite_tv);
+            holder.delete_fl = convertView.FindViewById<FrameLayout>(Resource.Id.delete_fl);
+            holder.delete_fl.Visibility = ViewStates.Visible;
             convertView.Tag = holder;
             convertView.Click += (t, e) =>
             {
                 ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
                 int position = (int)viewHolder.txtTv.Tag;
                 ClickItem(position);
+            };
+            holder.delete_fl.Click += (t, e) =>
+            {
+                FrameLayout view = (FrameLayout)t;
+                int position = (int)view.Tag;
+                DeleteItem(position);
             };
             return convertView;
         }
@@ -210,12 +227,32 @@ namespace TabletArtco
             Finish();
         }
 
+        public void DeleteItem(int position)
+        {
+            List<string> pathList = filePathList[mIndex];
+            List<string> nameList = fileNameList[mIndex];
+
+            string path = pathList[position];
+            string name = nameList[position];
+
+            Java.IO.File file = new Java.IO.File(path);
+            if (file.IsFile && file.Exists())
+            {
+                file.Delete();
+            }
+
+            pathList.RemoveAt(position);
+            nameList.RemoveAt(position);
+            UpdateView();
+        }
+
         //定义ViewHolder内部类，用于对控件实例进行缓存
         class ViewHolder : Java.Lang.Object
         {
             public ImageView bgIv;
             public ImageView imgIv;
             public TextView txtTv;
+            public FrameLayout delete_fl;
         }
     }
 }

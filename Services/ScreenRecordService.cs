@@ -29,6 +29,8 @@ namespace TabletArtco
         private int mResultCode;
         private Intent mResultData;
 
+        private string mName;
+
         //录屏文件的保存地址
         private string mRecordFilePath;
 
@@ -102,8 +104,9 @@ namespace TabletArtco
         }
 
         [TargetApi(Value = 21)]
-        public bool startRecord()
+        public bool startRecord(string name)
         {
+
             if (mIsRunning)
             {
                 return false;
@@ -112,6 +115,7 @@ namespace TabletArtco
             {
                 mMediaProjection = mProjectionManager.GetMediaProjection(mResultCode, mResultData);
             }
+            mName = name;
 
             setUpMediaRecorder();
             createVirtualDisplay();
@@ -202,12 +206,12 @@ namespace TabletArtco
         [TargetApi(Value = 21)]
         private void setUpMediaRecorder()
         {
-            mRecordFilePath = getSaveDirectory() + Java.IO.File.Separator + JavaSystem.CurrentTimeMillis() + ".mp4";
+            mRecordFilePath = getSaveDirectory() + Java.IO.File.Separator + mName + ".mp4";
             if (mMediaRecorder == null)
             {
                 mMediaRecorder = new MediaRecorder();
             }
-            mMediaRecorder.SetAudioSource(AudioSource.Mic);
+            mMediaRecorder.SetAudioSource(AudioSource.Default);
             mMediaRecorder.SetVideoSource(VideoSource.Surface);
             mMediaRecorder.SetOutputFormat(OutputFormat.Mpeg4);
             mMediaRecorder.SetOutputFile(mRecordFilePath);
@@ -246,11 +250,12 @@ namespace TabletArtco
         {
             if (Android.OS.Environment.ExternalStorageState.Equals(Android.OS.Environment.MediaMounted))
             {
-                if (!Directory.Exists(UserDirectoryPath.userVideoPath))
-                {
-                    Directory.CreateDirectory(UserDirectoryPath.userVideoPath);
-                }
-                return UserDirectoryPath.userVideoPath;
+                string galleryPath = Android.OS.Environment.ExternalStorageDirectory.Path + Java.IO.File.Separator + Android.OS.Environment.DirectoryDcim + Java.IO.File.Separator + "Camera";
+                //if (!Directory.Exists(UserDirectoryPath.userVideoPath))
+                //{
+                //    Directory.CreateDirectory(UserDirectoryPath.userVideoPath);
+                //}
+                return galleryPath;//UserDirectoryPath.userVideoPath;
             }
             else
             {

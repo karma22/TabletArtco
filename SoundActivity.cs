@@ -4,13 +4,15 @@ using System.IO;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Runtime;
 using Android.Views;
+using Android.Views.InputMethods;
 using Android.Widget;
 
 namespace TabletArtco
 {
     [Activity(Label = "SoundActivity")]
-    public class SoundActivity : Activity, DataSource, Delegate
+    public class SoundActivity : Activity, DataSource, Delegate, TextView.IOnEditorActionListener
     {
 
         private int mItemW;
@@ -102,6 +104,8 @@ namespace TabletArtco
                     searchEt.SetPadding((int)(30 / 166.0 * editTvW), 0, 0, 0);
                     searchEt.Gravity = GravityFlags.CenterVertical;
                     searchEt.SetBackgroundResource(resIds[i]);
+                    searchEt.ImeOptions = Android.Views.InputMethods.ImeAction.Search;
+                    searchEt.SetOnEditorActionListener(this);
                     topView.AddView(searchEt);
                 }
                 else
@@ -201,7 +205,6 @@ namespace TabletArtco
             adapter.NotifyDataSetChanged();
         }
 
-
         public int GetItemsCount(Java.Lang.Object adapter)
         {
             List<List<Sound>> sounds = Sound._sounds;
@@ -300,6 +303,13 @@ namespace TabletArtco
                     Finish();
                 }
             }
+        }
+
+        public bool OnEditorAction(TextView v, [GeneratedEnum] ImeAction actionId, KeyEvent e)
+        {
+
+
+            return true;
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存

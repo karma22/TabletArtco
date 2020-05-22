@@ -586,7 +586,7 @@ namespace TabletArtco
                         repeat.Add(Block.GetBlockTextOrVarName(block));
                         loopCnt.Add(0);
                     }
-                    else if (blockName.Equals("ControlFlag"))
+                    else if (blockName.Equals("ControlFlag") || blockName.Equals("GameFlag"))
                     {
                         int loop = repeat.Count - 1;
                         if(loop >= 0)

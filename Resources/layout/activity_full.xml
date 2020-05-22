@@ -8,23 +8,26 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:gravity="center_vertical">
-        <TextView
-            android:id="@+id/timeTv"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:textColor="#333333"
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/recordBt"/>
+        
         <ImageView
             android:id="@+id/recordBt"
-            android:layout_width="40dp"
+            android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/playBt"
-            android:src="@drawable/Button_play"
+            android:layout_toLeftOf="@id/timeTv"
+            android:src="@drawable/rec "
             />
+        <TextView
+            android:id="@+id/timeTv"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:textColor="#333333"
+            android:gravity="center_vertical"
+            
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/playBt"/>
         <ImageView
             android:id="@+id/playBt"
             android:layout_width="40dp"
