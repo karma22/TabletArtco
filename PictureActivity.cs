@@ -13,13 +13,16 @@ using Android.Views.InputMethods;
 
 namespace TabletArtco
 {
-    [Activity(Label = "PictureActivity")]
+    [Activity(Label = "PictureActivity", LaunchMode = Android.Content.PM.LaunchMode.SingleTop)]
     public class PictureActivity : Activity, DataSource, Delegate, TextView.IOnEditorActionListener
     {
 
         private int mItemW;
         private int mItemH;
         private int mIndex;
+        private EditText searchEt;
+        private bool isSearch = false;
+        private List<Sprite> searchList = new List<Sprite>();
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -65,11 +68,14 @@ namespace TabletArtco
                 if (i == 0)
                 {
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(editTvW, editTvH);
-                    EditText searchEt = new EditText(this);
+                    searchEt = new EditText(this);
                     searchEt.LayoutParameters = lp;
                     searchEt.SetPadding((int)(30 / 166.0 * editTvW), 0, 0, 0);
                     searchEt.Gravity = GravityFlags.CenterVertical;
                     searchEt.SetBackgroundResource(resIds[i]);
+                    searchEt.Hint = "搜索";
+                    searchEt.TextSize = 14;
+                    searchEt.SetSingleLine(true);
                     searchEt.ImeOptions = Android.Views.InputMethods.ImeAction.Search;
                     searchEt.SetOnEditorActionListener(this);
                     topView.AddView(searchEt);
@@ -102,7 +108,8 @@ namespace TabletArtco
                             fl.Background = null;
                         }
                         ((FrameLayout)t).SetBackgroundResource(Resource.Drawable.tab_select);
-
+                        isSearch = false;
+                        searchEt.Text = "";
                         UpdateView();
                     };
                 }
@@ -146,6 +153,10 @@ namespace TabletArtco
          */
         public int GetItemsCount(Java.Lang.Object adapter)
         {
+            if (isSearch) {
+                return searchList.Count;
+            }
+
             List<List<Sprite>> sprites = Sprite._sprites;
             if (mIndex<sprites.Count)
             {
@@ -174,15 +185,25 @@ namespace TabletArtco
 
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
-            List<List<Sprite>> sprites = Sprite._sprites;   
-            if (mIndex >= sprites.Count)
-            {
-                return;
-            }
-            List<Sprite> list = sprites[mIndex];
-            Sprite sprite = list[position];
-            ViewHolder viewHolder = (ViewHolder)contentView.Tag;
 
+            Sprite sprite = null;
+            if (isSearch)
+            {
+                sprite = searchList[position];
+            }
+            else
+            {
+                List<List<Sprite>> sprites = Sprite._sprites;
+                if (mIndex >= sprites.Count)
+                {
+                    return;
+                }
+                List<Sprite> list = sprites[mIndex];
+                sprite = list[position];
+            }
+
+            
+            ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             Glide.With(this).Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(viewHolder.imgIv);
             viewHolder.txtTv.Text = sprite.name;
             viewHolder.txtTv.Tag = position;
@@ -191,15 +212,21 @@ namespace TabletArtco
         // select sprite then back
         public void ClickItem(int position)
         {
-            
-            List<List<Sprite>> sprites = Sprite._sprites;
-            if (mIndex >= sprites.Count)
+            Sprite sprite = null;
+            if (isSearch)
             {
-                return;
+                sprite = searchList[position];
             }
-            Android.Util.Log.Info("position", "position===" + position);
-            List<Sprite> list = sprites[mIndex];
-            Sprite sprite = list[position];
+            else
+            {
+                List<List<Sprite>> sprites = Sprite._sprites;
+                if (mIndex >= sprites.Count)
+                {
+                    return;
+                }
+                List<Sprite> list = sprites[mIndex];
+                sprite = list[position];
+            }
             Intent intent = new Intent();
             Bundle bundle = new Bundle();
             bundle.PutString("model", sprite.ToString());
@@ -210,7 +237,33 @@ namespace TabletArtco
 
         public bool OnEditorAction(TextView v, [GeneratedEnum] ImeAction actionId, KeyEvent e)
         {
-            return true;
+            if (v.Text.Length == 0) {
+                ToastUtil.ShowToast(this, "搜索内容不能为空");
+                return false;
+            }
+            if (actionId == ImeAction.Search)
+            {
+                String text = searchEt.Text;
+                isSearch = true;
+                searchList.RemoveRange(0, searchList.Count);
+                List<List<Sprite>> list = Sprite._sprites;
+                for (int i = 0; i < list.Count; i++) {
+                    List<Sprite> subList = list[i];
+                    for (int j = 0; j < subList.Count; j++)
+                    {
+                        Sprite sprite = subList[j];
+                        if (sprite.name.Contains(text)) {
+                            searchList.Add(sprite);
+                        }
+                    }
+                }
+                UpdateView();
+                // 当按了搜索之后关闭软键盘
+                Keyboard.hideKeyboard(v);
+                return true;
+            }
+
+            return false;
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存

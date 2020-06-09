@@ -12,7 +12,7 @@ using Com.Bumptech.Glide.Manager;
 
 namespace TabletArtco
 {
-    [Activity(Label = "ProjectActivity")]
+    [Activity(Label = "ProjectActivity", LaunchMode = Android.Content.PM.LaunchMode.SingleTop)]
     public class ProjectActivity : Activity, DataSource, Delegate
     {
         private int mItemW;
@@ -83,27 +83,30 @@ namespace TabletArtco
             scrollView.LayoutParameters = svParams;
             scrollView.SetPadding(margin, (int)(10 / 975.0 * height), margin, 0);
             LinearLayout topView = FindViewById<LinearLayout>(Resource.Id.grid_top_view);
+            //int[] resIds = {
+            //    Resource.Drawable.search_bg, Resource.Drawable.PO_ProjectOpen_tab, Resource.Drawable.PO_PictureOpen_tab
+            //};
             int[] resIds = {
-                Resource.Drawable.search_bg, Resource.Drawable.PO_ProjectOpen_tab, Resource.Drawable.PO_PictureOpen_tab
+                Resource.Drawable.PO_ProjectOpen_tab, Resource.Drawable.PO_PictureOpen_tab
             };
             int editTvH = (int)(45 / 90.0 * topH);
             int editTvW = (int)(166 / 35.0 * editTvH);
-            int itemH = (int)(50 / 90.0 * topH);
+            int itemH = (int)(50 / 90.0 * topH); 
             int itemW = (int)(179 / 50.0 * itemH);
             for (int i = 0; i < resIds.Length; i++)
             {
-                if (i == 0)
-                {
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(editTvW, editTvH);
-                    EditText searchEt = new EditText(this);
-                    searchEt.LayoutParameters = lp;
-                    searchEt.SetPadding((int)(30 / 166.0 * editTvW), 0, 0, 0);
-                    searchEt.Gravity = GravityFlags.CenterVertical;
-                    searchEt.SetBackgroundResource(resIds[i]);
-                    topView.AddView(searchEt);
-                }
-                else
-                {
+                //if (i == 0)
+                //{
+                //    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(editTvW, editTvH);
+                //    EditText searchEt = new EditText(this);
+                //    searchEt.LayoutParameters = lp;
+                //    searchEt.SetPadding((int)(30 / 166.0 * editTvW), 0, 0, 0);
+                //    searchEt.Gravity = GravityFlags.CenterVertical;
+                //    searchEt.SetBackgroundResource(resIds[i]);
+                //    topView.AddView(searchEt);
+                //}
+                //else
+                //{
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(itemW + 2*padding, itemH + 2*padding);
 
                     ImageView imgIv = new ImageView(this);
@@ -113,7 +116,7 @@ namespace TabletArtco
                     frameLayout.LayoutParameters = lp;
                     frameLayout.SetPadding(padding, padding, padding, padding);
                     frameLayout.Tag = i;
-                    if (i == 1)
+                    if (i == 0)
                         frameLayout.SetBackgroundResource(Resource.Drawable.tab_select);
 
                     frameLayout.AddView(imgIv);
@@ -122,9 +125,9 @@ namespace TabletArtco
                     frameLayout.Click += (t, e) =>
                     {
                         int tag = (int)(((FrameLayout)t).Tag);
-                        mIndex = tag - 1;
+                        mIndex = tag;
 
-                        for (int j = 1; j < resIds.Length; j++)
+                        for (int j = 0; j < resIds.Length; j++)
                         {
                             FrameLayout fl = (FrameLayout)topView.GetChildAt(j);
                             fl.Background = null;
@@ -133,7 +136,7 @@ namespace TabletArtco
 
                         UpdateView();
                     };
-                }
+                //}
             }
 
             int spacing = 20;

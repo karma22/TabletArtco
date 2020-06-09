@@ -15,7 +15,7 @@ using Java.Lang;
 
 namespace TabletArtco
 {
-    [Activity(Label = "SettingActivity")]
+    [Activity(Label = "SettingActivity", LaunchMode = Android.Content.PM.LaunchMode.SingleTop)]
     public class SettingActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)

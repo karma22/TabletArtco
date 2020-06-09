@@ -73,12 +73,19 @@ namespace TabletArtco
         public void PreImageViewVisible()
         {
             mPreImgIv.ClearAnimation();
-            mPreImgIv.Alpha = 0;
+            mPreImgIv.Alpha = 1;
             mPreImgIv.Visibility = Android.Views.ViewStates.Visible;
         }
 
+        public void hideVideo()
+        {
+            mVideoView.Visibility = Android.Views.ViewStates.Invisible;
+        }
+
+
         public void SetUri(int path, bool isRecycle)
         {
+            mVideoView.Visibility = Android.Views.ViewStates.Visible;
             mVideoView.Pause();
             StopSound();
             mVideoView.StopPlayback();
@@ -98,6 +105,7 @@ namespace TabletArtco
 
         public void SetPath(string path, string img, string sound)
         {
+            mVideoView.Visibility = Android.Views.ViewStates.Visible;
             mVideoView.Pause();
             StopSound();
             mVideoView.StopPlayback();
@@ -143,10 +151,7 @@ namespace TabletArtco
             mPath = null;
             PreImageViewVisible();
             mPreImgIv.SetImageResource(Resource.Drawable.home_bg);
-            if (mVideoView.IsPlaying)
-            {
-                mVideoView.Pause();
-            }
+            mVideoView.Pause();
         }
 
         // play media

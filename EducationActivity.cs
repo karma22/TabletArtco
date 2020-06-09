@@ -24,6 +24,10 @@ namespace TabletArtco
         private int mItemH;
         private int mIndex;
 
+        private EditText searchEt;
+        private bool isSearch = false;
+        private List<Background> searchList = new List<Background>();
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -65,11 +69,14 @@ namespace TabletArtco
                 if (i == 0)
                 {
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(editTvW, editTvH);
-                    EditText searchEt = new EditText(this);
+                    searchEt = new EditText(this);
                     searchEt.LayoutParameters = lp;
                     searchEt.SetPadding((int)(30 / 166.0 * editTvW), 0, 0, 0);
                     searchEt.Gravity = GravityFlags.CenterVertical;
                     searchEt.SetBackgroundResource(resIds[i]);
+                    searchEt.Hint = "搜索";
+                    searchEt.TextSize = 14;
+                    searchEt.SetSingleLine(true);
                     searchEt.ImeOptions = Android.Views.InputMethods.ImeAction.Search;
                     searchEt.SetOnEditorActionListener(this);
                     topView.AddView(searchEt);
@@ -102,7 +109,8 @@ namespace TabletArtco
                             fl.Background = null;
                         }
                         ((FrameLayout)t).SetBackgroundResource(Resource.Drawable.tab_select);
-
+                        isSearch = false;
+                        searchEt.Text = "";
                         UpdateView();
                     };
                 }
@@ -138,6 +146,9 @@ namespace TabletArtco
         // Delegate interface
         public int GetItemsCount(Java.Lang.Object adapter)
         {
+            if (isSearch) {
+                return searchList.Count;
+            }
             List<List<Background>> backgrounds = Background._backgrounds;
             if (mIndex < backgrounds.Count)
             {
@@ -166,13 +177,23 @@ namespace TabletArtco
 
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
-            List<List<Background>> backgrounds = Background._backgrounds;
-            if (mIndex >= backgrounds.Count)
+            Background background = null;
+
+            if (isSearch)
             {
-                return;
+                background = searchList[position];
             }
-            List<Background> list = backgrounds[mIndex];
-            Background background = list[position];
+            else
+            {
+                List<List<Background>> backgrounds = Background._backgrounds;
+                if (mIndex >= backgrounds.Count)
+                {
+                    return;
+                }
+                List<Background> list = backgrounds[mIndex];
+                background = list[position];
+            }
+           
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             Android.Util.Log.Info("background", background.remotePreviewImgPath+"");
             Glide.With(this).Load(GlideUtil.GetGlideUrl(background.remotePreviewImgPath)).Into(viewHolder.imgIv);
@@ -182,13 +203,21 @@ namespace TabletArtco
 
         public void ClickItem(int position)
         {
-            List<List<Background>> backgrounds = Background._backgrounds;
-            if (mIndex >= backgrounds.Count)
+            Background background = null;
+            if (isSearch)
             {
-                return;
+                background = searchList[position];
             }
-            List<Background> list = backgrounds[mIndex];
-            Background background = list[position];
+            else {
+                List<List<Background>> backgrounds = Background._backgrounds;
+                if (mIndex >= backgrounds.Count)
+                {
+                    return;
+                }
+                List<Background> list = backgrounds[mIndex];
+                background = list[position];
+            }
+           
             Intent intent = new Intent();
             Bundle bundle = new Bundle();
             bundle.PutString("model", background.ToString());
@@ -201,8 +230,37 @@ namespace TabletArtco
         }
 
         public bool OnEditorAction(TextView v, [GeneratedEnum] ImeAction actionId, KeyEvent e)
-        {
-            return true;
+        { 
+            if (v.Text.Length == 0)
+            {
+                ToastUtil.ShowToast(this, "搜索内容不能为空");
+                return false;
+            }
+            if (actionId == ImeAction.Search)
+            {
+                string text = searchEt.Text;
+                isSearch = true;
+                searchList.RemoveRange(0, searchList.Count);
+                List<List<Background>> list = Background._backgrounds;
+                for (int i = 0; i < list.Count; i++)
+                {
+                    List<Background> subList = list[i];
+                    for (int j = 0; j < subList.Count; j++)
+                    {
+                        Background bg = subList[j];
+                        if (bg.name.Contains(text))
+                        {
+                            searchList.Add(bg);
+                        }
+                    }
+                }
+                UpdateView();
+                // 当按了搜索之后关闭软键盘
+                Keyboard.hideKeyboard(v);
+                return true;
+            }
+
+            return false;
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存

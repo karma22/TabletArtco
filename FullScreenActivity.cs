@@ -14,7 +14,7 @@ using Java.Lang;
 
 namespace TabletArtco
 {
-    [Activity(Label = "FullScreenActivity")]
+    [Activity(Label = "FullScreenActivity", LaunchMode = Android.Content.PM.LaunchMode.SingleTop)]
     public class FullScreenActivity : Activity, UpdateDelegate, IServiceConnection, RecordUtil.RecordListener
     {
         private static string Tag = "FullScreenActivity";

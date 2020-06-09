@@ -17,7 +17,7 @@ using System.Drawing.Printing;
 namespace TabletArtco
 {
 
-    [Activity(Theme = "@style/AppTheme")]
+    [Activity(Theme = "@style/AppTheme", LaunchMode = Android.Content.PM.LaunchMode.SingleTop)]
     public class MainActivity : AppCompatActivity, Delegate, DataSource, UpdateDelegate, View.IOnDragListener, View.IOnLongClickListener, PopupMenu.IOnMenuItemClickListener
     {
         private static string Tag = "MainActivity";
@@ -259,16 +259,8 @@ namespace TabletArtco
                     {
                         Bundle bundle = data.GetBundleExtra("bundle");
                         string bg = bundle.GetString("model");
-
-                        if(bg.Equals("blue"))
-                            FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background);
-                        else if(bg.Equals("red"))
-                            FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background_red);
-                        else if (bg.Equals("yellow"))
-                            FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background_yellow);
-                        else if (bg.Equals("black"))
-                            FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background_black);
-
+                        Editor.PutString("model", bg).Commit();
+                        initBg();
                         break;
                     }
                 // load sprite or project
@@ -425,12 +417,25 @@ namespace TabletArtco
         // init view
         public void InitView()
         {
+            initBg();
             InitTopButtonEvent();
             InitLeftButtonEvent();
             InitMainView();
             InitSpriteListView();
         }
+        public void initBg() {
+            string bg = SharedPres.GetString("model", "blue");
+            if (bg.Equals("blue"))
+                FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background);
+            else if (bg.Equals("red"))
+                FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background_red);
+            else if (bg.Equals("yellow"))
+                FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background_yellow);
+            else if (bg.Equals("black"))
+                FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background_black);
+        }
         
+
         //Top tool button
         public void InitTopButtonEvent()
         {
@@ -458,6 +463,7 @@ namespace TabletArtco
                             {
                                 // Sprite select Activity
                                 Intent intent = new Intent(this, typeof(PictureActivity));
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivityForResult(intent, 0, null);
                                 break;
                             }
@@ -465,6 +471,7 @@ namespace TabletArtco
                             {
                                 // Education select activity
                                 Intent intent = new Intent(this, typeof(EducationActivity));
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivityForResult(intent, 1, null);
                                 break;
                             }
@@ -472,6 +479,7 @@ namespace TabletArtco
                             {
                                 // Background  select activity
                                 Intent intent = new Intent(this, typeof(BackgroundActivity));
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivityForResult(intent, 2, null);
                                 break;
                             }
@@ -479,6 +487,7 @@ namespace TabletArtco
                             {
                                 // Sound select activity
                                 Intent intent = new Intent(this, typeof(SoundActivity));
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivityForResult(intent, 3, null);
                                 break;
                             }
@@ -486,6 +495,7 @@ namespace TabletArtco
                             {
                                 // BGM select activity
                                 Intent intent = new Intent(this, typeof(MusicActivity));
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivityForResult(intent, 4, null);
                                 break;
                             }
@@ -504,6 +514,7 @@ namespace TabletArtco
                             {
                                 // to project activity
                                 Intent intent = new Intent(this, typeof(ProjectActivity));
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivityForResult(intent, 6, null);
 
                                 break;
@@ -512,6 +523,7 @@ namespace TabletArtco
                             {
                                 // to setting activity
                                 Intent intent = new Intent(this, typeof(SettingActivity));
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivityForResult(intent, 5, null);
                                 break;
                             }
@@ -519,12 +531,14 @@ namespace TabletArtco
                             {
                                 // to aboutus activity
                                 Intent intent = new Intent(this, typeof(AboutUsActivity));
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivity(intent);
                                 break;
                             }
                         case 9:
                             {
                                 Intent intent = new Intent(Android.Provider.MediaStore.ActionImageCapture);
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivityForResult(intent, 11, null);
                                 break;
                             }
@@ -816,7 +830,10 @@ namespace TabletArtco
 
                                     // initialize Background
                                     //mediaManager.ClickHomeButton();
+                                    videoPlayer.hideVideo();
                                     videoPlayer.ClickHomeBt();
+                                    FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Invisible;
+                                    
                                     SoundPlayer.bgmPath = null;
 
                                     // initialize Variavles
@@ -876,6 +893,7 @@ namespace TabletArtco
                                 }
                                 //full button click
                                 Intent intent = new Intent(this, typeof(FullScreenActivity));
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivity(intent);
                                 break;
                             }
@@ -907,7 +925,7 @@ namespace TabletArtco
 
             ActivatedSprite.notFullSize = new Android.Util.Size((int)width-paddingL*2, (int)(481 / 549.0 * height));
             ActivatedSprite.fullSize = new Android.Util.Size(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this)-ScreenUtil.dip2px(this, 50));
-          
+ 
 
             // video surfaceview
             VideoView videoView = FindViewById<VideoView>(Resource.Id.video_view);
@@ -1006,6 +1024,7 @@ namespace TabletArtco
             {
                 FindViewById<ImageView>(Resource.Id.bt_center3).PerformClick();
                 Intent intent = new Intent(this, typeof(BackgroundActivity));
+                intent.AddFlags(ActivityFlags.ReorderToFront);
                 StartActivityForResult(intent, 2, null);
             };
 
@@ -1125,6 +1144,7 @@ namespace TabletArtco
                         Bundle bundle = new Bundle();
                         bundle.PutInt("position", tag-100);
                         intent.PutExtra("bundle", bundle);
+                        intent.AddFlags(ActivityFlags.ReorderToFront);
                         StartActivityForResult(intent, 10, null);
                     }
                     else
@@ -1367,6 +1387,7 @@ namespace TabletArtco
                                         bundle.PutInt("row", block.row);
                                         bundle.PutInt("column", tag);
                                         intent.PutExtra("bundle", bundle);
+                                        intent.AddFlags(ActivityFlags.ReorderToFront);
                                         StartActivityForResult(intent, clickType, null);
                                         break;
                                     }
@@ -1467,6 +1488,22 @@ namespace TabletArtco
                     FindViewById<ImageView>(Resource.Id.p_start).Visibility = ViewStates.Invisible;
                 }
             });
+        }
+
+        private ISharedPreferences SharedPres
+        {
+            get
+            {
+                return GetSharedPreferences("_main_", 0);
+            }
+        }
+
+        private ISharedPreferencesEditor Editor
+        {
+            get
+            {
+                return SharedPres.Edit();
+            }
         }
 
         [System.Obsolete]
@@ -1794,6 +1831,7 @@ namespace TabletArtco
                         Bundle bundle = new Bundle();
                         bundle.PutInt("position", mLongPressSpriteIndex);
                         intent.PutExtra("bundle", bundle);
+                        intent.AddFlags(ActivityFlags.ReorderToFront);
                         StartActivityForResult(intent, 10, null);
                         break;
                     }

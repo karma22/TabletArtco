@@ -4,6 +4,7 @@ using Android.App;
 using Android.Graphics;
 using Java.Lang;
 using Android.Content.PM;
+using Android.Views.InputMethods;
 
 namespace TabletArtco
 {
@@ -224,4 +225,13 @@ namespace TabletArtco
         public static string userVideoPath { get; } = Android.OS.Environment.ExternalStorageDirectory.Path + "/Artco/video";
     }
 
+
+    public class Keyboard
+    {
+        public static void hideKeyboard(View view)
+        {
+            InputMethodManager manager = (InputMethodManager)view.Context.GetSystemService(Context.InputMethodService);
+            manager.HideSoftInputFromWindow(view.WindowToken, 0);
+        }
+    }
 }

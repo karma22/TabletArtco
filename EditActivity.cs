@@ -19,7 +19,7 @@ namespace TabletArtco
     //[Activity(Label = "EditActivity", MainLauncher = true)]
 
     // Edit Image Activity
-    [Activity(Theme = "@style/AppTheme")]
+    [Activity(Theme = "@style/AppTheme", LaunchMode = Android.Content.PM.LaunchMode.SingleTop)]
     public class EditActivity : Activity, Delegate, DataSource, PopupMenu.IOnMenuItemClickListener, Android.Text.ITextWatcher, TextView.IOnEditorActionListener
     {
         private List<Bitmap> originList = new List<Bitmap>();

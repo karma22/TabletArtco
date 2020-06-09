@@ -11,12 +11,16 @@ using Android.Widget;
 
 namespace TabletArtco
 {
-    [Activity(Label = "MusicActivity")]
+    [Activity(Label = "MusicActivity", LaunchMode = Android.Content.PM.LaunchMode.SingleTop)]
     public class MusicActivity : Activity, DataSource, Delegate, TextView.IOnEditorActionListener
     {
         private int mItemW;
         private int mItemH;
         private int mIndex = 0;
+
+        private EditText searchEt;
+        private bool isSearch = false;
+        private List<Music> searchList = new List<Music>();
 
         private string dirPath = UserDirectoryPath.userMusicPath;
         private string[] filePath = new string[0];
@@ -76,11 +80,14 @@ namespace TabletArtco
                 if (i == 0)
                 {
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(editTvW, editTvH);
-                    EditText searchEt = new EditText(this);
+                    searchEt = new EditText(this);
                     searchEt.LayoutParameters = lp;
                     searchEt.SetPadding((int)(30 / 166.0 * editTvW), 0, 0, 0);
                     searchEt.Gravity = GravityFlags.CenterVertical;
                     searchEt.SetBackgroundResource(resIds[i]);
+                    searchEt.Hint = "搜索";
+                    searchEt.TextSize = 14;
+                    searchEt.SetSingleLine(true);
                     searchEt.ImeOptions = Android.Views.InputMethods.ImeAction.Search;
                     searchEt.SetOnEditorActionListener(this);
                     topView.AddView(searchEt);
@@ -129,7 +136,8 @@ namespace TabletArtco
                                 }
                             }
                         }
-
+                        isSearch = false;
+                        searchEt.Text = "";
                         UpdateView();
                     };
                 }
@@ -166,6 +174,10 @@ namespace TabletArtco
 
         public int GetItemsCount(Java.Lang.Object adapter)
         {
+            if (isSearch) {
+                return searchList.Count;
+            }
+
             List<List<Music>> musics = Music._bgms;
             if (0<= mIndex && mIndex < musics.Count)
             {
@@ -207,8 +219,15 @@ namespace TabletArtco
 
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
-            List<List<Music>> musics = Music._bgms;
+            if (isSearch) {
+                Music sound = searchList[position];
+                ViewHolder viewHolder = (ViewHolder)contentView.Tag;
+                viewHolder.nameTv.Text = sound.name;
+                viewHolder.soundPlay.Tag = position;
+                return;
+            }
 
+            List<List<Music>> musics = Music._bgms;
             if (mIndex == musics.Count) //user background tab
             {
                 ViewHolder viewHolder = (ViewHolder)contentView.Tag;
@@ -230,35 +249,46 @@ namespace TabletArtco
             List<List<Music>> musics = Music._bgms;
             Music music = null;
 
-            if (mIndex < musics.Count)
+            if (isSearch)
             {
-                List<Music> list = musics[mIndex];
-                music = list[position];
+                music = searchList[position];
             }
             else
             {
-                music = new Music(fileName[position], filePath[position]);
-            }
-            
-            if (playSound)
-            {
-                if(isPlay)
+                if (mIndex < musics.Count)
                 {
-                    isPlay = false;
-                    SoundPlayer.StopAll();
-                    if(this.position != position)
-                    {
-                        isPlay = true;
-                        this.position = position;
-                        soundPlayer.Play(music.path);
-                    }
+                    List<Music> list = musics[mIndex];
+                    music = list[position];
                 }
                 else
                 {
-                    isPlay = true;
-                    this.position = position;
-                    soundPlayer.Play(music.path);
+                    music = new Music(fileName[position], filePath[position]);
                 }
+            }
+            
+            
+            if (playSound)
+            {
+
+                SoundPlayer.StopAll();
+                new SoundPlayer(this).Play(music.path);
+                //if (isPlay)
+                //{
+                //    isPlay = false;
+                //    SoundPlayer.StopAll();
+                //    if(this.position != position)
+                //    {
+                //        isPlay = true;
+                //        this.position = position;
+                //        soundPlayer.Play(music.path);
+                //    }
+                //}
+                //else
+                //{
+                //    isPlay = true;
+                //    this.position = position;
+                //    soundPlayer.Play(music.path);
+                //}
             }
             else
             {
@@ -274,7 +304,36 @@ namespace TabletArtco
 
         public bool OnEditorAction(TextView v, [GeneratedEnum] ImeAction actionId, KeyEvent e)
         {
-            return true;
+            if (v.Text.Length == 0)
+            {
+                ToastUtil.ShowToast(this, "搜索内容不能为空");
+                return false;
+            }
+            if (actionId == ImeAction.Search)
+            {
+                string text = searchEt.Text;
+                isSearch = true;
+                searchList.RemoveRange(0, searchList.Count);
+                List<List<Music>> list = Music._bgms;
+                for (int i = 0; i < list.Count; i++)
+                {
+                    List<Music> subList = list[i];
+                    for (int j = 0; j < subList.Count; j++)
+                    {
+                        Music music = subList[j];
+                        if (music.name.Contains(text))
+                        {
+                            searchList.Add(music);
+                        }
+                    }
+                }
+                UpdateView();
+                // 当按了搜索之后关闭软键盘
+                Keyboard.hideKeyboard(v);
+                return true;
+            }
+
+            return false;
         }
 
         //定义ViewHolder内部类，用于对控件实例进行缓存
