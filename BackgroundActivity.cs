@@ -152,10 +152,12 @@ namespace TabletArtco
                     searchEt.SetBackgroundResource(resIds[i]);
                     searchEt.Hint = "搜索";
                     searchEt.TextSize = 14;
+                   
                     searchEt.SetSingleLine(true);
                     searchEt.ImeOptions = Android.Views.InputMethods.ImeAction.Search;
                     searchEt.SetOnEditorActionListener(this);
                     topView.AddView(searchEt);
+                    TextViewUtil.setMaxLength(searchEt, 32);
                 }
                 else
                 {

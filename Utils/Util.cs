@@ -5,6 +5,9 @@ using Android.Graphics;
 using Java.Lang;
 using Android.Content.PM;
 using Android.Views.InputMethods;
+using Android.Widget;
+using Android.Text;
+using Java.Util.Regex;
 
 namespace TabletArtco
 {
@@ -233,5 +236,28 @@ namespace TabletArtco
             InputMethodManager manager = (InputMethodManager)view.Context.GetSystemService(Context.InputMethodService);
             manager.HideSoftInputFromWindow(view.WindowToken, 0);
         }
+    }
+
+
+    public class TextViewUtil {
+        public static void setMaxLength(TextView et, int length)
+        {
+            if (length > 0)
+            {
+                et.SetFilters(new Android.Text.IInputFilter[] { new InputFilterLengthFilter(length) });
+            }
+        }
+    }
+
+    public class JPWStringUtil {
+        public static string stringFilter(string str)
+        {
+            // 只允许字母、数字和汉字其余的还可以随时添加比如下划线什么的，但是注意引文符号和中文符号区别
+            string regEx = "[^a-zA-Z0-9\u4E00-\u9FA5]";//正则表达式
+            Pattern p = Pattern.Compile(regEx);
+            Matcher m = p.Matcher(str);
+            return m.ReplaceAll("").Trim();
+        }
+
     }
 }

@@ -136,6 +136,10 @@ namespace TabletArtco
                         block.row = curRow;
                         list.Add(block);
                     }
+                    else 
+                    {
+                        
+                    }
                 }
             }
         }

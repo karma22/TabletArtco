@@ -16,6 +16,7 @@
             android:layout_marginTop="146dp"
             android:layout_centerHorizontal="true"
             android:lines="1"
+            android:maxLength="32"
             android:background="@android:color/transparent"/>
         <TextView
             android:id="@+id/tv_cancel"

@@ -503,14 +503,14 @@
 				android:layout_marginRight="4dp"
 				android:layout_marginBottom="4dp"
 				android:layout_alignParentBottom="true">
-				<ImageView
+			<!--	<ImageView
 					android:id="@+id/bt_open"
 					android:layout_width="0px"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
 					android:src="@drawable/button_choice_picturecreate"
 					android:layout_centerVertical="true"
-                    />
+                    />-->
 				<ImageView
 					android:id="@+id/bt_delete"
 					android:layout_width="0px"

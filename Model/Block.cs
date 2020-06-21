@@ -37,8 +37,8 @@ namespace TabletArtco
             Resource.Drawable.Contblock_Show, Resource.Drawable.Contblock_Hide, Resource.Drawable.Contblock_Sound,
             Resource.Drawable.Contblock_Speak, Resource.Drawable.Contblock_SpeakStop, Resource.Drawable.Contblock_AdditionBackground,
             Resource.Drawable.Contblock_SendSignal, Resource.Drawable.Contblock_SendSigWait, Resource.Drawable.Contblock_XY,
-            Resource.Drawable.Contblock_ChangeVal, Resource.Drawable.Contblock_SetVal, Resource.Drawable.Contblock_If, 
-            Resource.Drawable.Contblock_Clone, Resource.Drawable.Contblock_Stop
+            Resource.Drawable.Contblock_ChangeVal, Resource.Drawable.Contblock_SetVal
+                //, Resource.Drawable.Contblock_If,  Resource.Drawable.Contblock_Clone, Resource.Drawable.Contblock_Stop
         };
         public static int[] blockTab4ResIds = {
             

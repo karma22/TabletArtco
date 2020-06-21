@@ -82,26 +82,34 @@ namespace TabletArtco
                 }
                 else
                 {
-                    if (!isPracticeStart)
+                    if (!isPracticeStart && practice != null)
                     {
                         videoPlayer.SetUri(practice.explainId, false);
                         videoPlayer.Play();
                     }
                     else
                     {
-                        new Java.Lang.Thread(new Java.Lang.Runnable(() =>
-                        {
-                            Thread.Sleep(10);
-                            videoPlayer.Play();
-                            new Java.Lang.Thread(new Java.Lang.Runnable(() =>
-                            {
-                                Thread.Sleep(10);
-                                RunOnUiThread(() =>
-                                {
-                                    videoPlayer.Stop();
-                                });
-                            })).Start();
-                        })).Start();
+                        ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
+                        Glide.With(this)
+                            .Load(Project.currentBack.remotePreviewImgPath.Equals("") ? Project.currentBack.remoteVideoPath : Project.currentBack.remotePreviewImgPath)
+                            .Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg))
+                            .Into(imgIv);
+                        //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
+                        videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+                        //new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+                        //{
+                        //    videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+                        //    Thread.Sleep(10);
+                        //    videoPlayer.Play();
+                        //    new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+                        //    {
+                        //        Thread.Sleep(10);
+                        //        RunOnUiThread(() =>
+                        //        {
+                        //            videoPlayer.Stop();
+                        //        });
+                        //    })).Start();
+                        //})).Start();
                     }
                 }
             }
@@ -374,6 +382,7 @@ namespace TabletArtco
             }
             else
             {
+                isPracticeStart = true;
                 practice = null;
             }
         }

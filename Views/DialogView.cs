@@ -10,6 +10,8 @@ using Com.Bumptech.Glide;
 using Java.Interop;
 using Android.Runtime;
 using Android.Views.InputMethods;
+using Android.Text;
+using Java.Lang;
 
 namespace TabletArtco
 {
@@ -64,7 +66,9 @@ namespace TabletArtco
                     PreHander(valueTv);
                     if (tag < 9)
                     {
-                        valueTv.Text = valueTv.Text + values[tag];
+                        if (valueTv.Text.Length < 4) {
+                            valueTv.Text = valueTv.Text + values[tag];
+                        }
                     }
                     else if (tag == 9)
                     {
@@ -74,8 +78,12 @@ namespace TabletArtco
                         }
                         else
                         {
-                            if( valueTv.Text.IndexOf(".") == -1 )
-                                valueTv.Text = valueTv.Text + values[tag];
+                            if (valueTv.Text.IndexOf(".") == -1) {
+                                if (valueTv.Text.Length < 4)
+                                {
+                                    valueTv.Text = valueTv.Text + values[tag];
+                                }
+                            }
                         }
                     }
                     else if (tag == 10)
@@ -86,7 +94,10 @@ namespace TabletArtco
                         }
                         else
                         {
-                            valueTv.Text = valueTv.Text + values[tag];
+                            if (valueTv.Text.Length < 4)
+                            {
+                                valueTv.Text = valueTv.Text + values[tag];
+                            }
                         }
                     }
                     else
@@ -739,7 +750,7 @@ namespace TabletArtco
     * 
     ************************************************************************************
     ************************************************************************************/
-    class SaveDialog : ParentDialog, TextView.IOnEditorActionListener
+    class SaveDialog : ParentDialog, TextView.IOnEditorActionListener, ITextWatcher
     {
         Action<string> mAction;
         Context mCxt;
@@ -750,6 +761,27 @@ namespace TabletArtco
             mAction = action;
             mCxt = context;
             initView(context);
+        }
+
+        public void AfterTextChanged(IEditable s)
+        {
+        }
+
+        public void BeforeTextChanged(ICharSequence s, int start, int count, int after)
+        {
+        }
+
+        public void OnTextChanged(ICharSequence s, int start, int before, int count)
+        {
+
+            string edit = textEt.Text.ToString();
+            string str = JPWStringUtil.stringFilter(edit);
+            if (!edit.Equals(str))
+            {
+                textEt.Text = str;
+                //设置新的光标所在位置
+                textEt.SetSelection(str.Length);
+            }
         }
 
         public bool OnEditorAction(TextView v, [GeneratedEnum] ImeAction actionId, KeyEvent e)
@@ -766,6 +798,7 @@ namespace TabletArtco
         }
 
 
+
         //信号输入
         private void initView(Context context)
         {
@@ -776,6 +809,7 @@ namespace TabletArtco
             ImageView cancelBt = view.FindViewById<ImageView>(Resource.Id.save_close);
             TextView confirmBt = view.FindViewById<TextView>(Resource.Id.save_ok);
             textEt = view.FindViewById<EditText>(Resource.Id.save_et);
+            textEt.AddTextChangedListener(this);
             textEt.SetOnEditorActionListener(this);
 
             cancelBt.Click += (t, e) =>

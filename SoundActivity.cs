@@ -115,6 +115,7 @@ namespace TabletArtco
                     searchEt.ImeOptions = Android.Views.InputMethods.ImeAction.Search;
                     searchEt.SetOnEditorActionListener(this);
                     topView.AddView(searchEt);
+                    TextViewUtil.setMaxLength(searchEt, 32);
                 }
                 else
                 {
