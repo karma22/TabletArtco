@@ -6066,268 +6066,274 @@ namespace TabletArtco
 			public const int navigation_empty_icon = 2131165742;
 			
 			// aapt resource value: 0x7F07022F
-			public const int notification_action_background = 2131165743;
+			public const int next = 2131165743;
 			
 			// aapt resource value: 0x7F070230
-			public const int notification_bg = 2131165744;
+			public const int notification_action_background = 2131165744;
 			
 			// aapt resource value: 0x7F070231
-			public const int notification_bg_low = 2131165745;
+			public const int notification_bg = 2131165745;
 			
 			// aapt resource value: 0x7F070232
-			public const int notification_bg_low_normal = 2131165746;
+			public const int notification_bg_low = 2131165746;
 			
 			// aapt resource value: 0x7F070233
-			public const int notification_bg_low_pressed = 2131165747;
+			public const int notification_bg_low_normal = 2131165747;
 			
 			// aapt resource value: 0x7F070234
-			public const int notification_bg_normal = 2131165748;
+			public const int notification_bg_low_pressed = 2131165748;
 			
 			// aapt resource value: 0x7F070235
-			public const int notification_bg_normal_pressed = 2131165749;
+			public const int notification_bg_normal = 2131165749;
 			
 			// aapt resource value: 0x7F070236
-			public const int notification_icon_background = 2131165750;
+			public const int notification_bg_normal_pressed = 2131165750;
 			
 			// aapt resource value: 0x7F070237
-			public const int notification_template_icon_bg = 2131165751;
+			public const int notification_icon_background = 2131165751;
 			
 			// aapt resource value: 0x7F070238
-			public const int notification_template_icon_low_bg = 2131165752;
+			public const int notification_template_icon_bg = 2131165752;
 			
 			// aapt resource value: 0x7F070239
-			public const int notification_tile_bg = 2131165753;
+			public const int notification_template_icon_low_bg = 2131165753;
 			
 			// aapt resource value: 0x7F07023A
-			public const int notify_panel_notification_icon_bg = 2131165754;
+			public const int notification_tile_bg = 2131165754;
 			
 			// aapt resource value: 0x7F07023B
-			public const int OpenDirectory = 2131165755;
-			
-			// aapt resource value: 0x7F070240
-			public const int PictureEditing = 2131165760;
-			
-			// aapt resource value: 0x7F070241
-			public const int PictureEditing_Background = 2131165761;
-			
-			// aapt resource value: 0x7F070242
-			public const int picturematerial_choiceline = 2131165762;
-			
-			// aapt resource value: 0x7F070243
-			public const int picturematerial_line = 2131165763;
-			
-			// aapt resource value: 0x7F070244
-			public const int PictureSelect_Background = 2131165764;
-			
-			// aapt resource value: 0x7F070245
-			public const int PO_PictureOpen_tab = 2131165765;
-			
-			// aapt resource value: 0x7F070246
-			public const int PO_ProjectBack = 2131165766;
-			
-			// aapt resource value: 0x7F070247
-			public const int PO_ProjectOpen_tab = 2131165767;
-			
-			// aapt resource value: 0x7F070248
-			public const int PO_SpriteBack = 2131165768;
-			
-			// aapt resource value: 0x7F070249
-			public const int ps_animal_tab = 2131165769;
-			
-			// aapt resource value: 0x7F07024A
-			public const int ps_character_tab = 2131165770;
-			
-			// aapt resource value: 0x7F07024B
-			public const int ps_etc_tab = 2131165771;
-			
-			// aapt resource value: 0x7F07024C
-			public const int ps_food_tab = 2131165772;
-			
-			// aapt resource value: 0x7F07024D
-			public const int ps_insect_tab = 2131165773;
-			
-			// aapt resource value: 0x7F07024E
-			public const int ps_object_tab = 2131165774;
-			
-			// aapt resource value: 0x7F07024F
-			public const int ps_plants_tab = 2131165775;
-			
-			// aapt resource value: 0x7F070250
-			public const int ps_sea_tab = 2131165776;
-			
-			// aapt resource value: 0x7F070251
-			public const int ps_traffic_tab = 2131165777;
+			public const int notify_panel_notification_icon_bg = 2131165755;
 			
 			// aapt resource value: 0x7F07023C
-			public const int p_again_button = 2131165756;
+			public const int OpenDirectory = 2131165756;
 			
-			// aapt resource value: 0x7F07023D
-			public const int p_next_step_button = 2131165757;
+			// aapt resource value: 0x7F070241
+			public const int PictureEditing = 2131165761;
 			
-			// aapt resource value: 0x7F07023E
-			public const int p_start_button = 2131165758;
+			// aapt resource value: 0x7F070242
+			public const int PictureEditing_Background = 2131165762;
 			
-			// aapt resource value: 0x7F07023F
-			public const int p_stop_here_button = 2131165759;
+			// aapt resource value: 0x7F070243
+			public const int picturematerial_choiceline = 2131165763;
+			
+			// aapt resource value: 0x7F070244
+			public const int picturematerial_line = 2131165764;
+			
+			// aapt resource value: 0x7F070245
+			public const int PictureSelect_Background = 2131165765;
+			
+			// aapt resource value: 0x7F070246
+			public const int PO_PictureOpen_tab = 2131165766;
+			
+			// aapt resource value: 0x7F070247
+			public const int PO_ProjectBack = 2131165767;
+			
+			// aapt resource value: 0x7F070248
+			public const int PO_ProjectOpen_tab = 2131165768;
+			
+			// aapt resource value: 0x7F070249
+			public const int PO_SpriteBack = 2131165769;
+			
+			// aapt resource value: 0x7F07024A
+			public const int previous = 2131165770;
+			
+			// aapt resource value: 0x7F07024B
+			public const int ps_animal_tab = 2131165771;
+			
+			// aapt resource value: 0x7F07024C
+			public const int ps_character_tab = 2131165772;
+			
+			// aapt resource value: 0x7F07024D
+			public const int ps_etc_tab = 2131165773;
+			
+			// aapt resource value: 0x7F07024E
+			public const int ps_food_tab = 2131165774;
+			
+			// aapt resource value: 0x7F07024F
+			public const int ps_insect_tab = 2131165775;
+			
+			// aapt resource value: 0x7F070250
+			public const int ps_object_tab = 2131165776;
+			
+			// aapt resource value: 0x7F070251
+			public const int ps_plants_tab = 2131165777;
 			
 			// aapt resource value: 0x7F070252
-			public const int rec = 2131165778;
+			public const int ps_sea_tab = 2131165778;
 			
 			// aapt resource value: 0x7F070253
-			public const int RecordingForm = 2131165779;
+			public const int ps_traffic_tab = 2131165779;
+			
+			// aapt resource value: 0x7F07023D
+			public const int p_again_button = 2131165757;
+			
+			// aapt resource value: 0x7F07023E
+			public const int p_next_step_button = 2131165758;
+			
+			// aapt resource value: 0x7F07023F
+			public const int p_start_button = 2131165759;
+			
+			// aapt resource value: 0x7F070240
+			public const int p_stop_here_button = 2131165760;
 			
 			// aapt resource value: 0x7F070254
-			public const int RecordingForm_pause = 2131165780;
+			public const int rec = 2131165780;
 			
 			// aapt resource value: 0x7F070255
-			public const int RecordingForm_play = 2131165781;
+			public const int RecordingForm = 2131165781;
 			
 			// aapt resource value: 0x7F070256
-			public const int RecordingForm_recording = 2131165782;
+			public const int RecordingForm_pause = 2131165782;
 			
 			// aapt resource value: 0x7F070257
-			public const int RecordingForm_stop = 2131165783;
+			public const int RecordingForm_play = 2131165783;
 			
 			// aapt resource value: 0x7F070258
-			public const int RectCutBtn = 2131165784;
+			public const int RecordingForm_recording = 2131165784;
 			
 			// aapt resource value: 0x7F070259
-			public const int Revision_line = 2131165785;
+			public const int RecordingForm_stop = 2131165785;
 			
 			// aapt resource value: 0x7F07025A
-			public const int Right_picture_BG = 2131165786;
+			public const int RectCutBtn = 2131165786;
 			
 			// aapt resource value: 0x7F07025B
-			public const int RRotate = 2131165787;
+			public const int Revision_line = 2131165787;
 			
 			// aapt resource value: 0x7F07025C
-			public const int search_bg = 2131165788;
+			public const int Right_picture_BG = 2131165788;
 			
 			// aapt resource value: 0x7F07025D
-			public const int ShowVarListBtn = 2131165789;
+			public const int RRotate = 2131165789;
 			
 			// aapt resource value: 0x7F07025E
-			public const int SizeDecreseBtn = 2131165790;
+			public const int search_bg = 2131165790;
 			
 			// aapt resource value: 0x7F07025F
-			public const int SizeIncreseBtn = 2131165791;
+			public const int ShowVarListBtn = 2131165791;
 			
 			// aapt resource value: 0x7F070260
-			public const int Slide = 2131165792;
+			public const int SizeDecreseBtn = 2131165792;
 			
 			// aapt resource value: 0x7F070261
-			public const int Slide_stick = 2131165793;
+			public const int SizeIncreseBtn = 2131165793;
 			
 			// aapt resource value: 0x7F070262
-			public const int sound_bg = 2131165794;
+			public const int Slide = 2131165794;
 			
 			// aapt resource value: 0x7F070263
-			public const int SpeakBox = 2131165795;
+			public const int Slide_stick = 2131165795;
 			
 			// aapt resource value: 0x7F070264
-			public const int ss_animal_tab = 2131165796;
+			public const int sound_bg = 2131165796;
 			
 			// aapt resource value: 0x7F070265
-			public const int ss_etc_tab = 2131165797;
+			public const int SpeakBox = 2131165797;
 			
 			// aapt resource value: 0x7F070266
-			public const int ss_life_tab = 2131165798;
+			public const int ss_animal_tab = 2131165798;
 			
 			// aapt resource value: 0x7F070267
-			public const int ss_music_tab = 2131165799;
+			public const int ss_etc_tab = 2131165799;
 			
 			// aapt resource value: 0x7F070268
-			public const int ss_nature_tab = 2131165800;
+			public const int ss_life_tab = 2131165800;
 			
 			// aapt resource value: 0x7F070269
-			public const int storage_recorder_button = 2131165801;
+			public const int ss_music_tab = 2131165801;
 			
 			// aapt resource value: 0x7F07026A
-			public const int Storage_Search = 2131165802;
+			public const int ss_nature_tab = 2131165802;
 			
 			// aapt resource value: 0x7F07026B
-			public const int Success = 2131165803;
-			
-			// aapt resource value: 0x7F07026D
-			public const int Tablet_BGsetting = 2131165805;
-			
-			// aapt resource value: 0x7F07026E
-			public const int Tablet_black = 2131165806;
-			
-			// aapt resource value: 0x7F07026F
-			public const int Tablet_Blue = 2131165807;
-			
-			// aapt resource value: 0x7F070270
-			public const int Tablet_Red = 2131165808;
-			
-			// aapt resource value: 0x7F070271
-			public const int Tablet_UI = 2131165809;
-			
-			// aapt resource value: 0x7F070272
-			public const int Tablet_Yellow = 2131165810;
+			public const int storage_recorder_button = 2131165803;
 			
 			// aapt resource value: 0x7F07026C
-			public const int tab_select = 2131165804;
+			public const int Storage_Search = 2131165804;
+			
+			// aapt resource value: 0x7F07026D
+			public const int Success = 2131165805;
+			
+			// aapt resource value: 0x7F07026F
+			public const int Tablet_BGsetting = 2131165807;
+			
+			// aapt resource value: 0x7F070270
+			public const int Tablet_black = 2131165808;
+			
+			// aapt resource value: 0x7F070271
+			public const int Tablet_Blue = 2131165809;
+			
+			// aapt resource value: 0x7F070272
+			public const int Tablet_Red = 2131165810;
 			
 			// aapt resource value: 0x7F070273
-			public const int title = 2131165811;
+			public const int Tablet_UI = 2131165811;
 			
 			// aapt resource value: 0x7F070274
-			public const int tooltip_frame_dark = 2131165812;
+			public const int Tablet_Yellow = 2131165812;
+			
+			// aapt resource value: 0x7F07026E
+			public const int tab_select = 2131165806;
 			
 			// aapt resource value: 0x7F070275
-			public const int tooltip_frame_light = 2131165813;
+			public const int title = 2131165813;
 			
 			// aapt resource value: 0x7F070276
-			public const int transpant = 2131165814;
+			public const int tooltip_frame_dark = 2131165814;
 			
 			// aapt resource value: 0x7F070277
-			public const int transparentBackgroundTile_01 = 2131165815;
+			public const int tooltip_frame_light = 2131165815;
 			
 			// aapt resource value: 0x7F070278
-			public const int transparentBackgroundTile_02 = 2131165816;
+			public const int transpant = 2131165816;
 			
 			// aapt resource value: 0x7F070279
-			public const int User_tab = 2131165817;
+			public const int transparentBackgroundTile_01 = 2131165817;
 			
 			// aapt resource value: 0x7F07027A
-			public const int var_add = 2131165818;
+			public const int transparentBackgroundTile_02 = 2131165818;
 			
 			// aapt resource value: 0x7F07027B
-			public const int xml_asprite_item_bg_n = 2131165819;
+			public const int User_tab = 2131165819;
 			
 			// aapt resource value: 0x7F07027C
-			public const int xml_asprite_item_bg_s = 2131165820;
+			public const int var_add = 2131165820;
 			
 			// aapt resource value: 0x7F07027D
-			public const int xml_bt_bg = 2131165821;
+			public const int xml_asprite_item_bg_n = 2131165821;
 			
 			// aapt resource value: 0x7F07027E
-			public const int xml_custom_bg = 2131165822;
+			public const int xml_asprite_item_bg_s = 2131165822;
 			
 			// aapt resource value: 0x7F07027F
-			public const int xml_edit_bg = 2131165823;
+			public const int xml_bt_bg = 2131165823;
 			
 			// aapt resource value: 0x7F070280
-			public const int xml_edit_bt_bg = 2131165824;
+			public const int xml_custom_bg = 2131165824;
 			
 			// aapt resource value: 0x7F070281
-			public const int xml_feedback_input_bg = 2131165825;
+			public const int xml_edit_bg = 2131165825;
 			
 			// aapt resource value: 0x7F070282
-			public const int xml_gridview_bg = 2131165826;
+			public const int xml_edit_bt_bg = 2131165826;
 			
 			// aapt resource value: 0x7F070283
-			public const int xml_input_bg = 2131165827;
+			public const int xml_feedback_input_bg = 2131165827;
 			
 			// aapt resource value: 0x7F070284
-			public const int XY_Coordinate = 2131165828;
+			public const int xml_gridview_bg = 2131165828;
 			
 			// aapt resource value: 0x7F070285
-			public const int zoom_in = 2131165829;
+			public const int xml_input_bg = 2131165829;
 			
 			// aapt resource value: 0x7F070286
-			public const int zoom_out = 2131165830;
+			public const int XY_Coordinate = 2131165830;
+			
+			// aapt resource value: 0x7F070287
+			public const int zoom_in = 2131165831;
+			
+			// aapt resource value: 0x7F070288
+			public const int zoom_out = 2131165832;
 			
 			static Drawable()
 			{

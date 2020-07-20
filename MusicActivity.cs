@@ -267,7 +267,6 @@ namespace TabletArtco
                 }
             }
             
-            
             if (playSound)
             {
 

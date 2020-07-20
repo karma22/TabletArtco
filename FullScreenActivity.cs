@@ -243,11 +243,11 @@ namespace TabletArtco
             {
                 ActivatedSprite activatedSprite = Project.mSprites[i];
                 DragImgView imgIv = new DragImgView(this);
+                imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(activatedSprite.curSize.Width, activatedSprite.curSize.Height);
                 layoutParams.LeftMargin = activatedSprite.curPoint.X;
                 layoutParams.TopMargin = activatedSprite.curPoint.Y;
                 containerView.AddView(imgIv, layoutParams);
-                imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 imgList.Add(imgIv);
                 imgIv.Tag = 100 + i;
                 imgIv.MoveAction += (t, x, y) =>
@@ -291,12 +291,12 @@ namespace TabletArtco
             {
                 ActivatedSprite activatedSprite = Project.mSprites[i];
                 DragImgView imgIv = imgList[i];
+                imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)imgIv.LayoutParameters;
                 layoutParams.LeftMargin = activatedSprite.curPoint.X;
                 layoutParams.TopMargin = activatedSprite.curPoint.Y;
                 layoutParams.Width = activatedSprite.curSize.Width;
                 layoutParams.Height = activatedSprite.curSize.Height;
-                imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 imgIv.Visibility = activatedSprite.isVisible ? ViewStates.Visible : ViewStates.Invisible;
                 containerView.UpdateViewLayout(imgIv, layoutParams);
 

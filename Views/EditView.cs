@@ -836,6 +836,10 @@ namespace TabletArtco
             return editTarget?.EditLayer().LayerImage();
         }
 
+        public float CurScale() {
+            return editTarget != null ? editTarget.scale : 1;
+        }
+
         public void updateView()
         {
             bBitmap?.Recycle();

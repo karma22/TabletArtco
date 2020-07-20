@@ -811,7 +811,7 @@ namespace TabletArtco
                                 }
 
                                 // home button click
-                                MessageBoxDialog dialog = new MessageBoxDialog(this, "真的吗?", () => {
+                                MessageBoxDialog dialog = new MessageBoxDialog(this, "确定要回到主界面吗?", () => {
                                     // initialize ActivatedSprite
                                     Project.mSprites.RemoveRange(0, Project.mSprites.Count);
                                     mSpriteIndex = -1;
@@ -839,6 +839,8 @@ namespace TabletArtco
 
                                     // initialize Background
                                     //mediaManager.ClickHomeButton();
+                                    videoPlayer.SetPath(null, null, null);
+                                    Project.currentBack = null;
                                     videoPlayer.hideVideo();
                                     videoPlayer.ClickHomeBt();
                                     FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Invisible;
@@ -983,14 +985,30 @@ namespace TabletArtco
                 Project.mSprites[0].isVisible = true;
                 UpdateMainView();
                 videoPlayer.Stop();
-                videoPlayer.SetUri(practice.practiceId, true);
-                videoPlayer.Play();
+                ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
+                Glide.With(this)
+                    .Load(Project.currentBack.remotePreviewImgPath.Equals("") ? Project.currentBack.remoteVideoPath : Project.currentBack.remotePreviewImgPath)
+                    .Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg))
+                    .Into(imgIv);
+                videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+                //videoPlayer.SetUri(practice.practiceId, true);
+                FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Invisible;
                 new Java.Lang.Thread(new Java.Lang.Runnable(() =>
                 {
                     Thread.Sleep(10);
                     RunOnUiThread(() =>
                     {
-                        videoPlayer.Stop();
+                        videoPlayer.Play();
+                        new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+                        {
+                            Thread.Sleep(2000);
+                            RunOnUiThread(() =>
+                            {
+                                if (!isPlay) {
+                                    videoPlayer.Stop();
+                                }
+                            });
+                        })).Start();
                     });
                 })).Start();
             };
@@ -1127,12 +1145,12 @@ namespace TabletArtco
             {
                 ActivatedSprite activatedSprite = spritesList[i];
                 DragImgView imgIv = new DragImgView(this);
+                imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(activatedSprite.curSize.Width, activatedSprite.curSize.Height);
                 layoutParams.LeftMargin = activatedSprite.curPoint.X;
                 layoutParams.TopMargin = activatedSprite.curPoint.Y;
                 containerView.AddView(imgIv, layoutParams);
                 imgIv.Visibility = activatedSprite.isVisible ? ViewStates.Visible : ViewStates.Invisible;
-                imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 imgList.Add(imgIv);
                 imgIv.Tag = 100+i;
                 imgIv.MoveAction += (t, x, y) =>
@@ -1179,12 +1197,12 @@ namespace TabletArtco
             {
                 ActivatedSprite activatedSprite = spritesList[i];
                 DragImgView imgIv = imgList[i];
+                imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)imgIv.LayoutParameters;
                 layoutParams.LeftMargin = activatedSprite.curPoint.X;
                 layoutParams.TopMargin = activatedSprite.curPoint.Y;
                 layoutParams.Width = activatedSprite.curSize.Width;
                 layoutParams.Height = activatedSprite.curSize.Height;
-                imgIv.SetImageBitmap(activatedSprite.GetSpriteBit());
                 imgIv.Visibility = activatedSprite.isVisible ? ViewStates.Visible : ViewStates.Invisible;
                 containerView.UpdateViewLayout(imgIv, layoutParams);
 

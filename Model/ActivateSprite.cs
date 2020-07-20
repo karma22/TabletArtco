@@ -22,6 +22,7 @@ namespace TabletArtco
         public Sprite sprite { get; set; }
         public List<List<Block>> mBlocks { get; set; } = new List<List<Block>>();
         public List<Bitmap> originBitmapList { get; set; } = new List<Bitmap>();
+        public List<float> scaleList { get; set; } = new List<float>();
         public Point originPoint { get; set; } = new Point(0, 0);
 
         // animation arguments
@@ -65,6 +66,7 @@ namespace TabletArtco
 
             curbitmapList.Add(Bitmap.CreateBitmap(sprite.bitmap));
             originBitmapList.Add(Bitmap.CreateBitmap(sprite.bitmap));
+            scaleList.Add(1);
             int width = sprite.bitmap.Width;
             int height = sprite.bitmap.Height;
             int x = (int)(1 + Java.Lang.Math.Random() * (notFullSize.Width - width + 1));
@@ -93,7 +95,9 @@ namespace TabletArtco
             }
             for (int i = 0; i < list.Count; i++)
             {
+               
                 originBitmapList.Add(list[i]);
+
                 curbitmapList.Add(Bitmap.CreateBitmap(list[i]));
             }
         }
@@ -411,7 +415,11 @@ namespace TabletArtco
 
         public Bitmap GetSpriteBit()
         {
-            return curbitmapList[curIndex];
+            float scale = scaleList[curIndex];
+            Bitmap b = curbitmapList[curIndex];
+            Bitmap bitmap = Bitmap.CreateScaledBitmap(b, (int)(b.Width * scale), (int)(b.Height * scale), false);
+            curSize = new Size(bitmap.Width, bitmap.Height);
+            return bitmap; //curbitmapList[curIndex];
         }
 
         // bitmap transparent 

@@ -128,11 +128,11 @@ namespace TabletArtco
             if (path != null)
             {
                 mVideoView.SetVideoPath(mPath);
+                mVideoView.Start();
             }
-            mVideoView.SetVideoPath(mPath);
 
-            mVideoView.Start();
-            if(!isPlay)
+           
+            if(!isPlay && path != null)
             {
                 gifImageView.Visibility = Android.Views.ViewStates.Visible;
             }

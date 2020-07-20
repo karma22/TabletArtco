@@ -24,6 +24,7 @@ namespace TabletArtco
     {
         private List<Bitmap> originList = new List<Bitmap>();
         private List<Bitmap> operateList = new List<Bitmap>();
+        private List<float> scaleList = new List<float>();
         private int mIndex = -1;
         private EditView editView;
         private SpriteAdapter mAdapter;
@@ -70,6 +71,7 @@ namespace TabletArtco
                             {
                                 originList.Add(bitmap);
                                 operateList.Add(Bitmap.CreateBitmap(bitmap));
+                                scaleList.Add(1);
                                 mIndex = operateList.Count - 1;
                                 editView.SetSrcBitmap(bitmap);
                                 mAdapter.NotifyDataSetChanged();
@@ -114,7 +116,11 @@ namespace TabletArtco
                         operateList.Remove(oldB);
                         Bitmap bitmap = editView.CurBitmap();
                         operateList.Insert(mIndex, bitmap);
+                        scaleList.RemoveAt(mIndex);
+                        scaleList.Insert(mIndex, editView.CurScale());
                         mActivatedSprite.SetSrcBitmapList(operateList);
+                        mActivatedSprite.scaleList = scaleList;
+                        LogUtil.CustomLog(scaleList.ToString());
                         for (int i = 0; i < originList.Count; i++)
                         {
                             originList[i].Recycle();
@@ -141,6 +147,7 @@ namespace TabletArtco
                     Bitmap bitmap = Bitmap.CreateBitmap(mActivatedSprite.originBitmapList[i]);
                     originList.Add(bitmap);
                     operateList.Add(Bitmap.CreateBitmap(bitmap));
+                    scaleList.Add(mActivatedSprite.scaleList[i]);
                 }
                 if (mActivatedSprite.originBitmapList.Count>0)
                 {
@@ -410,6 +417,7 @@ namespace TabletArtco
                                 operateList.Remove(oldB);
                                 Bitmap bitmap = editView.CurBitmap();
                                 operateList.Insert(mIndex, bitmap);
+                                scaleList.Insert(mIndex, editView.CurScale());
                                 operateList.Add(Bitmap.CreateBitmap(bitmap));
                                 originList.Add(Bitmap.CreateBitmap(bitmap));
                                 mIndex = operateList.Count - 1;
@@ -450,7 +458,7 @@ namespace TabletArtco
                 Resource.Drawable.FlipXBtn, Resource.Drawable.FlipYBtn, Resource.Drawable.RRotate,
                 Resource.Drawable.LRotate, Resource.Drawable.SizeIncreseBtn, Resource.Drawable.SizeDecreseBtn,
                 Resource.Drawable.EraseBtn, Resource.Drawable.BrushBtn,
-                Resource.Drawable.RectCutBtn, Resource.Drawable.FreeCutBtn, Resource.Drawable.EditAddSprite,Resource.Drawable.EditAddSprite,Resource.Drawable.EditAddSprite
+                Resource.Drawable.RectCutBtn, Resource.Drawable.FreeCutBtn, Resource.Drawable.EditAddSprite,Resource.Drawable.previous,Resource.Drawable.next
             };
             int sw = (int)(ScreenUtil.ScreenWidth(this) * 931 / 1280.0);
             FrameLayout contentView = FindViewById<FrameLayout>(Resource.Id.edit_bt_content_view);
@@ -609,6 +617,8 @@ namespace TabletArtco
             Bitmap bitmap = operateList[mIndex];
             operateList.Remove(bitmap);
             operateList.Insert(mIndex, editView.CurBitmap());
+            scaleList.RemoveAt(mIndex);
+            scaleList.Insert(mIndex, editView.CurScale());
             bitmap.Recycle();
             editView.SetSrcBitmap(operateList[position]);
             mIndex = position;
@@ -620,6 +630,7 @@ namespace TabletArtco
             Bitmap bitmap = operateList[position];
             originList.Remove(src);
             operateList.Remove(bitmap);
+            scaleList.RemoveAt(position);
             src.Recycle();
             bitmap.Recycle();
             if (position == mIndex)
