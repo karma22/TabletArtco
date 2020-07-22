@@ -195,7 +195,7 @@ namespace TabletArtco
                             }
                             else if (split[k].Equals("backgroundId"))
                             {
-                                code.backgroundId = Integer.ParseInt(split[j + 1]);
+                                code.backgroundId = Integer.ParseInt(split[k + 1]);
                             }
                         }
                         artcoobject.blocks.Add(code);

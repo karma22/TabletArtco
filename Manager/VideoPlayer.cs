@@ -128,7 +128,7 @@ namespace TabletArtco
             if (path != null)
             {
                 mVideoView.SetVideoPath(mPath);
-                mVideoView.Start();
+                mVideoView.Start(); 
             }
 
            
