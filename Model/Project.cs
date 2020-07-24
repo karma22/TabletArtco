@@ -8,7 +8,7 @@ namespace TabletArtco
     {
         void UpdateView();
         void UpdateBlockViewDelegate();
-        void UpdateBackground(int backgroundId);
+        void UpdateBackground(string backgroundName);
 
         void RowAnimateComplete();
     }
@@ -18,7 +18,7 @@ namespace TabletArtco
         // first background
         public static Background currentBack { get; set; } = null;
         // change backgrounds
-        public static Dictionary<int, Background> backgroundsList { get; set; } = new Dictionary<int, Background>();
+        public static Dictionary<string, Background> backgroundsList { get; set; } = new Dictionary<string, Background>();
         // all sprites list
         public static List<ActivatedSprite> mSprites { get; set; } = new List<ActivatedSprite>();
         // Copy blocks list

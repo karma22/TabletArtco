@@ -1497,9 +1497,9 @@ namespace TabletArtco
             });
         }
 
-        public void UpdateBackground(int backgroundId) { 
+        public void UpdateBackground(string name) { 
             RunOnUiThread(() => {
-                Background background = Project.backgroundsList[backgroundId];
+                Background background = Project.backgroundsList.ContainsKey(name) ? Project.backgroundsList[name] : null;
                 if (background != null)
                 {
                     videoPlayer.SetPath(background.remoteVideoPath, background.remotePreviewImgPath, null);

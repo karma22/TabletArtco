@@ -363,7 +363,7 @@ namespace TabletArtco
             // do nothing
         }
 
-        public void UpdateBackground(int backgroundId)
+        public void UpdateBackground(string backgroundId)
         {
             RunOnUiThread(() => {
                 Background background = Project.backgroundsList[backgroundId];

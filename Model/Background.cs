@@ -40,6 +40,22 @@ namespace TabletArtco
             return null;
         }
 
+        public static Background GetBackgroundById(int idx)
+        {
+            foreach (var backgrounds in _backgrounds)
+            {
+                foreach (var tab in backgrounds)
+                {
+
+                    var ret = tab.idx.Equals(idx);
+                    if (ret)
+                        return tab;
+                }
+            }
+
+            return null;
+        }
+
         public static Background ToBackground(string backgroundstr) {
             if (backgroundstr != null)
             {

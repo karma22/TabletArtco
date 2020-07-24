@@ -349,10 +349,13 @@ namespace TabletArtco
             if (block != null)
             {
                 block.text = background.name;
-                block.backgroundId = background.idx;
+                block.backgroundName = background.name;
                 block.varName = background.remotePreviewImgPath;
                 block.varValue = background.remoteVideoPath;
-                Project.backgroundsList.Add(background.idx, background);
+                if (!Project.backgroundsList.ContainsKey(background.name)) {
+                    Project.backgroundsList.Add(background.name, background);
+                }
+               
             }
             SetResult(Result.Ok, intent);
             Finish();

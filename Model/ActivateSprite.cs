@@ -745,9 +745,9 @@ namespace TabletArtco
                     }
                     else if (blockName.Equals("ControlAdditionBackground"))
                     {
-                        if (block.backgroundId != -1)
+                        if (block.backgroundName != null)
                         {
-                            mUpdateDelegate?.UpdateBackground(block.backgroundId);
+                            mUpdateDelegate?.UpdateBackground(block.backgroundName);
                         }
                     }
                     else if (blockName.Equals("GameRight")) TurnAndMoveForward(MoveArrow.Right);

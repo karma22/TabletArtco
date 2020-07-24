@@ -68,8 +68,8 @@ namespace TabletArtco
                         header += ">>varName>>" + code.varName;
                     if (code.varValue != null && code.varValue.Length > 0)
                         header += ">>varValue>>" + code.varValue;
-                    if (code.backgroundId != -1)
-                        header += ">>backgroundId>>" + code.backgroundId;
+                    if (code.backgroundName != null)
+                        header += ">>backgroundName>>" + code.backgroundName;
 
                     header += "\n";
                 }
@@ -149,9 +149,9 @@ namespace TabletArtco
                         {
                             code.varValue = split[j + 1];
                         }
-                        else if (split[j].Equals("backgroundId"))
+                        else if (split[j].Equals("backgroundName"))
                         {
-                            code.backgroundId = Integer.ParseInt(split[j + 1]);
+                            code.backgroundName = split[j + 1];
                         }
                     }
                     codes.Add(code);
