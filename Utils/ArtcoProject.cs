@@ -45,6 +45,7 @@ namespace TabletArtco
 
             int headerSize = 0;
             string backgroundName = Project.currentBack != null ? Project.currentBack.name + "\n" : "null\n" ;
+            string bgMusic = SoundPlayer.bgmPath != null ? SoundPlayer.bgmPath + "\n" : "null\n";
             string variableCount = Variable.variableMap.Count.ToString() + "\n";
             string spriteCount = Project.mSprites.Count.ToString() + "\n";
 
@@ -55,6 +56,7 @@ namespace TabletArtco
                 using (StreamWriter wr = new StreamWriter(filePath))
                 {
                     wr.Write(backgroundName);
+                    wr.Write(bgMusic);
                     wr.Write(variableCount);
                     wr.Write(spriteCount);
                 }
@@ -117,6 +119,7 @@ namespace TabletArtco
 
                 headerSize += Encoding.UTF8.GetBytes(header).Length;
                 headerSize += Encoding.UTF8.GetBytes(backgroundName).Length;
+                headerSize += Encoding.UTF8.GetBytes(bgMusic).Length;
                 headerSize += Encoding.UTF8.GetBytes(variableCount).Length;
                 headerSize += Encoding.UTF8.GetBytes(spriteCount).Length;
 
@@ -153,6 +156,8 @@ namespace TabletArtco
 
                 string backgroundname = rdr.ReadLine();
                 Project.currentBack = Background.GetNameToBack(backgroundname);
+                string bgMusic = rdr.ReadLine();
+                SoundPlayer.bgmPath = bgMusic;
                 int variablecount = int.Parse(rdr.ReadLine());
                 int spritecount = int.Parse(rdr.ReadLine());
 
