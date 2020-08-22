@@ -252,7 +252,7 @@ namespace TabletArtco
                 {
                     if (!isPlay)
                     {
-                        //activatedSprite.AddToOriginPoint((int)x, (int)y);
+                        activatedSprite.AddToOriginPoint((int)x, (int)y);
                     }
                 };
                 imgIv.ClickAction += (t) =>
