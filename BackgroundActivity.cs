@@ -19,7 +19,7 @@ namespace TabletArtco
 
         private int mItemW;
         private int mItemH;
-        private int mIndex = 9;
+        private int mIndex = 5;
 
         private EditText searchEt;
         private bool isSearch = false;
@@ -170,7 +170,7 @@ namespace TabletArtco
                     frameLayout.LayoutParameters = lp;
                     frameLayout.SetPadding(padding, padding, padding, padding);
                     frameLayout.Tag = i;
-                    if (i == 5)
+                    if (i == 1)
                         frameLayout.SetBackgroundResource(Resource.Drawable.tab_select);
 
                     frameLayout.AddView(imgIv);
@@ -218,7 +218,6 @@ namespace TabletArtco
                             UpdateView();
                         };
                     }
-
                 }
             }
 

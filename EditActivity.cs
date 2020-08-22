@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using Android.App;
 using Android.OS;
 using Android.Views;
@@ -107,7 +106,8 @@ namespace TabletArtco
         {
             if (keyCode == Keycode.Back)
             {
-                ConfirmDialog dialog = new ConfirmDialog(this);
+                ConfirmDialog dialog = new ConfirmDialog(this, true);
+                dialog.SetMessage("是否保存对当前图片的更改？");
                 dialog.callbackAction = (confirm) =>
                 {
                     if (confirm)
@@ -153,8 +153,7 @@ namespace TabletArtco
                 {
                     mIndex = 0;
                 }
-            }
-               
+            }               
         }
 
         // init view
@@ -171,9 +170,9 @@ namespace TabletArtco
             int h = (int)(ScreenUtil.ScreenHeight(this) * 57 / 800.0);
             int logoW = (int)(70 / 43.0 * h);
             int titleW = (int)(242 / 35.0 * h);
-            ImageView logoIv = FindViewById<ImageView>(Resource.Id.edit_logo_view);
+            //ImageView logoIv = FindViewById<ImageView>(Resource.Id.edit_logo_view);
             ImageView titleIv = FindViewById<ImageView>(Resource.Id.edit_title_view);
-            ViewUtil.SetViewWidth(logoIv, logoW);
+            //ViewUtil.SetViewWidth(logoIv, logoW);
             ViewUtil.SetViewWidth(titleIv, titleW);
         }
 

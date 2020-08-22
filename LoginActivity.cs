@@ -150,6 +150,7 @@ namespace TabletArtco
                     try
                     {
                         DBManager.LoadSprites();
+                        DBManager.LoadBlocks();
                         DBManager.LoadBackgrounds();
                         DBManager.LoadSounds();
                         DBManager.LoadMusic();

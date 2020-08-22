@@ -39,21 +39,21 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/Button_choice_picture"
+                android:src="@drawable/Button_choice_BG"
                 />
             <ImageView
                 android:id="@+id/bt_choice2"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/Button_choice_educationBG"
+                android:src="@drawable/Button_choice_picture"
                 />
             <ImageView
                 android:id="@+id/bt_choice3"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/Button_choice_BG"
+                android:src="@drawable/Button_choice_educationBG"
                 />
             <ImageView
                 android:id="@+id/bt_choice4"
@@ -314,8 +314,8 @@
 						android:layout_alignParentLeft="true"/>
                     <LinearLayout
                         android:id="@+id/rl_center"
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_toRightOf="@id/bt_center1"
                         android:layout_marginLeft="5dp"
                         android:orientation="horizontal"

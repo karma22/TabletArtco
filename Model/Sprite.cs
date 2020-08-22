@@ -8,7 +8,7 @@ using Com.Bumptech.Glide;
 
 namespace TabletArtco
 {
-    class Sprite
+    public class Sprite
     {
         // List by category
         public static List<List<Sprite>> _sprites { get; set; } = new List<List<Sprite>>();

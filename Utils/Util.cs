@@ -8,6 +8,7 @@ using Android.Views.InputMethods;
 using Android.Widget;
 using Android.Text;
 using Java.Util.Regex;
+using System.Collections.Generic;
 
 namespace TabletArtco
 {
@@ -33,11 +34,13 @@ namespace TabletArtco
             return frame.Top;
         }
 
-        public static Android.Util.DisplayMetricsDensity DensityDpi(Context cxt) {
+        public static Android.Util.DisplayMetricsDensity DensityDpi(Context cxt)
+        {
             return cxt.Resources.DisplayMetrics.DensityDpi;
         }
 
-        public static int Density(Context cxt) {
+        public static int Density(Context cxt)
+        {
             return (int)cxt.Resources.DisplayMetrics.Density;
         }
 
@@ -111,11 +114,13 @@ namespace TabletArtco
         }
     }
 
-    public class LogUtil {
+    public class LogUtil
+    {
 
         private static bool isDebug = true;
 
-        public static void CustomLog(string message) {
+        public static void CustomLog(string message)
+        {
             if (isDebug)
             {
                 Android.Util.Log.Info("LogUtil", "\n");
@@ -170,23 +175,24 @@ namespace TabletArtco
         }
     }
 
-    public class RectUtil {
+    public class RectUtil
+    {
 
-        public static bool intersect(Rect r1,  Rect r2)
+        public static bool intersect(Rect r1, Rect r2)
         {
-            int Left    = Math.Max(r1.Left, r2.Left);
-            int Top     = Math.Max(r1.Top, r2.Top);
-            int Right   = Math.Min(r1.Right, r2.Right);
-            int Bottom  = Math.Min(r1.Bottom, r2.Bottom);
+            int Left = Math.Max(r1.Left, r2.Left);
+            int Top = Math.Max(r1.Top, r2.Top);
+            int Right = Math.Min(r1.Right, r2.Right);
+            int Bottom = Math.Min(r1.Bottom, r2.Bottom);
 
-            LogUtil.CustomLog("r1:" +r1);
+            LogUtil.CustomLog("r1:" + r1);
             LogUtil.CustomLog("r2:" + r2);
 
             LogUtil.CustomLog("Left:" + Left);
             LogUtil.CustomLog("Top:" + Top);
             LogUtil.CustomLog("Rigth:" + Right);
             LogUtil.CustomLog("Bottom:" + Bottom);
-            if (Left<Right && Top<Bottom)
+            if (Left < Right && Top < Bottom)
             {
                 return true;
             }
@@ -197,7 +203,7 @@ namespace TabletArtco
 
     public class VersionUtil
     {
-         
+
         public static string GetAppVersionName(Context context)
         {
             string versionName = null;
@@ -209,7 +215,7 @@ namespace TabletArtco
             }
             catch (Exception e)
             {
-                
+
             }
             return versionName;
         }
@@ -239,7 +245,8 @@ namespace TabletArtco
     }
 
 
-    public class TextViewUtil {
+    public class TextViewUtil
+    {
         public static void setMaxLength(TextView et, int length)
         {
             if (length > 0)
@@ -249,7 +256,8 @@ namespace TabletArtco
         }
     }
 
-    public class JPWStringUtil {
+    public class JPWStringUtil
+    {
         public static string stringFilter(string str)
         {
             // 只允许字母、数字和汉字其余的还可以随时添加比如下划线什么的，但是注意引文符号和中文符号区别
@@ -259,5 +267,39 @@ namespace TabletArtco
             return m.ReplaceAll("").Trim();
         }
 
+    }
+
+    public class LoopStack
+    {
+        private readonly List<List<(int, int)>> list = new List<List<(int, int)>>();
+
+        public void Init(int count)
+        {
+            list.Clear();
+            for (int i = 0; i < count; i++)
+                list.Add(new List<(int, int)>());
+        }
+
+        public void Push(int lineNumber, int pc, int value)
+        {
+            list[lineNumber].Add((pc, value));
+        }
+
+        public int Pop(int lineNumber)
+        {
+            int listCount = list[lineNumber].Count;
+            int lastIdx = listCount - 1;
+            int loopCnt = list[lineNumber][lastIdx].Item2 - 1;
+            int savedPC = list[lineNumber][lastIdx].Item1;
+
+            if (loopCnt == 0)
+            {
+                list[lineNumber].RemoveAt(lastIdx);
+                return 0;
+            }
+
+            list[lineNumber][lastIdx] = (savedPC, loopCnt);
+            return savedPC;
+        }
     }
 }

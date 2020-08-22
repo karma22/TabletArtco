@@ -181,8 +181,6 @@ namespace TabletArtco
                     return;
                 }
 
-
-
                 if (name != null)
                 {
                     RecordUtil.startScreenRecord(this, 1, name);

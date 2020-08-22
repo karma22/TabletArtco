@@ -8,7 +8,7 @@ using Android.Content;
 using Android.Views;
 using Com.Bumptech.Glide;
 using Java.Lang;
-using Android.Graphics; 
+using Android.Graphics;
 using System.Linq;
 using System.IO;
 using Com.Bumptech.Glide.Request;
@@ -60,7 +60,8 @@ namespace TabletArtco
             ActivatedSprite.mUpdateDelegate = this;
             ActivatedSprite.SoundAction = (sound) =>
             {
-                RunOnUiThread(() => {
+                RunOnUiThread(() =>
+                {
                     if (isPlay)
                     {
                         new SoundPlayer(this).Play(sound);
@@ -77,6 +78,7 @@ namespace TabletArtco
                         .Load(Project.currentBack.remotePreviewImgPath.Equals("") ? Project.currentBack.remoteVideoPath : Project.currentBack.remotePreviewImgPath)
                         .Apply(new RequestOptions().Placeholder(Resource.Drawable.home_bg))
                         .Into(imgIv);
+
                     //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                     videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
                 }
@@ -96,24 +98,25 @@ namespace TabletArtco
                             .Into(imgIv);
                         //mediaManager.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, Project.currentBack.remoteSoundPath);
                         videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
-                        //new Java.Lang.Thread(new Java.Lang.Runnable(() =>
-                        //{
-                        //    videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
-                        //    Thread.Sleep(10);
-                        //    videoPlayer.Play();
-                        //    new Java.Lang.Thread(new Java.Lang.Runnable(() =>
-                        //    {
-                        //        Thread.Sleep(10);
-                        //        RunOnUiThread(() =>
-                        //        {
-                        //            videoPlayer.Stop();
-                        //        });
-                        //    })).Start();
-                        //})).Start();
+                        new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+                        {
+                            videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
+                            Thread.Sleep(10);
+                            videoPlayer.Play();
+                            new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+                            {
+                                Thread.Sleep(10);
+                                RunOnUiThread(() =>
+                                {
+                                    videoPlayer.Stop();
+                                });
+                            })).Start();
+                        })).Start();
                     }
                 }
             }
-            else {
+            else
+            {
                 ImageView imgIv = FindViewById<ImageView>(Resource.Id.preimage);
                 imgIv.SetImageResource(Resource.Drawable.home_bg);
                 imgIv.Visibility = ViewStates.Visible;
@@ -164,7 +167,8 @@ namespace TabletArtco
                 //Select Sprite callback
                 case 0:
                     {
-                        if (isPractice) {
+                        if (isPractice)
+                        {
                             break;
                         }
                         Bundle bundle = data.GetBundleExtra("bundle");
@@ -178,12 +182,13 @@ namespace TabletArtco
                         {
                             Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
                             bitmap.HasAlpha = true;
-                            
+
                             sprite.bitmap = bitmap;
                             Project.AddSprite(sprite);
                             mSpriteIndex = spritesList.Count - 1;
 
-                            RunOnUiThread(() => {
+                            RunOnUiThread(() =>
+                            {
                                 ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
                                 mSpriteAdapter.NotifyDataSetChanged();
                                 UpdateBlockView();
@@ -197,7 +202,8 @@ namespace TabletArtco
                     {
                         Bundle bundle = data.GetBundleExtra("bundle");
                         Background background = Background.ToBackground(bundle.GetString("model"));
-                        if (isPractice && !bundle.GetBoolean("isPractice")) {
+                        if (isPractice && !bundle.GetBoolean("isPractice"))
+                        {
                             FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Invisible;
                             ChangeLeftList(1);
                             changeLeftTopButtonImage(1);
@@ -219,10 +225,11 @@ namespace TabletArtco
                         videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
 
                         isPractice = bundle.GetBoolean("isPractice");
-                        if (isPractice) {
+                        if (isPractice)
+                        {
                             isPracticeStart = false;
                             LoadPracticeProject(bundle);
-                        } 
+                        }
                         break;
                     }
                 // select background callback
@@ -274,7 +281,7 @@ namespace TabletArtco
                 // load sprite or project
                 case 6:
                     {
-                        if(resultCode == Result.Ok)
+                        if (resultCode == Result.Ok)
                         {
                             mSpriteIndex = spritesList.Count - 1;
                             mSpriteAdapter.NotifyDataSetChanged();
@@ -326,9 +333,10 @@ namespace TabletArtco
             }
         }
 
-        public void LoadPracticeProject(Bundle bundle) {
-            ChangeLeftList(5);
-            changeLeftTopButtonImage(5);
+        public void LoadPracticeProject(Bundle bundle)
+        {
+            ChangeLeftList(4);
+            //changeLeftTopButtonImage(4);
             Project.mSprites.RemoveRange(0, Project.mSprites.Count);
             mSpriteIndex = -1;
             mSpriteAdapter.NotifyDataSetChanged();
@@ -364,8 +372,8 @@ namespace TabletArtco
                 }
                 int x = (int)(practice.pointsList[0].X / 1000.0 * ActivatedSprite.notFullSize.Width);
                 int y = (int)(practice.pointsList[0].Y / 548.0 * ActivatedSprite.notFullSize.Height);
-                Project.mSprites[0].SetSrcBitmapList(list);
-                Project.mSprites[0].Location((int)(x-w/6.0), y-6);
+                Project.mSprites[0].SetSrcBitmapList(list);                
+                Project.mSprites[0].Location((int)(x - w / 6.0), y - 6);
                 Project.mSprites[0].isVisible = false;
                 mSpriteIndex = 0;
                 ListView listView = FindViewById<ListView>(Resource.Id.materailListView);
@@ -401,7 +409,7 @@ namespace TabletArtco
                 if (FTPManager.ftpManager.UploadResource(stream, fileName))
                 {
                     Toast.MakeText(Application, "Upload Succeeded", ToastLength.Short).Show();
-                    
+
                     Sprite sprite = new Sprite()
                     {
                         name = editText.Text,
@@ -432,7 +440,8 @@ namespace TabletArtco
             InitMainView();
             InitSpriteListView();
         }
-        public void initBg() {
+        public void initBg()
+        {
             string bg = SharedPres.GetString("model", "blue");
             if (bg.Equals("blue"))
                 FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background);
@@ -443,7 +452,7 @@ namespace TabletArtco
             else if (bg.Equals("black"))
                 FindViewById<LinearLayout>(Resource.Id.ll_main).SetBackgroundResource(Resource.Drawable.Background_black);
         }
-        
+
 
         //Top tool button
         public void InitTopButtonEvent()
@@ -465,10 +474,18 @@ namespace TabletArtco
                     {
                         return;
                     }
-                    
+
                     switch ((int)((ImageView)t).Tag)
                     {
                         case 0:
+                            {
+                                // Background  select activity
+                                Intent intent = new Intent(this, typeof(BackgroundActivity));
+                                intent.AddFlags(ActivityFlags.ReorderToFront);
+                                StartActivityForResult(intent, 2, null);
+                                break;
+                            }
+                        case 1:
                             {
                                 // Sprite select Activity
                                 Intent intent = new Intent(this, typeof(PictureActivity));
@@ -476,20 +493,12 @@ namespace TabletArtco
                                 StartActivityForResult(intent, 0, null);
                                 break;
                             }
-                        case 1:
+                        case 2:
                             {
                                 // Education select activity
                                 Intent intent = new Intent(this, typeof(EducationActivity));
                                 intent.AddFlags(ActivityFlags.ReorderToFront);
                                 StartActivityForResult(intent, 1, null);
-                                break;
-                            }
-                        case 2:
-                            {
-                                // Background  select activity
-                                Intent intent = new Intent(this, typeof(BackgroundActivity));
-                                intent.AddFlags(ActivityFlags.ReorderToFront);
-                                StartActivityForResult(intent, 2, null);
                                 break;
                             }
                         case 3:
@@ -566,7 +575,7 @@ namespace TabletArtco
                 Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4, Resource.Id.bt_left_select5
             };
             //int itemW = (int)((ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2)) / 4);
-            for (int i = 0; i < btsResIds.Length; i++)
+            for (int i = 0; i < btsResIds.Length - 1; i++)
             {
                 ImageView imgBt = FindViewById<ImageView>(btsResIds[i]);
                 imgBt.Tag = i;
@@ -586,7 +595,8 @@ namespace TabletArtco
             FindViewById<ScrollView>(Resource.Id.left_blocks_view_wrapper).SetOnDragListener(this);
         }
 
-        public void changeLeftTopButtonImage(int index) {
+        public void changeLeftTopButtonImage(int index)
+        {
             int[] btsResIds = {
                 Resource.Id.bt_left_select1, Resource.Id.bt_left_select2, Resource.Id.bt_left_select3, Resource.Id.bt_left_select4, Resource.Id.bt_left_select5
             };
@@ -625,21 +635,13 @@ namespace TabletArtco
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.left_blocks_view);
             blockView.RemoveAllViews();
 
-            List<int[]> ids = new List<int[]>() {
-                Block.blockTab0ResIds, Block.blockTab1ResIds, Block.blockTab2ResIds, Block.blockTab3ResIds, Block.blockTab4ResIds, Block.blockTab5ResIds
-            };
+            var blocks = Block._blocks[index];
 
-            List<string[]> idstrs = new List<string[]>() {
-                Block.blockTab0ResIdStrs, Block.blockTab1ResIdStrs, Block.blockTab2ResIdStrs, Block.blockTab3ResIdStrs, Block.blockTab4ResIdStrs, Block.blockTab5ResIdStrs
-            };
-            
-            int[] resIds = ids[index]; 
-            string[] resIdStrs = idstrs[index];
             int margin = 12;
             int padding = 4;
             double rowWidth = ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2);
             int itemW = (int)((rowWidth - (margin * 2) - (padding * 2)) / 3);
-            for (int i = 0; i < resIds.Length; i++)
+            for (int i = 0; i < blocks.Count; i++)
             {
                 FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(itemW, itemW);
                 param.LeftMargin = i % 3 * (itemW + padding) + margin;
@@ -647,7 +649,7 @@ namespace TabletArtco
                 ImageView imgIv = new ImageView(this);
                 imgIv.LayoutParameters = param;
                 imgIv.Tag = index * 1000 + i;
-                imgIv.SetImageResource(resIds[i]);
+                imgIv.SetImageResource(blocks[i].resourceId);
                 blockView.AddView(imgIv);
                 imgIv.Click += (t, e) =>
                 {
@@ -656,43 +658,51 @@ namespace TabletArtco
                     {
                         return;
                     }
-                    if (mSpriteIndex<0 || mSpriteIndex>=spritesList.Count)
-                    {
-                        return;
-                    }
-                    
-                    int tag = (int)(((ImageView)t).Tag);
-                    int tabIndex = tag / 1000;
-                    int tempIndex = tag - tabIndex * 1000;
-                    if (resIdStrs[tempIndex] == "MoveEmpty")
+                    if (mSpriteIndex < 0 || mSpriteIndex >= spritesList.Count)
                     {
                         return;
                     }
 
-                    if (spritesList[mSpriteIndex].mBlocks.Count==0 && tabIndex != 0)
+                    int tag = (int)(((ImageView)t).Tag);
+                    int tabIndex = tag / 1000;
+                    int tempIndex = tag - tabIndex * 1000;
+                    if (Block._blocks[tabIndex][tempIndex].name.Equals("MoveEmpty"))
+                    {
+                        return;
+                    }
+
+                    if (spritesList[mSpriteIndex].mBlocks.Count == 0 && tabIndex != 0)
                     {
                         Block b = new Block();
-                        b.resourceId = Block.blockTab0ResIds[0];
-                        b.name = Block.blockTab0ResIdStrs[0];
+                        b.resourceId = Block._blocks[0][0].resourceId;// blockTab0ResIds[0];
+                        b.name = Block._blocks[0][0].name; //Block.blockTab0ResIdStrs[0];
                         b.tabIndex = 0;
                         b.index = 0;
                         spritesList[mSpriteIndex].AddBlock(b);
                     }
+                    
                     Block block = new Block();
-                    block.resourceId = resIds[tempIndex];
-                    block.name = resIdStrs[tempIndex];
+                    block.resourceId = Block._blocks[tabIndex][tempIndex].resourceId;
+                    block.name = Block._blocks[tabIndex][tempIndex].name;
                     block.tabIndex = tabIndex;
                     block.index = tempIndex;
+                    if (Block._blocks[tabIndex][tempIndex].category == 2)
+                    {
+                        block.text = "1";
+                    }
+
                     if (isPractice)
                     {
                         List<Block> list = spritesList[mSpriteIndex].mBlocks[0];
                         if (practice.solutionList.Count > list.Count)
                         {
                             // 练习block匹配才加入
-                            if (practice.solutionList[list.Count].Contains(block.name)) {
+                            if (practice.solutionList[list.Count].Contains(block.name))
+                            {
                                 LogUtil.CustomLog("=========" + practice.solutionList[list.Count]);
                                 var arr = practice.solutionList[list.Count].Split(":");
-                                if (arr.Length>1) {
+                                if (arr.Length > 1)
+                                {
                                     block.text = arr[1];
                                 };
                                 spritesList[mSpriteIndex].AddBlock(block);
@@ -700,9 +710,19 @@ namespace TabletArtco
                             }
                         }
                     }
-                    else {
-                        spritesList[mSpriteIndex].AddBlock(block);
-                        UpdateBlockView();
+                    else
+                    {
+                        bool ret = spritesList[mSpriteIndex].AddBlock(block);
+                        if(ret)
+                        {
+                            UpdateBlockView();
+                        }
+                        else
+                        {
+                            ConfirmDialog confirmDialog = new ConfirmDialog(this);
+                            confirmDialog.SetMessage("因为动作积木默认为无限循环，所以动作积木后不能放置其他积木");
+                            confirmDialog.Show();                            
+                        }
                     }
                 };
             }
@@ -710,20 +730,20 @@ namespace TabletArtco
             if (index == 3)
             {
                 int tempW = (int)((ScreenUtil.ScreenWidth(this) * 244.0 / 1280 - (12 * 2)) / 4);
-                
+
                 int tempH = (int)(720 / 800.0 * ScreenUtil.ScreenHeight(this)) - (int)(tempW * 45.0 / 55);
 
-                int w = (int) ((rowWidth - margin * 3) / 2);
-                int h = (int) (22 / 72.0 * w);
+                int w = (int)((rowWidth - margin * 3) / 2);
+                int h = (int)(22 / 72.0 * w);
                 for (int i = 0; i < 2; i++)
                 {
                     FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(w, h);
-                    param.LeftMargin = margin + (w+margin)*i;
-                    param.TopMargin = tempH - h - margin-margin/2;
+                    param.LeftMargin = margin + (w + margin) * i;
+                    param.TopMargin = tempH - h - margin - margin / 2;
                     ImageView imgIv = new ImageView(this);
                     imgIv.LayoutParameters = param;
                     imgIv.Tag = i;
-                    if (i==0)
+                    if (i == 0)
                         imgIv.SetBackgroundResource(Resource.Drawable.CreateVarBtn);
                     else
                         imgIv.SetBackgroundResource(Resource.Drawable.HideVarListBtn);
@@ -732,13 +752,15 @@ namespace TabletArtco
                     {
                         int tag = (int)((ImageView)t).Tag;
                         new SoundPlayer(this).PlayLocal(SoundPlayer.mouse_click);
-                        switch (tag) {
+                        switch (tag)
+                        {
                             case 0:
                                 {
                                     if (isPlay)
                                         break;
 
-                                    VariableInitDialog dialog = new VariableInitDialog(this, (name, value) => {
+                                    VariableInitDialog dialog = new VariableInitDialog(this, (name, value) =>
+                                    {
                                         Variable.variableMap[name] = value;
                                         mVariableAdapter.NotifyDataSetChanged();
                                     });
@@ -748,7 +770,7 @@ namespace TabletArtco
                             case 1:
                                 {
                                     ListView listView = FindViewById<ListView>(Resource.Id.variableListView);
-                                    if(listView.Visibility == ViewStates.Visible)
+                                    if (listView.Visibility == ViewStates.Visible)
                                     {
                                         listView.Visibility = ViewStates.Invisible;
                                         imgIv.SetBackgroundResource(Resource.Drawable.ShowVarListBtn);
@@ -811,7 +833,8 @@ namespace TabletArtco
                                 }
 
                                 // home button click
-                                MessageBoxDialog dialog = new MessageBoxDialog(this, "确定要回到主界面吗?", () => {
+                                MessageBoxDialog dialog = new MessageBoxDialog(this, "确定要回到主界面吗?", () =>
+                                {
                                     // initialize ActivatedSprite
                                     Project.mSprites.RemoveRange(0, Project.mSprites.Count);
                                     mSpriteIndex = -1;
@@ -844,7 +867,7 @@ namespace TabletArtco
                                     videoPlayer.hideVideo();
                                     videoPlayer.ClickHomeBt();
                                     FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Invisible;
-                                    
+
                                     SoundPlayer.bgmPath = null;
 
                                     // initialize Variavles
@@ -868,7 +891,7 @@ namespace TabletArtco
                                 Project.RunSprite();
                                 //mediaManager.Play();
                                 videoPlayer.Play();
-                                if(!isMute)
+                                if (!isMute)
                                     bgmPlayer.Play(SoundPlayer.bgmPath);
 
                                 break;
@@ -889,7 +912,7 @@ namespace TabletArtco
                                 SoundPlayer.StopAll();
                                 if (Project.currentBack != null)
                                 {
-                                    if(!Project.currentBack.remoteVideoPath.Equals(videoPlayer.mPath))
+                                    if (!Project.currentBack.remoteVideoPath.Equals(videoPlayer.mPath))
                                     {
                                         videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
                                     }
@@ -917,7 +940,7 @@ namespace TabletArtco
                                 }
 
                                 isMute = !isMute;
-                                if(isMute)
+                                if (isMute)
                                 {
                                     ((ImageView)t).SetBackgroundResource(Resource.Drawable.BGM_mute);
                                 }
@@ -934,9 +957,9 @@ namespace TabletArtco
                 };
             }
 
-            ActivatedSprite.notFullSize = new Android.Util.Size((int)width-paddingL*2, (int)(481 / 549.0 * height));
-            ActivatedSprite.fullSize = new Android.Util.Size(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this)-ScreenUtil.dip2px(this, 50));
- 
+            ActivatedSprite.notFullSize = new Android.Util.Size((int)width - paddingL * 2, (int)(481 / 549.0 * height));
+            ActivatedSprite.fullSize = new Android.Util.Size(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this) - ScreenUtil.dip2px(this, 50));
+
 
             // video surfaceview
             VideoView videoView = FindViewById<VideoView>(Resource.Id.video_view);
@@ -950,7 +973,7 @@ namespace TabletArtco
             videoPlayer.PlayDefault();
             bgmPlayer = new SoundPlayer(this);
             bgmPlayer.PlayLocal(Resource.Raw.Stage_Default);
-            
+
             //mediaManager = new MediaManager2(surfaceView, imgIv, this);
 
             //varible listView
@@ -959,7 +982,7 @@ namespace TabletArtco
             mVariableAdapter.variableMap = Variable.variableMap;
             mVariableAdapter.mAction += (position, type) =>
             {
-                if (type == 1) 
+                if (type == 1)
                 {
                     List<string> keys = Variable.variableMap.Keys.ToList();
                     Variable.RemoveVariable(keys[position]);
@@ -967,7 +990,8 @@ namespace TabletArtco
                 }
                 else
                 {
-                    VariableInitDialog dialog = new VariableInitDialog(this, (name, value) => {
+                    VariableInitDialog dialog = new VariableInitDialog(this, (name, value) =>
+                    {
                         List<string> keys = Variable.variableMap.Keys.ToList();
                         Variable.RemoveVariable(keys[position]);
                         Variable.AddVariable(name, value);
@@ -993,24 +1017,25 @@ namespace TabletArtco
                 videoPlayer.SetPath(Project.currentBack.remoteVideoPath, Project.currentBack.remotePreviewImgPath, null);
                 //videoPlayer.SetUri(practice.practiceId, true);
                 FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Invisible;
-                new Java.Lang.Thread(new Java.Lang.Runnable(() =>
-                {
-                    Thread.Sleep(10);
-                    RunOnUiThread(() =>
-                    {
-                        videoPlayer.Play();
-                        new Java.Lang.Thread(new Java.Lang.Runnable(() =>
-                        {
-                            Thread.Sleep(2000);
-                            RunOnUiThread(() =>
-                            {
-                                if (!isPlay) {
-                                    videoPlayer.Stop();
-                                }
-                            });
-                        })).Start();
-                    });
-                })).Start();
+                //new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+                //{
+                //    Thread.Sleep(10);
+                //    RunOnUiThread(() =>
+                //    {
+                //        videoPlayer.Play();
+                //        new Java.Lang.Thread(new Java.Lang.Runnable(() =>
+                //        {
+                //            Thread.Sleep(2000);
+                //            RunOnUiThread(() =>
+                //            {
+                //                if (!isPlay)
+                //                {
+                //                    videoPlayer.Stop();
+                //                }
+                //            });
+                //        })).Start();
+                //    });
+                //})).Start();
             };
 
             FindViewById<ImageView>(Resource.Id.p_next_bt).Click += (t, e) =>
@@ -1021,7 +1046,7 @@ namespace TabletArtco
                     Project.mSprites[0].isVisible = true;
                     UpdateMainView();
                 }
-                else 
+                else
                 {
                     FindViewById<ImageView>(Resource.Id.bt_center3).PerformClick();
                     int level = int.Parse(practice.level);
@@ -1058,9 +1083,11 @@ namespace TabletArtco
             RelativeLayout activate_block_wrapperview = FindViewById<RelativeLayout>(Resource.Id.activate_block_wrapperview);
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.block_view);
             blockView.SetOnDragListener(this);
-            ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0-ScreenUtil.dip2px(this, 8)));
+            ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - ScreenUtil.dip2px(this, 8)));
+
             // scale button
-            FindViewById<ImageView>(Resource.Id.bt_scale).Click += (t, e) =>
+            ImageView scaleButton = FindViewById<ImageView>(Resource.Id.bt_scale);
+            scaleButton.Click += (t, e) =>
             {
                 if (isPlay)
                 {
@@ -1070,13 +1097,15 @@ namespace TabletArtco
                 activateBlockScale = !activateBlockScale;
                 if (activateBlockScale)
                 {
-                    ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 * 3 / 800.0 ));
+                    ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 * 3 / 800.0)); 
                     activate_block_wrapperview.SetBackgroundResource(Resource.Drawable.BlockGlass_large);
+                    scaleButton.SetImageResource(Resource.Drawable.zoom_in);
                 }
                 else
                 {
                     ViewUtil.SetViewHeight(activate_block_wrapperview, (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - ScreenUtil.dip2px(this, 8)));
                     activate_block_wrapperview.SetBackgroundResource(Resource.Drawable.BlockGlass_small);
+                    scaleButton.SetImageResource(Resource.Drawable.zoom_out);
                 }
             };
 
@@ -1120,7 +1149,8 @@ namespace TabletArtco
             listView.Adapter = mSpriteAdapter;
             FindViewById<ImageView>(Resource.Id.bt_delete).Click += (t, e) =>
             {
-                if (!isPlay) {
+                if (!isPlay)
+                {
                     new SoundPlayer(this).PlayLocal(SoundPlayer.all_clear);
                     Project.mSprites.RemoveRange(0, Project.mSprites.Count);
                     mSpriteIndex = -1;
@@ -1132,7 +1162,8 @@ namespace TabletArtco
         }
 
         // main screen add animate sprite view
-        public void AddSpriteView() {
+        public void AddSpriteView()
+        {
             FrameLayout containerView = FindViewById<FrameLayout>(Resource.Id.ContainerView);
             containerView.RemoveAllViews();
             imgList.RemoveRange(0, imgList.Count);
@@ -1152,7 +1183,7 @@ namespace TabletArtco
                 containerView.AddView(imgIv, layoutParams);
                 imgIv.Visibility = activatedSprite.isVisible ? ViewStates.Visible : ViewStates.Invisible;
                 imgList.Add(imgIv);
-                imgIv.Tag = 100+i;
+                imgIv.Tag = 100 + i;
                 imgIv.MoveAction += (t, x, y) =>
                 {
                     if (!isPlay && !isPractice)
@@ -1169,21 +1200,21 @@ namespace TabletArtco
                     {
                         Intent intent = new Intent(this, typeof(EditActivity));
                         Bundle bundle = new Bundle();
-                        bundle.PutInt("position", tag-100);
+                        bundle.PutInt("position", tag - 100);
                         intent.PutExtra("bundle", bundle);
                         intent.AddFlags(ActivityFlags.ReorderToFront);
                         StartActivityForResult(intent, 10, null);
                     }
                     else
                     {
-                        if (tag-100<Project.mSprites.Count)
+                        if (tag - 100 < Project.mSprites.Count)
                         {
                             Project.mSprites[tag - 100].ReceiveClickSignal();
                         }
                     }
                 };
                 SpeakView speakView = new SpeakView(this);
-                FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WrapContent, FrameLayout.LayoutParams.WrapContent);                
+                FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WrapContent, FrameLayout.LayoutParams.WrapContent);
                 containerView.AddView(speakView, p);
                 speakViewList.Add(speakView);
             }
@@ -1220,14 +1251,15 @@ namespace TabletArtco
         }
 
         // update bottom block views
-        public void UpdateBlockView() {
+        public void UpdateBlockView()
+        {
             FrameLayout blockView = FindViewById<FrameLayout>(Resource.Id.block_view);
             int width = (int)(ScreenUtil.ScreenWidth(this) * 890 / 1280.0) - ScreenUtil.dip2px(this, 30);
             int GridViewH = (int)(ScreenUtil.ScreenHeight(this) * 175 / 800.0 - ScreenUtil.dip2px(this, 28));
             int margin = 3;
             int itemW = (int)((GridViewH - margin) / 2.0);
             //int padding = 5;
-            int column = (width - itemW/2 + margin) / (itemW + margin);
+            int column = (width - itemW / 2 + margin) / (itemW + margin);
             //padding = (width - column * itemW - (column - 1) * margin)/2;
             //column = column - 1;
             blockView.RemoveAllViews();
@@ -1240,13 +1272,13 @@ namespace TabletArtco
                 for (int i = 0; i < blockList.Count; i++)
                 {
                     List<Block> list = blockList[i];
-                    if (activatedSprite.curRow == i) 
+                    if (activatedSprite.curRow == i)
                     {
                         ImageView view = new ImageView(this);
                         view.SetImageResource(Resource.Drawable.Revision_line);
-                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(itemW/2, itemW/2);
+                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(itemW / 2, itemW / 2);
                         //layoutParams.LeftMargin = padding;
-                        layoutParams.TopMargin = originY + itemW/4;
+                        layoutParams.TopMargin = originY + itemW / 4;
                         blockView.AddView(view, layoutParams);
                     }
 
@@ -1262,9 +1294,9 @@ namespace TabletArtco
                         layoutParams.TopMargin = originY;
                         blockView.AddView(view, layoutParams);
                         view.SetOnLongClickListener(this);
-                        view.Tag =  i * 10000 + j;
-                        List<Dictionary<string, string>> locationList = Block.TextViewLocations(block);
-                        if (locationList != null && locationList.Count>0)
+                        view.Tag = i * 10000 + j;
+                        List<Dictionary<string, string>> locationList = BlockResources.TextViewLocations(block);
+                        if (locationList != null && locationList.Count > 0)
                         {
                             for (int k = 0; k < locationList.Count; k++)
                             {
@@ -1274,17 +1306,17 @@ namespace TabletArtco
                                 float w = float.Parse(dic["w"]) * itemW;
                                 float h = float.Parse(dic["h"]) * itemW;
                                 TextView tv = new TextView(this);
-                                FrameLayout.LayoutParams tvparams = new FrameLayout.LayoutParams((int)w,(int)h);
+                                FrameLayout.LayoutParams tvparams = new FrameLayout.LayoutParams((int)w, (int)h);
                                 tvparams.LeftMargin = (int)x;
                                 tvparams.TopMargin = (int)y;
                                 tv.Text = dic["text"];
-                                tv.TextSize = h/1.5f; // h/2.8f;
-                                tv.SetPadding(0,0,0,0);
+                                tv.TextSize = h / 1.5f; // h/2.8f;
+                                tv.SetPadding(0, 0, 0, 0);
                                 tv.TextAlignment = TextAlignment.Center;
                                 view.AddView(tv, tvparams);
                             }
                         }
-                        int clickType = Block.GetClickType(block);
+                        int clickType = BlockResources.GetClickType(block);
                         // activateblock click event
                         view.Click += (t, e) =>
                         {
@@ -1294,8 +1326,9 @@ namespace TabletArtco
                             }
                             activatedSprite.curRow = block.row;
                             UpdateBlockView();
-                                
-                            switch (clickType) {
+
+                            switch (clickType)
+                            {
                                 // input the value or select variable value
                                 case 0:
                                     {
@@ -1304,7 +1337,8 @@ namespace TabletArtco
                                         {
                                             varlist.Add(name);
                                         }
-                                        VariableSelectDialog dialog = new VariableSelectDialog(this, (selectIndex, text)=> {
+                                        VariableSelectDialog dialog = new VariableSelectDialog(this, (selectIndex, text) =>
+                                        {
                                             if (selectIndex != -1)
                                             {
                                                 block.varName = varlist[selectIndex];
@@ -1327,7 +1361,7 @@ namespace TabletArtco
                                 case 2:
                                     {
                                         // change variable dialog, example set variable value or increase variable value
-                                        if (Variable.variableMap.Count<=0)
+                                        if (Variable.variableMap.Count <= 0)
                                         {
                                             ToastUtil.ShowToast(this, "你还没有添加变量");
                                             return;
@@ -1337,12 +1371,12 @@ namespace TabletArtco
                                         {
                                             varlist.Add(name);
                                         }
-                                        VariableChangeDialog dialog = new VariableChangeDialog(this, clickType>1, (selectIndex, value) =>
-                                        {
-                                            block.varName = varlist[selectIndex];
-                                            block.varValue = value;
-                                            UpdateBlockView();
-                                        });
+                                        VariableChangeDialog dialog = new VariableChangeDialog(this, clickType > 1, (selectIndex, value) =>
+                                          {
+                                              block.varName = varlist[selectIndex];
+                                              block.varValue = value;
+                                              UpdateBlockView();
+                                          });
                                         dialog.mList = varlist;
                                         dialog.Show();
                                         break;
@@ -1352,7 +1386,8 @@ namespace TabletArtco
                                 // send signal dialog
                                 case 4:
                                     {
-                                        SignalDialog dialog = new SignalDialog(this, (text) => {
+                                        SignalDialog dialog = new SignalDialog(this, (text) =>
+                                        {
                                             block.text = text;
                                             UpdateBlockView();
                                         });
@@ -1380,7 +1415,8 @@ namespace TabletArtco
                                                 idlist.Add(sprite.activateSpriteId);
                                             }
                                         }
-                                        ImageSelectDialog dialog = new ImageSelectDialog(this, clickType > 4, (selectIndex) => {
+                                        ImageSelectDialog dialog = new ImageSelectDialog(this, clickType > 4, (selectIndex) =>
+                                        {
                                             block.text = titlelist[selectIndex];
                                             block.activateSpriteId = idlist[selectIndex];
                                             UpdateBlockView();
@@ -1393,7 +1429,8 @@ namespace TabletArtco
                                 // input speck text dialog
                                 case 6:
                                     {
-                                        SpeakDialog dialog = new SpeakDialog(this, (text) => {
+                                        SpeakDialog dialog = new SpeakDialog(this, (text) =>
+                                        {
                                             block.text = text;
                                             UpdateBlockView();
                                         });
@@ -1403,7 +1440,7 @@ namespace TabletArtco
                                 // select sound 
                                 case 7:
                                 // select background
-                                case 8: 
+                                case 8:
                                     {
                                         int tag = (int)view.Tag;
                                         tag = tag - tag / 10000 * 10000;
@@ -1441,7 +1478,7 @@ namespace TabletArtco
                                     break;
                             }
                         };
-                        
+
                     }
                     originY += itemW + margin;
                 }
@@ -1449,8 +1486,9 @@ namespace TabletArtco
         }
 
         // check Collision
-        public void JudgeCollision() {
-            if (!isPlay || imgList.Count<=1)
+        public void JudgeCollision()
+        {
+            if (!isPlay || imgList.Count <= 1)
             {
                 return;
             }
@@ -1485,20 +1523,26 @@ namespace TabletArtco
         /*
          * ActivateSprite interface
          */
-        public void UpdateView() {
-            RunOnUiThread(() => {
+        public void UpdateView()
+        {
+            RunOnUiThread(() =>
+            {
                 UpdateMainView();
             });
         }
 
-        public void UpdateBlockViewDelegate() {
-            RunOnUiThread(() => {
+        public void UpdateBlockViewDelegate()
+        {
+            RunOnUiThread(() =>
+            {
                 UpdateBlockView();
             });
         }
 
-        public void UpdateBackground(string name) { 
-            RunOnUiThread(() => {
+        public void UpdateBackground(string name)
+        {
+            RunOnUiThread(() =>
+            {
                 Background background = Project.backgroundsList.ContainsKey(name) ? Project.backgroundsList[name] : null;
                 if (background != null)
                 {
@@ -1507,9 +1551,12 @@ namespace TabletArtco
             });
         }
 
-        public void RowAnimateComplete() {
-            RunOnUiThread(() => {
-                if (isPractice && Project.mSprites.Count>0 && practice.solutionList.Count == Project.mSprites[0].mBlocks[0].Count) {
+        public void RowAnimateComplete()
+        {
+            RunOnUiThread(() =>
+            {
+                if (isPractice && Project.mSprites.Count > 0 && practice.solutionList.Count == Project.mSprites[0].mBlocks[0].Count)
+                {
                     FindViewById<RelativeLayout>(Resource.Id.p_wrapper_view).Visibility = ViewStates.Visible;
                     FindViewById<LinearLayout>(Resource.Id.successView).Visibility = ViewStates.Visible;
                     FindViewById<ImageView>(Resource.Id.p_start).Visibility = ViewStates.Invisible;
@@ -1519,16 +1566,14 @@ namespace TabletArtco
 
         private ISharedPreferences SharedPres
         {
-            get
-            {
+            get {
                 return GetSharedPreferences("_main_", 0);
             }
         }
 
         private ISharedPreferencesEditor Editor
         {
-            get
-            {
+            get {
                 return SharedPres.Edit();
             }
         }
@@ -1565,7 +1610,8 @@ namespace TabletArtco
         {
             //获取拖拽的动作类型值
             DragAction action = e.Action;
-            switch(action) {
+            switch (action)
+            {
                 case DragAction.Started:
                     {
                         break;
@@ -1599,18 +1645,18 @@ namespace TabletArtco
 
                                 int margin = 3;
                                 int itemW = (int)((GridViewH - margin) / 2.0);
-                                LogUtil.CustomLog("itemW="+itemW + ", width=" + width);
+                                LogUtil.CustomLog("itemW=" + itemW + ", width=" + width);
                                 //int padding = 10;
-                                int columnNum = (width - itemW/2 + margin) / (itemW + margin);
+                                int columnNum = (width - itemW / 2 + margin) / (itemW + margin);
                                 //padding = (width - columnNum * itemW - (columnNum - 1) * margin) / 2;
                                 //columnNum = columnNum - 1;
                                 float x = e.GetX();
                                 float y = e.GetY();
                                 //int firstX = itemW + padding + margin-margin/2;
-                                int firstX = itemW/2;
-                                int firstY = -margin/2;
+                                int firstX = itemW / 2;
+                                int firstY = -margin / 2;
                                 int add = itemW + margin;
-                                if (x>firstX)
+                                if (x > firstX)
                                 {
                                     ActivatedSprite activatedSprite = spritesList[mSpriteIndex];
                                     List<List<Block>> blockList = activatedSprite.mBlocks;
@@ -1618,12 +1664,13 @@ namespace TabletArtco
                                     r = firstY + r * add < y ? r : r - 1;
                                     int c = Math.Round((x - firstX) / add);
                                     c = firstX + c * add < x ? c : c - 1;
-                                    if (c<columnNum)
+                                    if (c < columnNum)
                                     {
                                         int cc = 0;
                                         bool isTrue = true;
                                         int i = 0;
-                                        while (isTrue) {
+                                        while (isTrue)
+                                        {
                                             if (i < blockList.Count)
                                             {
                                                 List<Block> list = blockList[i];
@@ -1722,7 +1769,7 @@ namespace TabletArtco
                     return;
                 }
                 new SoundPlayer(this).PlayLocal(SoundPlayer.all_clear);
-                int position = (int) ((FrameLayout)t).Tag;
+                int position = (int)((FrameLayout)t).Tag;
                 ActivatedSprite sprite = Project.mSprites[position];
                 Project.mSprites.RemoveAt(position);
                 if (Project.mSprites.Count <= 0)
@@ -1778,13 +1825,14 @@ namespace TabletArtco
             }
         }
 
-        public void LongClickItem(int position, View view) 
+        public void LongClickItem(int position, View view)
         {
             mLongPressSpriteIndex = position;
             ShowMenu(view);
         }
 
-        public void ShowMenu(View view) {
+        public void ShowMenu(View view)
+        {
             PopupMenu popupMenu = new PopupMenu(view.Context, view);
             popupMenu.Menu.Add("克隆");
             popupMenu.Menu.Add("保存");
@@ -1800,9 +1848,10 @@ namespace TabletArtco
         public bool OnMenuItemClick(IMenuItem item)
         {
             string title = item.ToString();
-            List<string> list = new List<string>() {"克隆","保存","复制积木","粘贴积木","重新定位","往后送", "编辑"};
+            List<string> list = new List<string>() { "克隆", "保存", "复制积木", "粘贴积木", "重新定位", "往后送", "编辑" };
             int index = list.IndexOf(title);
-            switch (index) {
+            switch (index)
+            {
                 case 0:
                     {
                         ActivatedSprite activatedSprite = spritesList[mLongPressSpriteIndex];

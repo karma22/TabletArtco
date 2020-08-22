@@ -15,11 +15,6 @@
         android:gravity="center"
         android:paddingTop="2px">
         <ImageView
-            android:id="@+id/edit_logo_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/edit_logo"/>
-        <ImageView
             android:id="@+id/edit_title_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
