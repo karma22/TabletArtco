@@ -436,8 +436,9 @@ namespace TabletArtco
             {
                 scale = scaleList[curIndex];
             }
-            
-            Bitmap b = curbitmapList[curIndex];
+
+            //Bitmap b = curbitmapList[curIndex];
+            Bitmap b = originBitmapList[curIndex];
             Bitmap bitmap = Bitmap.CreateScaledBitmap(b, (int)(b.Width * scale), (int)(b.Height * scale), false);
             curSize = new Size(bitmap.Width, bitmap.Height);
             return bitmap; //curbitmapList[curIndex];
