@@ -182,7 +182,9 @@ namespace TabletArtco
             for (int i = 0; i <= datas.Length - rowCnt; i += rowCnt)
             {
                 string name = datas[i + 1];
-                if (name.Equals("EventInputKey"))
+                if (name.Equals("EventInputKey") ||
+                    name.Equals("ControlClone") ||
+                    name.Equals("ControlCondition"))
                     continue;
 
                 Block block = new Block()
