@@ -185,7 +185,8 @@ namespace TabletArtco
                 if (name.Equals("EventInputKey") ||
                     name.Equals("ControlClone") ||
                     name.Equals("ControlCondition") ||
-                    name.Equals("EventClone")) 
+                    name.Equals("EventClone"))
+
                     continue;
 
                 Block block = new Block()
