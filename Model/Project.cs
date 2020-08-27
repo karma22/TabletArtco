@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Android.Content;
+using Android.Views;
+using System;
 using System.Collections.Generic;
 
 namespace TabletArtco
@@ -22,7 +24,7 @@ namespace TabletArtco
         // all sprites list
         public static List<ActivatedSprite> mSprites { get; set; } = new List<ActivatedSprite>();
         // Copy blocks list
-        public static List<List<Block>> blocksList = new List<List<Block>>(); 
+        public static List<List<Block>> blocksList = new List<List<Block>>();
         // sprite animation thread
         public static List<Java.Lang.Thread> codeThreadList { get; set; } = new List<Java.Lang.Thread>();
 
@@ -44,7 +46,8 @@ namespace TabletArtco
             mSprites.Add(activatedSprite);
         }
 
-        public static void ClearCollision(string collisionid) {
+        public static void ClearCollision(string collisionid)
+        {
             for (int i = 0; i < mSprites.Count; i++)
             {
                 mSprites[i].RemoveCollision(collisionid);
@@ -52,7 +55,8 @@ namespace TabletArtco
         }
 
         // Copy Blocks
-        public static void CopyBlocks(List<List<Block>> list) {
+        public static void CopyBlocks(List<List<Block>> list)
+        {
             blocksList.RemoveRange(0, blocksList.Count);
             for (int i = 0; i < list.Count; i++)
             {
@@ -68,7 +72,8 @@ namespace TabletArtco
         }
 
         // Paste Blocks
-        public static List<List<Block>> PasteBlocks() {
+        public static List<List<Block>> PasteBlocks()
+        {
             List<List<Block>> list = new List<List<Block>>();
             for (int i = 0; i < blocksList.Count; i++)
             {
@@ -85,13 +90,24 @@ namespace TabletArtco
         }
 
         // Run Sprite Animation
-        public static void RunSprite()
+        public static bool RunSprite(Context ctx)
         {
             Variable.InitCurVariable();
-            Android.Util.Log.Info("RunCode", "-----------------------");
-            for (int i = 0; i < Project.mSprites.Count; i++)
+
+            for (int i = 0; i < mSprites.Count; i++)
             {
-                ActivatedSprite sprite = Project.mSprites[i];
+                if(!CheckError(mSprites[i]))
+                {
+                    ConfirmDialog confirmDialog = new ConfirmDialog(ctx);
+                    confirmDialog.SetMessage("错误的编码编辑");
+                    confirmDialog.Show();
+                    return false;
+                }
+            }
+
+            for (int i = 0; i < mSprites.Count; i++)
+            {
+                ActivatedSprite sprite = mSprites[i];
                 Java.Lang.Thread thread = new Java.Lang.Thread(new Java.Lang.Runnable(() =>
                 {
                     sprite.Start();
@@ -100,10 +116,37 @@ namespace TabletArtco
             }
 
             ActivatedSprite.isAnimationTag = true;
-            for (int i = 0; i < Project.mSprites.Count; i++)
+            for (int i = 0; i < mSprites.Count; i++)
             {
                 codeThreadList[i].Start();
             }
+
+            return true;
+        }
+
+        public static bool CheckError(ActivatedSprite s)
+        {
+            var codes = s.mBlocks;
+            int cnt = 0;
+            for (int i = 0; i < codes.Count; i++)
+            {
+                for (int j = 0; j < codes[i].Count; j++)
+                {
+                    var code = codes[i][j];
+                    var name = code.name;
+                    if (name.Equals("ControlLoop") || name.Equals("ControlLoopN") ||
+                        name.Equals("GameLoopN") || name.Equals("ControlCondition"))
+                        cnt++;
+
+                    if (name.Equals("ControlFlag") || name.Equals("GameFlag"))
+                        cnt--;
+                }
+            }
+
+            if (cnt != 0)
+                return false;
+            else
+                return true;
         }
 
         // Stop Sprite Animation
@@ -111,17 +154,18 @@ namespace TabletArtco
         {
             Android.Util.Log.Info("StopCode", "-----------------------");
             ActivatedSprite.isAnimationTag = false;
-            Project.sendSignalWait.Clear();
-            for (int i = 0; i < Project.mSprites.Count; i++)
+            sendSignalWait.Clear();
+            for (int i = 0; i < mSprites.Count; i++)
             {
-                var sprite = Project.mSprites[i];
+                var sprite = mSprites[i];
                 sprite.Reset();
             }
             codeThreadList.RemoveRange(0, codeThreadList.Count);
         }
     }
 
-    class Variable {
+    class Variable
+    {
         // variable init value
         public static Dictionary<string, string> variableMap = new Dictionary<string, string>();
         // variable current value
@@ -166,16 +210,16 @@ namespace TabletArtco
         }
     }
 
-    class Signal {
-        
-        public static void SendSignal(string signalName) {
+    class Signal
+    {
+
+        public static void SendSignal(string signalName)
+        {
             for (int i = 0; i < Project.mSprites.Count; i++)
             {
                 ActivatedSprite activatedSprite = Project.mSprites[i];
                 activatedSprite.ReceiveSignal(signalName);
             }
         }
-
     }
-
 }

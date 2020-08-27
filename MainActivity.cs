@@ -155,6 +155,16 @@ namespace TabletArtco
         }
 
         [System.Obsolete]
+        public Bitmap GetBitmap(Sprite sprite)
+        {
+            if(sprite.category == -1)
+            {
+                return (Bitmap)Glide.With(this).AsBitmap().Load(sprite.remotePath).Into(100, 100).Get();
+            }            
+            return (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
+        }
+
+        [System.Obsolete]
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
@@ -174,13 +184,12 @@ namespace TabletArtco
                         Bundle bundle = data.GetBundleExtra("bundle");
                         Sprite sprite = Sprite.ToSprite(bundle.GetString("model"));
                         if (sprite == null)
-                        {
                             return;
-                        }
 
                         new Thread(new Runnable(() =>
                         {
-                            Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
+                            //Bitmap bitmap = (Bitmap)Glide.With(this).AsBitmap().Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(100, 100).Get();
+                            Bitmap bitmap = GetBitmap(sprite);
                             bitmap.HasAlpha = true;
 
                             sprite.bitmap = bitmap;
@@ -310,7 +319,6 @@ namespace TabletArtco
                 // EditActivity callback
                 case 10:
                     {
-
                         break;
                     }
                 // camera callback
@@ -673,19 +681,11 @@ namespace TabletArtco
 
                     if (spritesList[mSpriteIndex].mBlocks.Count == 0 && tabIndex != 0)
                     {
-                        Block b = new Block();
-                        b.resourceId = Block._blocks[0][0].resourceId;// blockTab0ResIds[0];
-                        b.name = Block._blocks[0][0].name; //Block.blockTab0ResIdStrs[0];
-                        b.tabIndex = 0;
-                        b.index = 0;
+                        Block b = new Block(Block._blocks[0][0]);
                         spritesList[mSpriteIndex].AddBlock(b);
                     }
                     
-                    Block block = new Block();
-                    block.resourceId = Block._blocks[tabIndex][tempIndex].resourceId;
-                    block.name = Block._blocks[tabIndex][tempIndex].name;
-                    block.tabIndex = tabIndex;
-                    block.index = tempIndex;
+                    Block block = new Block(Block._blocks[tabIndex][tempIndex]);
                     if (Block._blocks[tabIndex][tempIndex].category == 2)
                     {
                         block.text = "1";
@@ -886,10 +886,11 @@ namespace TabletArtco
                                     return;
                                 }
 
-                                mainViewHighlight.Visibility = ViewStates.Visible;
+                                if (!Project.RunSprite(this))
+                                    return;
+
                                 isPlay = true;
-                                Project.RunSprite();
-                                //mediaManager.Play();
+                                mainViewHighlight.Visibility = ViewStates.Visible;                                
                                 videoPlayer.Play();
                                 if (!isMute)
                                     bgmPlayer.Play(SoundPlayer.bgmPath);

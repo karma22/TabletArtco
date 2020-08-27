@@ -216,16 +216,16 @@ namespace TabletArtco
             //StartService(service);
             ApplicationContext.BindService(service, this, Bind.AutoCreate);
             RecordUtil.addRecordListener(this);
-
             PermissionUtil.checkPermission(this);
 
             AddSpriteView();
         }
 
         private void startAnimation() {
-            isPlay = true;
-            Project.RunSprite();
-            //mediaManager.Play();
+            if (!Project.RunSprite(this))
+                return;
+
+            isPlay = true;            
             videoPlayer.Play();
             bgmPlayer.Play(SoundPlayer.bgmPath);
         }

@@ -31,6 +31,19 @@ namespace TabletArtco
         public int signalCount = 0;
         public int clickSignalCount = 0;
 
+        public Block() { }
+        public Block(Block block)
+        {
+            category = block.category;
+            blockType = block.blockType;
+            eventType = block.eventType;
+
+            name = block.name;
+            resourceId = block.resourceId;
+            tabIndex = block.tabIndex;            
+            index = block.index;     
+        }
+
         public static Block Copy(Block block)
         {
             Block b = new Block();
@@ -143,9 +156,9 @@ namespace TabletArtco
         public void ActionFlash(ActivatedSprite s, int lineNumber) => FlashSprite(s, 0);
         public void ActionFlashN(ActivatedSprite s, int lineNumber) => FlashSprite(s, (int)GetConstantOrVariable(s, lineNumber));
         public void ActionRRotate(ActivatedSprite s, int lineNumber) => RotateLoopN(s, 90, 0, true, 1);
-        public void ActionRRotateN(ActivatedSprite s, int lineNumber) => RotateLoopN(s, 90, 0, true, (int)GetConstantOrVariable(s, lineNumber));
+        public void ActionRRotateN(ActivatedSprite s, int lineNumber) => RotateLoopN(s, (int)GetConstantOrVariable(s, lineNumber), 0, true, 1);
         public void ActionLRotate(ActivatedSprite s, int lineNumber) => RotateLoopN(s, 90, 0, false, 1);
-        public void ActionLRotateN(ActivatedSprite s, int lineNumber) => RotateLoopN(s, 90, 0, false, (int)GetConstantOrVariable(s, lineNumber));
+        public void ActionLRotateN(ActivatedSprite s, int lineNumber) => RotateLoopN(s, (int)GetConstantOrVariable(s, lineNumber), 0, false, 1);
         public void ActionRotateLoop(ActivatedSprite s, int lineNumber) => RotateLoopN(s, 10, 0, true, 0);
         public void ActionRotateLoopN(ActivatedSprite s, int lineNumber) => RotateLoopN(s, 10, (int)GetConstantOrVariable(s, lineNumber), true, 0);
         public void ActionWave(ActivatedSprite s, int lineNumber) => LeftRightWaveMove(s, 0, 4);
@@ -329,9 +342,13 @@ namespace TabletArtco
                 Bitmap curBitmap = s.curbitmapList[i];
                 Point center = new Point(s.curPoint.X + curBitmap.Width / 2, s.curPoint.Y + curBitmap.Height / 2);
                 Bitmap newBM = Bitmap.CreateBitmap(origin, 0, 0, width, height, matrix, false);
+                
+                if(s.curIndex == i)
+                {
+                    s.curSize = new Size(newBM.Width, newBM.Height);
+                    s.curPoint = new Point(center.X - newBM.Width / 2, center.Y - newBM.Height / 2);
+                }
 
-                s.curSize = new Size(newBM.Width, newBM.Height);
-                s.curPoint = new Point(center.X - newBM.Width / 2, center.Y - newBM.Height / 2);
                 s.curbitmapList[i] = newBM;
                 curBitmap.Recycle();
             }
@@ -613,7 +630,7 @@ namespace TabletArtco
             {
                 s.curIndex = 0;
             }
-            s.curbitmapList[s.curIndex] = s.GetSpriteBit();
+            s.curbitmapList[s.curIndex] = s.GetNextSpriteBit();
             s.InvalidateStage();
         }
 

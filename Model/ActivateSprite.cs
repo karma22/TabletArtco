@@ -20,7 +20,7 @@ namespace TabletArtco
         public static Size notFullSize;
         public static Size fullSize;
         public static bool mIsFull;
-        public static bool isAnimationTag;        
+        public static bool isAnimationTag;
 
         public string activateSpriteId = Java.Lang.JavaSystem.CurrentTimeMillis() + "";
         public Sprite sprite;
@@ -61,7 +61,7 @@ namespace TabletArtco
         public ActivatedSprite(Sprite s, bool isClone = false)
         {
             sprite = Sprite.ToSprite(s.ToString());
-            if (s.category == 0)
+            if (s.category == 0 || s.category == -1)
                 SetTransparentBit(s.bitmap, 100);
 
             sprite.bitmap = s.bitmap;
@@ -271,7 +271,7 @@ namespace TabletArtco
                 originPoint.X = (int)(originPoint.X * scaleX);
                 originPoint.Y = (int)(originPoint.Y * scaleY);
                 curPoint.X = originPoint.X;
-                curPoint.Y = originPoint.Y;
+                curPoint.Y = originPoint.Y;                
             }
             else
             {
@@ -429,19 +429,45 @@ namespace TabletArtco
             }
         }
 
+        private List<bool> isScaledList = new List<bool>() { false, false, false, false, false, false, false, false };
         public Bitmap GetSpriteBit()
         {
             float scale = 1;
-            if(curIndex < scaleList.Count)
-            {
+            if (curIndex < scaleList.Count)            
                 scale = scaleList[curIndex];
-            }
 
-            //Bitmap b = curbitmapList[curIndex];
-            Bitmap b = originBitmapList[curIndex];
-            Bitmap bitmap = Bitmap.CreateScaledBitmap(b, (int)(b.Width * scale), (int)(b.Height * scale), false);
+            Bitmap b = curbitmapList[curIndex];
+            int width = (int)(b.Width * scale);
+            int height = (int)(b.Height * scale);
+
+            //int width = (int)(b.Width * ((!isScaledList[curIndex]) ? scale : 1));
+            //int height = (int)(b.Height * ((!isScaledList[curIndex]) ? scale : 1));
+            //if (scale != 1 && !isScaledList[curIndex])
+            //    isScaledList[curIndex] = true;
+
+            Bitmap bitmap = Bitmap.CreateScaledBitmap(b, width, height, false);
             curSize = new Size(bitmap.Width, bitmap.Height);
-            return bitmap; //curbitmapList[curIndex];
+            return bitmap; 
+        }
+
+        public Bitmap GetNextSpriteBit()
+        {
+            float scale = 1;
+            if (curIndex < scaleList.Count)
+                scale = scaleList[curIndex];
+
+            Bitmap b = curbitmapList[curIndex];
+
+
+
+            int width = (int)(b.Width * ((!isScaledList[curIndex]) ? scale : 1));
+            int height = (int)(b.Height * ((!isScaledList[curIndex]) ? scale : 1));
+            if (scale != 1 && !isScaledList[curIndex])
+                isScaledList[curIndex] = true;
+
+            Bitmap bitmap = Bitmap.CreateScaledBitmap(b, width, height, false);
+            curSize = new Size(bitmap.Width, bitmap.Height);
+            return bitmap;
         }
 
         // bitmap transparent 
@@ -525,10 +551,7 @@ namespace TabletArtco
             curPoint.X = originPoint.X;
             curPoint.Y = originPoint.Y;
 
-            if (mUpdateDelegate != null)
-            {
-                mUpdateDelegate.UpdateView();
-            }
+            mUpdateDelegate?.UpdateView();
 
             for (int i = 0; i < mBlocks.Count; i++)
             {
@@ -541,6 +564,10 @@ namespace TabletArtco
                     block.clickSignalCount = 0;
                 }
             }
+
+            for(int i=0; i< isScaledList.Count; i++)            
+                isScaledList[i] = false;
+            
             LogUtil.CustomLog("Reset");
         }
 
@@ -558,7 +585,7 @@ namespace TabletArtco
                 codes = mBlocks[codeLineIdx];
                 ref var pc = ref programCnt[codeLineIdx];
 
-                for(; pc < codes.Count; pc++)
+                for (; pc < codes.Count; pc++)
                 {
                     if (!isAnimationTag || stopThisSprite)
                         break;
@@ -577,7 +604,7 @@ namespace TabletArtco
                 if (!isAnimationTag || stopThisSprite)
                     break;
 
-            } while (codes[0].eventType != 0);
-        }     
+            } while (codes[0].eventType != (int)EventType.EventStart);
+        }
     }
 }
