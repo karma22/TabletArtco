@@ -1278,7 +1278,7 @@ namespace TabletArtco
                                 tvparams.LeftMargin = (int)x;
                                 tvparams.TopMargin = (int)y;
                                 tv.Text = dic["text"];
-                                tv.TextSize = h/1.5f; // h/2.8f;
+                                tv.TextSize =  h/2.8f; // h/1.5f; //
                                 tv.SetPadding(0,0,0,0);
                                 tv.TextAlignment = TextAlignment.Center;
                                 view.AddView(tv, tvparams);

@@ -158,7 +158,7 @@ namespace TabletArtco
                 Project.currentBack = Background.GetNameToBack(backgroundname);
                 string bgMusic = rdr.ReadLine();
                 SoundPlayer.bgmPath = bgMusic;
-                int variablecount = int.Parse(rdr.ReadLine());
+                int variablecount  = int.Parse(rdr.ReadLine());
                 int spritecount = int.Parse(rdr.ReadLine());
 
                 for (int i = 0; i < variablecount; i++)
