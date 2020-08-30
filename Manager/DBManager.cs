@@ -1,4 +1,4 @@
-﻿ using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
@@ -19,7 +19,7 @@ namespace TabletArtco
         //public static string _host { get; } = "http://112.219.93.149";
 
         public static string _host { get; } = "http://182.151.21.32";
-        
+
 
         public static string url_login = _host + "/LoginCheck.php";
         public static string url_sprite = _host + "/SelectSpriteTable.php";
@@ -49,7 +49,7 @@ namespace TabletArtco
             {
                 using (HttpWebResponse hr = (HttpWebResponse)ex.Response)
                 {
-                   
+
                 }
                 return false;
             }
@@ -87,7 +87,7 @@ namespace TabletArtco
 
             //I will add a security check function
             string result;
-            
+
             using (WebClient client = GetWebClient())
             {
                 byte[] bytes = client.DownloadData(url_sprite);
@@ -136,14 +136,14 @@ namespace TabletArtco
                 byte[] bytes = client.DownloadData(url_background);
                 result = Encoding.UTF8.GetString(bytes);
             }
-            
+
             const int rowCnt = 7;
             string[] datas = result.Split('\n');
             for (int i = 0; i <= datas.Length - rowCnt; i += rowCnt)
             {
                 // This is korean name
                 // string name1 = datas[i];
-                
+
                 Background background = new Background()
                 {
                     name = datas[i + 1],
@@ -166,7 +166,7 @@ namespace TabletArtco
 
         public static void LoadBlocks()
         {
-            if (Block.blocks.Count > 0)
+            if (Block._blocks.Count > 0)
                 return;
 
             string result;
@@ -176,25 +176,35 @@ namespace TabletArtco
                 result = Encoding.UTF8.GetString(bytes);
             }
 
-            const int rowCnt = 6;
+            const int rowCnt = 7;
 
             string[] datas = result.Split('\n');
             for (int i = 0; i <= datas.Length - rowCnt; i += rowCnt)
             {
+                string name = datas[i + 1];
+                if (name.Equals("EventInputKey") ||
+                    name.Equals("ControlClone") ||
+                    name.Equals("ControlCondition") ||
+                    name.Equals("EventClone"))
+
+                    continue;
+
                 Block block = new Block()
                 {
-                    name = datas[i + 1],
+                    name = name,
+                    resourceId = BlockResources._blockImages[name],
                     category = int.Parse(datas[i + 2]),
-                    inputState = int.Parse(datas[i + 3]),
-                    idx = int.Parse(datas[i + 4]),
-                    remotePath = imgPath + datas[i + 5],
-
+                    blockType = int.Parse(datas[i + 3]),
+                    eventType = (!string.IsNullOrEmpty(datas[i + 6])) ? int.Parse(datas[i + 6]) : -1                   
                 };
-                if (block.category >= Block.blocks.Count)
-                    Block.blocks.Add(new List<Block>());
 
-                Block.blocks[block.category].Add(block);
+                if (block.category >= Block._blocks.Count)
+                    Block._blocks.Add(new List<Block>());
+
+                Block._blocks[block.category].Add(block);
             }
+
+            Block.SetBlockFunctions();
         }
 
         public static void LoadSounds()
@@ -223,7 +233,7 @@ namespace TabletArtco
 
                 Sound._sounds[category].Add(new Sound(name, localPath));
             }
-            
+
         }
 
         public static void LoadMusic()
@@ -256,9 +266,9 @@ namespace TabletArtco
             }
         }
 
-        public static Stream LoadPractise() 
+        public static Stream LoadPractise()
         {
-            return GetStreamFromHTTP(_host +  "/artco/backgrounds/Practice_Explain/path.xml");
+            return GetStreamFromHTTP(_host + "/artco/backgrounds/Practice_Explain/path.xml");
         }
 
         public static WebClient GetHttpClient()
@@ -274,11 +284,11 @@ namespace TabletArtco
             {
                 return client.OpenRead(remotePath);
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 return null;
             }
-            
+
         }
 
         public static WebClient GetWebClient()

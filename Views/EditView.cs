@@ -98,6 +98,10 @@ namespace TabletArtco
             
             RectF rect = new RectF();
             path.ComputeBounds(rect, false);
+
+            if(rect.Left == rect.Right || rect.Top == rect.Bottom)            
+                return null;
+            
             Bitmap b = Bitmap.CreateBitmap(bitmap1, (int)rect.Left, (int)rect.Top, (int)(rect.Right - rect.Left), (int)(rect.Bottom - rect.Top), null, true);
 
             bitmap1.Recycle();
@@ -567,6 +571,9 @@ namespace TabletArtco
             editLayer.RemoveNextSteps();
             Bitmap bitmap = editLayer.LayerImage();
             List<Bitmap> bitmaps = ImageUtil.Clip(bitmap, path);
+            if (bitmaps == null)
+                return;
+
             EditLayer layer = new EditLayer(bitmaps[0]);
             layer.Add(bitmaps[1], path, OperateType.FreeCut);
             layerlist.Add(layer);

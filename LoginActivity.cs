@@ -107,14 +107,12 @@ namespace TabletArtco
                 return;
             }
 
-            View contentView = LayoutInflater.From(this).Inflate(Resource.Layout.dialog_loading, null, false);
+            View contentView = LayoutInflater.From(this).Inflate(Resource.Layout.dialog_loading, null, false);            
             VideoView videoView = contentView.FindViewById<VideoView>(Resource.Id.loading_video);
             videoView.SetOnCompletionListener(this);
 
-            dialog = new Dialog(this, Resource.Style.Theme_Design_NoActionBar);
-            dialog.SetContentView(contentView);
-            dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
-            dialog.Window.SetLayout(ScreenUtil.ScreenWidth(this), ScreenUtil.ScreenHeight(this));
+            dialog = new Dialog(this, Android.Resource.Style.ThemeBlackNoTitleBarFullScreen);
+            dialog.SetContentView(contentView);                   
             dialog.SetCancelable(false);
             dialog.Show();
 
@@ -150,6 +148,7 @@ namespace TabletArtco
                     try
                     {
                         DBManager.LoadSprites();
+                        DBManager.LoadBlocks();
                         DBManager.LoadBackgrounds();
                         DBManager.LoadSounds();
                         DBManager.LoadMusic();

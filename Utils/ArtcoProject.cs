@@ -183,7 +183,7 @@ namespace TabletArtco
                     {
                         string codeName = rdr.ReadLine();
                         string[] split = codeName.Split(">>");
-                        Block code = Block.GetBlockByName(split[0]);
+                        Block code = Block.Copy(Block.GetBlockByName(split[0]));
                         for (int k = 1; k < split.Length; k += 2)
                         {
                             if (split[k].Equals("text"))

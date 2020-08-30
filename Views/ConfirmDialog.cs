@@ -14,10 +14,11 @@ namespace TabletArtco
         private AlertDialog dialog = null;
         public Action<bool> callbackAction;
         private View contentView;
+        private bool isYesOrNo = false;
 
-        public ConfirmDialog(Context context)
+        public ConfirmDialog(Context context, bool isYesOrNo = false)
         {
-            Initialize(context);
+            Initialize(context, isYesOrNo);            
         }
 
         public void Show()
@@ -30,21 +31,39 @@ namespace TabletArtco
             dialog?.Dismiss();
         }
 
-        private void Initialize(Context context)
-        {
+        private void Initialize(Context context, bool isYesOrNo)
+        {            
             contentView = LayoutInflater.From(context).Inflate(Resource.Layout.dialog_confirm, null, false);
             dialog = new AlertDialog.Builder(context).SetView(contentView).Create();
 
-            contentView.FindViewById<TextView>(Resource.Id.cancelTv).Click += (t, e) =>
+            if (isYesOrNo)
             {
-                callbackAction?.Invoke(false);
-                dialog.Dismiss();
-            };
-            contentView.FindViewById<TextView>(Resource.Id.confirmTv).Click += (t, e) =>
+                var cancelBtn = contentView.FindViewById<ImageView>(Resource.Id.cancelIv);
+                var yesBtn = contentView.FindViewById<ImageView>(Resource.Id.yesIv);
+                cancelBtn.Visibility = ViewStates.Visible;
+                yesBtn.Visibility = ViewStates.Visible;
+
+                cancelBtn.Click += (t, e) =>
+                {
+                    callbackAction?.Invoke(false);
+                    dialog.Dismiss();
+                };
+                yesBtn.Click += (t, e) =>
+                {
+                    callbackAction?.Invoke(true);
+                    dialog.Dismiss();
+                };
+            }
+            else
             {
-                callbackAction?.Invoke(true);
-                dialog.Dismiss();
-            };
+                var okBtn = contentView.FindViewById<ImageView>(Resource.Id.okIv);
+                okBtn.Visibility = ViewStates.Visible;
+                okBtn.Click += (t, e) =>
+                {
+                    dialog.Dismiss();
+                };
+            }
+
             dialog.Window.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
         }
 

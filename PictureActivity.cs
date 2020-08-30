@@ -10,6 +10,11 @@ using Com.Bumptech.Glide;
 using Android.Content;
 using Android.Runtime;
 using Android.Views.InputMethods;
+using Android.Graphics;
+using Android.Provider;
+using System.IO;
+using Android.Database;
+using Android.Util;
 
 namespace TabletArtco
 {
@@ -34,6 +39,55 @@ namespace TabletArtco
             InitView();
         }
 
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            if (data == null || resultCode != Result.Ok)
+                return;
+
+            string realPath = GetRealPathFromURI(this, data.Data);
+            //Stream stream = ContentResolver.OpenInputStream(uri);
+            //Bitmap img = BitmapFactory.DecodeStream(stream);
+
+            Sprite sprite = new Sprite();            
+            sprite.name = realPath.Substring(realPath.LastIndexOf("/") + 1);
+            sprite.isUser = true;
+            sprite.category = -1;
+            sprite.remotePath = realPath;
+
+            Intent intent = new Intent();
+            Bundle bundle = new Bundle();
+            bundle.PutString("model", sprite.ToString());
+            intent.PutExtra("bundle", bundle);
+            SetResult(Result.Ok, intent);
+            Finish();
+        }
+
+        public static string GetRealPathFromURI(Activity act, Android.Net.Uri contentURI)
+        {
+            try
+            {
+                ICursor cursor = act.ContentResolver.Query(contentURI, null, null, null, null);
+                cursor.MoveToFirst();
+                string documentId = cursor.GetString(0);
+                documentId = documentId.Split(':')[1];
+                cursor.Close();
+
+                cursor = act.ContentResolver.Query(
+                MediaStore.Images.Media.ExternalContentUri,
+                null, MediaStore.Images.Media.InterfaceConsts.Id + " = ? ", new[] { documentId }, null);
+                cursor.MoveToFirst();
+                string path = cursor.GetString(cursor.GetColumnIndex(MediaStore.Images.Media.InterfaceConsts.Data));
+                cursor.Close();
+
+                return path;
+            }
+            catch (Exception e)
+            {
+                Log.Debug("TAG_DATA", e.ToString());
+                return "";
+            }
+        }
         // init view
         private void InitView()
         {
@@ -51,13 +105,14 @@ namespace TabletArtco
             svParams.Width = width;
             svParams.Height = topH;
             scrollView.LayoutParameters = svParams;
-            scrollView.SetPadding(margin, (int)(10/975.0*height), margin, 0);
+            scrollView.SetPadding(margin, (int)(10 / 975.0 * height), margin, 0);
             LinearLayout topView = FindViewById<LinearLayout>(Resource.Id.grid_top_view);
             int[] resIds = {
                 Resource.Drawable.search_bg, Resource.Drawable.User_tab, Resource.Drawable.momochung_tab,
                 Resource.Drawable.ps_sea_tab, Resource.Drawable.ps_animal_tab, Resource.Drawable.ps_plants_tab,
                 Resource.Drawable.ps_insect_tab, Resource.Drawable.ps_character_tab, Resource.Drawable.ps_food_tab,
-                Resource.Drawable.ps_traffic_tab, Resource.Drawable.ps_object_tab, Resource.Drawable.National_studies_tab
+                Resource.Drawable.ps_traffic_tab, Resource.Drawable.ps_object_tab, Resource.Drawable.National_studies_tab,
+                Resource.Drawable.OpenDirectory
             };
             int editTvH = (int)(38 / 90.0 * topH);
             int editTvW = (int)(166 / 35.0 * editTvH);
@@ -76,14 +131,14 @@ namespace TabletArtco
                     searchEt.Hint = "搜索";
                     searchEt.TextSize = 14;
                     searchEt.SetSingleLine(true);
-                    searchEt.ImeOptions = Android.Views.InputMethods.ImeAction.Search;
+                    searchEt.ImeOptions = ImeAction.Search;
                     searchEt.SetOnEditorActionListener(this);
                     topView.AddView(searchEt);
                     TextViewUtil.setMaxLength(searchEt, 32);
                 }
                 else
                 {
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(itemW + 2*padding, itemH + 2*padding);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(itemW + 2 * padding, itemH + 2 * padding);
 
                     ImageView imgIv = new ImageView(this);
                     imgIv.SetImageResource(resIds[i]);
@@ -98,21 +153,34 @@ namespace TabletArtco
                     frameLayout.AddView(imgIv);
                     topView.AddView(frameLayout);
 
-                    frameLayout.Click += (t, e) =>
+                    if (i == resIds.Length - 1)
                     {
-                        int tag = (int)(((FrameLayout)t).Tag);
-                        mIndex = tag - 1;
-
-                        for (int j = 1; j < resIds.Length; j++)
+                        frameLayout.Click += (t, e) =>
                         {
-                            FrameLayout fl = (FrameLayout)topView.GetChildAt(j);
-                            fl.Background = null;
-                        }
-                        ((FrameLayout)t).SetBackgroundResource(Resource.Drawable.tab_select);
-                        isSearch = false;
-                        searchEt.Text = "";
-                        UpdateView();
-                    };
+                            Intent intent = new Intent();
+                            intent.SetAction(Intent.ActionGetContent);
+                            intent.SetType("image/*");
+                            StartActivityForResult(Intent.CreateChooser(intent, "Open"), 0);
+                        };
+                    }
+                    else
+                    {
+                        frameLayout.Click += (t, e) =>
+                        {
+                            int tag = (int)(((FrameLayout)t).Tag);
+                            mIndex = tag - 1;
+
+                            for (int j = 1; j < resIds.Length; j++)
+                            {
+                                FrameLayout fl = (FrameLayout)topView.GetChildAt(j);
+                                fl.Background = null;
+                            }
+                            ((FrameLayout)t).SetBackgroundResource(Resource.Drawable.tab_select);
+                            isSearch = false;
+                            searchEt.Text = "";
+                            UpdateView();
+                        };
+                    }
                 }
             }
 
@@ -128,11 +196,11 @@ namespace TabletArtco
             int columnCount = 8;
             mItemW = (int)((w - (columnCount + 1) * spacing * 1.0) / columnCount);
             mItemH = mItemW; // 2;
-            
+
             GridView gridView = FindViewById<GridView>(Resource.Id.gridview);
             gridView.SetColumnWidth(200);
             gridView.SetNumColumns(columnCount);
-            gridView.SetVerticalSpacing(spacing*2);
+            gridView.SetVerticalSpacing(spacing * 2);
             gridView.SetHorizontalSpacing(spacing);
             gridView.Adapter = new GridAdapter((DataSource)this, (Delegate)this);
             GridAdapter adapter = new GridAdapter((DataSource)this, (Delegate)this);
@@ -154,12 +222,13 @@ namespace TabletArtco
          */
         public int GetItemsCount(Java.Lang.Object adapter)
         {
-            if (isSearch) {
+            if (isSearch)
+            {
                 return searchList.Count;
             }
 
             List<List<Sprite>> sprites = Sprite._sprites;
-            if (mIndex<sprites.Count)
+            if (mIndex < sprites.Count)
             {
                 return sprites[mIndex].Count;
             }
@@ -203,7 +272,7 @@ namespace TabletArtco
                 sprite = list[position];
             }
 
-            
+
             ViewHolder viewHolder = (ViewHolder)contentView.Tag;
             Glide.With(this).Load(GlideUtil.GetGlideUrl(sprite.remotePath)).Into(viewHolder.imgIv);
             viewHolder.txtTv.Text = sprite.name;
@@ -238,7 +307,8 @@ namespace TabletArtco
 
         public bool OnEditorAction(TextView v, [GeneratedEnum] ImeAction actionId, KeyEvent e)
         {
-            if (v.Text.Length == 0) {
+            if (v.Text.Length == 0)
+            {
                 ToastUtil.ShowToast(this, "搜索内容不能为空");
                 return false;
             }
@@ -248,12 +318,14 @@ namespace TabletArtco
                 isSearch = true;
                 searchList.RemoveRange(0, searchList.Count);
                 List<List<Sprite>> list = Sprite._sprites;
-                for (int i = 0; i < list.Count; i++) {
+                for (int i = 0; i < list.Count; i++)
+                {
                     List<Sprite> subList = list[i];
                     for (int j = 0; j < subList.Count; j++)
                     {
                         Sprite sprite = subList[j];
-                        if (sprite.name.Contains(text)) {
+                        if (sprite.name.Contains(text))
+                        {
                             searchList.Add(sprite);
                         }
                     }

@@ -19,7 +19,7 @@ namespace TabletArtco
 
         private int mItemW;
         private int mItemH;
-        private int mIndex = 9;
+        private int mIndex = 5;
 
         private EditText searchEt;
         private bool isSearch = false;
@@ -35,7 +35,7 @@ namespace TabletArtco
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
+            Window.SetFlags(WindowManagerFlags.Fullscreen, WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_grid);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
             InitData();
@@ -170,7 +170,7 @@ namespace TabletArtco
                     frameLayout.LayoutParameters = lp;
                     frameLayout.SetPadding(padding, padding, padding, padding);
                     frameLayout.Tag = i;
-                    if (i == 5)
+                    if (i == 1)
                         frameLayout.SetBackgroundResource(Resource.Drawable.tab_select);
 
                     frameLayout.AddView(imgIv);
@@ -218,7 +218,6 @@ namespace TabletArtco
                             UpdateView();
                         };
                     }
-
                 }
             }
 

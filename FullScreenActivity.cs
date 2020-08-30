@@ -181,8 +181,6 @@ namespace TabletArtco
                     return;
                 }
 
-
-
                 if (name != null)
                 {
                     RecordUtil.startScreenRecord(this, 1, name);
@@ -218,16 +216,16 @@ namespace TabletArtco
             //StartService(service);
             ApplicationContext.BindService(service, this, Bind.AutoCreate);
             RecordUtil.addRecordListener(this);
-
             PermissionUtil.checkPermission(this);
 
             AddSpriteView();
         }
 
         private void startAnimation() {
-            isPlay = true;
-            Project.RunSprite();
-            //mediaManager.Play();
+            if (!Project.RunSprite(this))
+                return;
+
+            isPlay = true;            
             videoPlayer.Play();
             bgmPlayer.Play(SoundPlayer.bgmPath);
         }
@@ -254,7 +252,7 @@ namespace TabletArtco
                 {
                     if (!isPlay)
                     {
-                        //activatedSprite.AddToOriginPoint((int)x, (int)y);
+                        activatedSprite.AddToOriginPoint((int)x, (int)y);
                     }
                 };
                 imgIv.ClickAction += (t) =>

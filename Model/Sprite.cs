@@ -8,20 +8,20 @@ using Com.Bumptech.Glide;
 
 namespace TabletArtco
 {
-    class Sprite
+    public class Sprite
     {
         // List by category
-        public static List<List<Sprite>> _sprites { get; set; } = new List<List<Sprite>>();
+        public static List<List<Sprite>> _sprites = new List<List<Sprite>>();
 
-        public string name { get; set; }
-        public int category { get; set; }
-        public string remotePath { get; set; }
-        public bool isUser { get; set; }
-        public Bitmap bitmap { get; set; }
+        public string name;
+        public int category;
+        public string remotePath;
+        public bool isUser;
+        public Bitmap bitmap;
 
         public override string ToString()
         {
-            return name + "\n" + category + "\n" + remotePath + "\n" + isUser;
+            return name + "\n" + category + "\n" + remotePath + "\n" + isUser.ToString().ToLower();
         }
         
         public static Sprite ToSprite(string spriteStr)
@@ -43,9 +43,11 @@ namespace TabletArtco
             }
             return null;
         }
-    }
 
-    
+        //public static Sprite ToSprite(string path)
+        //{
 
-
+        //    return null;
+        //}
+    }    
 }
