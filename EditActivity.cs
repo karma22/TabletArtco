@@ -116,8 +116,9 @@ namespace TabletArtco
                         operateList.Remove(oldB);
                         Bitmap bitmap = editView.CurBitmap();
                         operateList.Insert(mIndex, bitmap);
+                        float scale = scaleList[mIndex];
                         scaleList.RemoveAt(mIndex);
-                        scaleList.Insert(mIndex, editView.CurScale());
+                        scaleList.Insert(mIndex, editView.CurScale()*scale);
                         mActivatedSprite.SetSrcBitmapList(operateList);
                         mActivatedSprite.scaleList = scaleList;
                         LogUtil.CustomLog(scaleList.ToString());
