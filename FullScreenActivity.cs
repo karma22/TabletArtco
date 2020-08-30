@@ -43,6 +43,7 @@ namespace TabletArtco
         protected override void OnResume()
         {
             base.OnResume();
+            Project.ChangeMode(true);
             ActivatedSprite.mUpdateDelegate = this;
             ActivatedSprite.SoundAction = (sound) =>
             {
