@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Android.Support.Design.Transformation;
+using System;
 using System.IO;
 using System.Net;
 
@@ -54,6 +55,23 @@ namespace TabletArtco
 
                 request.Abort();
 
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+
+        public bool DeleteFileFromFTP(string path)
+        {
+            string remotePath = "ftp" + path.Substring(4);
+            try
+            {
+                FtpWebRequest request = GetFtpRequest(remotePath);
+                request.Method = WebRequestMethods.Ftp.DeleteFile;
+                request.GetResponse();
                 return true;
             }
             catch (Exception)

@@ -206,7 +206,7 @@ namespace TabletArtco
             else
                 viewHolder.imgIv.SetImageResource(Resource.Drawable.PO_SpriteBack);
             viewHolder.txtTv.Text = fileNameList[mIndex][position];
-            viewHolder.txtTv.Tag = position;
+            viewHolder.delete_fl.Tag = viewHolder.txtTv.Tag = position;            
         }
 
         public void ClickItem(int position)
