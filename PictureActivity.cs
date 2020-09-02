@@ -19,7 +19,7 @@ using Android.Util;
 namespace TabletArtco
 {
     [Activity(Label = "PictureActivity", LaunchMode = Android.Content.PM.LaunchMode.SingleTop)]
-    public class PictureActivity : Activity, DataSource, Delegate, TextView.IOnEditorActionListener
+    public class PictureActivity : Activity, DataSource, Delegate, TextView.IOnEditorActionListener, PopupMenu.IOnMenuItemClickListener
     {
 
         private int mItemW;
@@ -202,9 +202,7 @@ namespace TabletArtco
             gridView.SetNumColumns(columnCount);
             gridView.SetVerticalSpacing(spacing * 2);
             gridView.SetHorizontalSpacing(spacing);
-            gridView.Adapter = new GridAdapter((DataSource)this, (Delegate)this);
-            GridAdapter adapter = new GridAdapter((DataSource)this, (Delegate)this);
-
+            gridView.Adapter = new GridAdapter((DataSource)this, (Delegate)this);            
         }
 
         // update listview
@@ -235,6 +233,8 @@ namespace TabletArtco
             return 0;
         }
 
+        private int mLongPressSpriteIndex = -1;
+        //删除 
         public View GetItemView(Java.Lang.Object adapter, ViewGroup parent)
         {
             View convertView = LayoutInflater.From(this).Inflate(Resource.Layout.item_sprite, parent, false);
@@ -242,7 +242,7 @@ namespace TabletArtco
             ViewHolder holder = new ViewHolder();
             holder.bgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_bgIv);
             holder.imgIv = convertView.FindViewById<ImageView>(Resource.Id.selected_material_imgIv);
-            holder.txtTv = convertView.FindViewById<TextView>(Resource.Id.sprite_tv);
+            holder.txtTv = convertView.FindViewById<TextView>(Resource.Id.sprite_tv);                    
             convertView.Tag = holder;
             convertView.Click += (t, e) =>
             {
@@ -250,12 +250,33 @@ namespace TabletArtco
                 int position = (int)viewHolder.txtTv.Tag;
                 ClickItem(position);
             };
+            convertView.LongClick += (t, e) =>
+            {
+                if (mIndex != 0)
+                    return;
+
+                ViewHolder viewHolder = (ViewHolder)(((View)t).Tag);
+                mLongPressSpriteIndex = (int)viewHolder.txtTv.Tag;
+
+                View view = (View)t;
+                PopupMenu popupMenu = new PopupMenu(view.Context, view);
+                popupMenu.Menu.Add("删除");
+                popupMenu.SetOnMenuItemClickListener(this);
+                popupMenu.Show();
+            };
+
+
             return convertView;
+        }
+
+        public bool OnMenuItemClick(IMenuItem item)
+        {
+            DeleteItem(mLongPressSpriteIndex);
+            return true;
         }
 
         public void UpdateItemView(Java.Lang.Object adapter, View contentView, int position)
         {
-
             Sprite sprite = null;
             if (isSearch)
             {
@@ -305,6 +326,19 @@ namespace TabletArtco
             Finish();
         }
 
+        public void DeleteItem(int position)
+        {
+            if (mIndex != 0)
+                return;
+
+            var sprites = Sprite._sprites[mIndex];
+            var sprite = sprites[position];
+            sprites.RemoveAt(position);
+            FTPManager.ftpManager.DeleteFileFromFTP(sprite.remotePath);
+
+            UpdateView();
+        }
+
         public bool OnEditorAction(TextView v, [GeneratedEnum] ImeAction actionId, KeyEvent e)
         {
             if (v.Text.Length == 0)
@@ -344,7 +378,7 @@ namespace TabletArtco
         {
             public ImageView bgIv;
             public ImageView imgIv;
-            public TextView txtTv;
+            public TextView txtTv;            
         }
     }
 }
