@@ -36,6 +36,13 @@ namespace TabletArtco
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             Window.SetFlags(Android.Views.WindowManagerFlags.Fullscreen, Android.Views.WindowManagerFlags.Fullscreen);
             RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
+
+            //            getWindow().getDecorView().setSystemUiVisibility(
+            //View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            //| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            //| View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
+            //Window.DecorView.SystemUiVisibility = View.SystemUiFlagImmersiveSticky;
             SetContentView(Resource.Layout.activity_full);
             InitView();
         }
@@ -43,7 +50,6 @@ namespace TabletArtco
         protected override void OnResume()
         {
             base.OnResume();
-            Project.ChangeMode(true);
             ActivatedSprite.mUpdateDelegate = this;
             ActivatedSprite.SoundAction = (sound) =>
             {
@@ -68,8 +74,6 @@ namespace TabletArtco
         protected override void OnPause()
         {
             base.OnPause();
-            Project.ChangeMode(false);
-
             if (!isPlay)
             {
                 return;
@@ -88,6 +92,7 @@ namespace TabletArtco
         protected override void OnDestroy()
         {
             base.OnDestroy();
+            Project.ChangeMode(false);
             if (isRecord)
             {
                 RecordUtil.stopScreenRecord(this);

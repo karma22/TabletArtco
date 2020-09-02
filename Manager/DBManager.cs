@@ -73,7 +73,7 @@ namespace TabletArtco
             {
                 for (int i = 0; i < fileNames.Length; i++)
                 {
-                    string name = fileNames[i].Substring(0, fileNames[i].Length - 4);
+                    string name = fileNames[i].Contains(".png") ? fileNames[i].Substring(0, fileNames[i].Length - 4) : fileNames[i];
                     string remotePath = imgPath + "sprites/" + GlideUtil.username + "/" + fileNames[i];
                     Sprite sprite = new Sprite()
                     {

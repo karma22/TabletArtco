@@ -27,6 +27,7 @@ namespace TabletArtco
         public List<List<Block>> mBlocks = new List<List<Block>>();
         public List<Bitmap> originBitmapList = new List<Bitmap>();
         public List<float> scaleList = new List<float>();
+        public Point oriPiont = new Point(0, 0);
         public Point originPoint = new Point(0, 0);
 
         // animation arguments
@@ -80,6 +81,8 @@ namespace TabletArtco
             curPoint = new Point(Java.Lang.Math.Abs(x), Java.Lang.Math.Abs(y));
             originPoint.X = curPoint.X;
             originPoint.Y = curPoint.Y;
+            oriPiont.X = curPoint.X;
+            oriPiont.Y = curPoint.Y;
             curSize = new Size(width, height);
         }
 
@@ -244,6 +247,8 @@ namespace TabletArtco
             curPoint.Y = Java.Lang.Math.Abs(y);
             originPoint.X = curPoint.X;
             originPoint.Y = curPoint.Y;
+            oriPiont.X = curPoint.X;
+            oriPiont.Y = curPoint.Y;
             mUpdateDelegate?.UpdateView();
         }
 
@@ -268,8 +273,8 @@ namespace TabletArtco
                 float scaleX = fullSize.Width * 1.0f / notFullSize.Width;
                 float scaleY = fullSize.Height * 1.0f / notFullSize.Height;
 
-                originPoint.X = (int)(originPoint.X * scaleX);
-                originPoint.Y = (int)(originPoint.Y * scaleY);
+                originPoint.X = (int)(oriPiont.X * scaleX);
+                originPoint.Y = (int)(oriPiont.Y * scaleY);
                 curPoint.X = originPoint.X;
                 curPoint.Y = originPoint.Y;                
             }
@@ -278,8 +283,8 @@ namespace TabletArtco
                 float scaleX = notFullSize.Width * 1.0f / fullSize.Width;
                 float scaleY = notFullSize.Height * 1.0f / fullSize.Height;
 
-                originPoint.X = (int)(originPoint.X * scaleX);
-                originPoint.Y = (int)(originPoint.Y * scaleY);
+                originPoint.X = (int)(oriPiont.X);
+                originPoint.Y = (int)(oriPiont.Y);
                 curPoint.X = originPoint.X;
                 curPoint.Y = originPoint.Y;
             }
@@ -399,10 +404,15 @@ namespace TabletArtco
             int width = bitmap.Width;
             int height = bitmap.Height;
             int mW, mH;
+            float scaleX = 1;
+            float scaleY = 1;
+
             if (mIsFull)
             {
                 mW = fullSize.Width - width + 1;
                 mH = fullSize.Height - height + 1;
+                scaleX = notFullSize.Width * 1.0f / fullSize.Width;
+                scaleY = notFullSize.Height * 1.0f / fullSize.Height;
             }
             else
             {
@@ -417,6 +427,8 @@ namespace TabletArtco
             originPoint.Y = oY < 0 ? 0 : oY > mH ? mH : oY;
             curPoint.X = originPoint.X;
             curPoint.Y = originPoint.Y;
+            oriPiont.X = (int)(originPoint.X * scaleX);
+            oriPiont.Y = (int)(originPoint.Y * scaleY);
             mUpdateDelegate?.UpdateView();
         }
 

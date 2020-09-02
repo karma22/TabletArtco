@@ -160,7 +160,11 @@ namespace TabletArtco
                     }
                     catch (Exception e)
                     {
-                        ToastUtil.ShowToast(this, "资源获取失败!");
+                        RunOnUiThread(() =>
+                        {
+                            ToastUtil.ShowToast(this, "资源获取失败!");
+                        });
+                      
                         dialog.Dismiss();
                     }
                 }

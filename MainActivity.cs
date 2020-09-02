@@ -53,6 +53,7 @@ namespace TabletArtco
         protected override void OnResume()
         {
             base.OnResume();
+            Project.ChangeMode(false);
             UpdateMainView();
             AddSpriteView();
             mSpriteAdapter.NotifyDataSetChanged();
